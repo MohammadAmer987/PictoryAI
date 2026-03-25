@@ -33,7 +33,7 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
                             Content History
                         </div>
 
-                        <div className="avatar-item" onClick={() => handleNavigate('pricing')}>
+                        <div className="avatar-item" onClick={() => handleNavigate('/pricing')}>
                             Manage Subscription
                         </div>
 
@@ -50,8 +50,7 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
             ) : (
 
                 <button className="btn-login" onClick={() => handleNavigate('/login')}>
-                    Sign In
-                </button>
+                              Log In                </button>
 
             )}
 

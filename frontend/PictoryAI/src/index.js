@@ -8,7 +8,8 @@ import PictorySimple from "./components/UnderNavbar/PictorySimple";
 import Footerpart from "./components/footer/Footerpart";
 import Pricingpart from "./components/PricingSection/Pricingpart";
 import Featurepart from "./components/features/Featurepart";
-import LoginPage from "./login";
+import LoginPage from "./pages/login";
+import SignupPage from './pages/signup';
 
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
@@ -33,6 +34,8 @@ function App() {
                 <Route path="/pricing" element={<Pricingpart />} />
                 <Route path="/features" element={<Featurepart />} />
                 <Route path="/login" element={<LoginPage/>} />
+                 <Route path="/signup" element={<SignupPage/>} />
+
             </Routes>
 
             <Footerpart />
@@ -47,6 +50,11 @@ root.render(
         <BrowserRouter>
             <App />
         </BrowserRouter>
+
+    </React.StrictMode>
+    
+);
+
 
     </React.StrictMode>
     
