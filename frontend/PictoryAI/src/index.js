@@ -55,3 +55,7 @@ root.render(
     
 );
 
+
+    </React.StrictMode>
+    
+);
