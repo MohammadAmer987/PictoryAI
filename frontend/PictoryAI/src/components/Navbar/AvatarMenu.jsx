@@ -50,8 +50,7 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
             ) : (
 
                 <button className="btn-login" onClick={() => handleNavigate('/login')}>
-                    Sign In
-                </button>
+                              Log In                </button>
 
             )}
 
