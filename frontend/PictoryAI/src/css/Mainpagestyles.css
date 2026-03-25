@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap');
+
+/* ── Brand tokens ── */
+:root {
+    --dark-green:  #043F34;
+    --mid-green:   #71967D;
+    --soft-green:  #AFCAB8;
+    --mint-green:  #B6E5D2;
+    --bg:          #F4F8F6;
+    --white:       #FFFFFF;
+    --border:      #D6EAE0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: var(--bg);
+    color: var(--dark-green);
+}
+
+/* ── Navbar shell ── */
+.navbar {
+    width: 100%;
+    background: var(--white);
+    border-bottom: 1.5px solid var(--border);
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* ── Logo ── */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.nav-logo img {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+}
+
+
+
+/* ── Center links ── */
+.nav-center {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.42rem 0.8rem;
+    border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mid-green);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+.nav-item:hover,
+.nav-item.open { background: rgba(182, 229, 210, 0.2); color: var(--dark-green); }
+
+.nav-item .chevron { width: 13px; height: 13px; opacity: 0.55; transition: transform 0.2s; flex-shrink: 0; }
+.nav-item.open .chevron { transform: rotate(180deg); }
+
+.nav-badge {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.07em;
+    background: var(--mint-green); color: var(--dark-green);
+    padding: 2px 6px; border-radius: 100px; margin-left: 3px;
+}
+
+/* ── Dropdown panel ── */
+.nav-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+    min-width: 268px;
+    box-shadow: 0 10px 36px rgba(4, 63, 52, 0.10);
+    display: none;
+    z-index: 300;
+}
+.nav-item.open .nav-dropdown { display: block; }
+
+.dd-section-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.11em;
+    text-transform: uppercase; color: var(--soft-green); padding: 6px 10px 3px;
+}
+.dd-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    transition: background 0.14s; text-decoration: none;
+}
+.dd-item:hover { background: rgba(175, 202, 184, 0.18); }
+
+.dd-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: rgba(182, 229, 210, 0.28);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.dd-icon svg { width: 16px; height: 16px; }
+.dd-label { font-size: 0.875rem; font-weight: 500; color: var(--dark-green); }
+.dd-sub   { font-size: 0.72rem; color: var(--mid-green); margin-top: 1px; }
+.dd-divider { height: 1px; background: var(--border); margin: 5px 0; }
+
+/* ── Auth buttons ── */
+.nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.btn-login {
+    background: transparent; border: 1.5px solid var(--border); color: var(--mid-green);
+    padding: 0.48rem 1.1rem; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif; font-size: 0.84rem; font-weight: 500;
+    cursor: pointer; transition: border-color 0.15s, color 0.15s;
+}
+.btn-login:hover { border-color: var(--mid-green); color: var(--dark-green); }
+
+.btn-signup {
+    background: var(--dark-green); color: var(--mint-green); border: none;
+    padding: 0.52rem 1.2rem; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif; font-size: 0.84rem; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+    transition: background 0.15s, transform 0.1s;
+}
+.btn-signup:hover { background: #062e25; transform: translateY(-1px); }
+
+/* ── Avatar (logged-in state) ── */
+.nav-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--mint-green); color: var(--dark-green);
+    border: 2px solid var(--border);
+    font-family: 'Instrument Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; display: none; align-items: center; justify-content: center;
+    position: relative; transition: border-color 0.15s;
+}
+.nav-avatar:hover { border-color: var(--mid-green); }
+.nav-avatar.active { display: flex; }
+
+.avatar-dropdown {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 6px; min-width: 196px;
+    box-shadow: 0 10px 36px rgba(4, 63, 52, 0.10);
+    display: none; z-index: 400;
+}
+.nav-avatar.open .avatar-dropdown { display: block; }
+
+.avatar-header { padding: 8px 10px 7px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+.avatar-name  { font-size: 0.9rem; font-weight: 600; color: var(--dark-green); }
+.avatar-email { font-size: 0.72rem; color: var(--mid-green); margin-top: 2px; }
+
+.avatar-item {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+    border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: var(--mid-green);
+    cursor: pointer; transition: background 0.14s, color 0.14s;
+}
+.avatar-item:hover        { background: rgba(175, 202, 184, 0.18); color: var(--dark-green); }
+.avatar-item.danger:hover { background: rgba(210, 60, 60, 0.07); color: #a83030; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) { .navbar { padding: 0 1.25rem; } .nav-center { display: none; } }
+@media (max-width: 560px)  { .btn-login { display: none; } .nav-logo-tag { display: none; } }
+
+
+
