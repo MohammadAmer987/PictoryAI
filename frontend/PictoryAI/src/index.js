@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-
 import Navbar from "./components/Navbar/Navbar";
 import Aboutpart from "./components/About/Aboutpart";
 import PictorySimple from "./components/UnderNavbar/PictorySimple";
@@ -12,6 +11,7 @@ import LoginPage from "./pages/login";
 import SignupPage from './pages/signup';
 
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import AnimatedBackground from './components/AnimatedBackground';
 
 function App() {
     const navigate = useNavigate();
@@ -19,7 +19,7 @@ function App() {
     return (
         <>
             <Navbar onNavigate={(route) => navigate(route)} />
-
+              <AnimatedBackground />
             <Routes>
                 <Route path="/" element={
                     <>
@@ -34,8 +34,8 @@ function App() {
                 <Route path="/pricing" element={<Pricingpart />} />
                 <Route path="/features" element={<Featurepart />} />
                 <Route path="/login" element={<LoginPage/>} />
-                 <Route path="/signup" element={<SignupPage/>} />
-
+                <Route path="/signup" element={<SignupPage/>} />
+                    
             </Routes>
 
             <Footerpart />

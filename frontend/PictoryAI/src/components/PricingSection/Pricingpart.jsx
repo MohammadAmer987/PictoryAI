@@ -1,43 +1,50 @@
 import "../../css/Pricingpartstyle.css";
+import AnimatedBackground from "../AnimatedBackground";
 import PricingCard from "./PricingCard";
-
+import DirectionImage from "../../images/Direction.png";
 function Pricingpart() {
 
-    const features = [
-        "Feature 1",
-        "Feature 2",
-        "Feature 3",
-        "Feature 4"
+    const ProPlan = [
+        "Unlimited image generation",
+        "Unlimited Captions generation",
+        "Add your logo to images",
+        "Full image description control",
+        "No watermarks",
+    ];
+
+    const FreePlan = [
+        "5 Image generations per month",
+        "10 Captions generation per month",
+        "Basic image editing",
+        "Watermarked images"
     ];
 
     return (
-        <div className="top-Pricingpart">
 
+        <div className="top-Pricingpart">
+            <div className="left-content"><img src={DirectionImage} alt="" className="direction-image"/></div>
+            <AnimatedBackground />
             <div className="left">
                 <PricingCard
-                    title="Free Trial"
-                    price="$0 / 7 Days"
-                    features={features}
+                    title="Free Tier"
+                    price="$0"
+                    features={FreePlan}
                     variant="secondary"
-                    buttonText="Start Free Trial"
-
+                    buttonText="Subscribe Now"
+                    link="/signup"
                 />
-
-
             </div>
 
             <div className="right">
                 <PricingCard
-                    title="Premium"
+                    title="Premium Tier"
                     price="$19 / Month"
-                    features={features}
+                    features={ProPlan}
                     variant="primary"
                     buttonText="Subscribe Now"
-
+                    link="/signup"
                 />
             </div>
-
-
 
         </div>
     );
