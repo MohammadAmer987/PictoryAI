@@ -19,7 +19,7 @@ body {
 }
 
 /* ── Navbar shell ── */
-.navbar {
+.navbar-react {
     width: 100%;
     background: var(--white);
     border-bottom: 1.5px solid var(--border);

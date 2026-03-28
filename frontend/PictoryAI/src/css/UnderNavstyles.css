@@ -379,6 +379,7 @@
     padding: 16px;
     --outer-r: 24px;
     --p-distance: 12px;
+    
 
 }
 
@@ -504,13 +505,7 @@
     transition: background-color 150ms;
 }
 
-.carousel-indicator.active {
-    background-color: #fff;
-}
 
-.carousel-indicator.inactive {
-    background-color: #555;
-}
 .hero-right{
     margin: auto;
 }

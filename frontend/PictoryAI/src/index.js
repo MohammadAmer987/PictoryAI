@@ -1,4 +1,5 @@
 import React from 'react';
+import  'bootstrap/dist/css/bootstrap.min.css';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import Navbar from "./components/Navbar/Navbar";
@@ -9,6 +10,11 @@ import Pricingpart from "./components/PricingSection/Pricingpart";
 import Featurepart from "./components/features/Featurepart";
 import LoginPage from "./pages/login";
 import SignupPage from './pages/signup';
+import AiToolsPage from './pages/tools';
+import CaptionGenerating from './pages/captionGenerating';
+import './css/captionGenerator.css'
+import'./css/footer.css'
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import AnimatedBackground from './components/AnimatedBackground';
@@ -35,9 +41,10 @@ function App() {
                 <Route path="/features" element={<Featurepart />} />
                 <Route path="/login" element={<LoginPage/>} />
                 <Route path="/signup" element={<SignupPage/>} />
-                    
+                <Route path="/tools" element={<AiToolsPage />} />  
+                <Route path="/tools/caption-generator" element={<CaptionGenerating />} /> 
             </Routes>
-
+            
             <Footerpart />
         </>
     );
