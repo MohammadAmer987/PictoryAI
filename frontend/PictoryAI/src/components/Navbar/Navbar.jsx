@@ -30,7 +30,7 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
     }
 
     return (
-        <nav className="navbar" ref={navRef} aria-label="Main navigation">
+        <nav className="navbar-react" ref={navRef} aria-label="Main navigation">
 
             <Logo />
 

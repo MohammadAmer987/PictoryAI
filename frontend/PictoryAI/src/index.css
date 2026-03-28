@@ -117,3 +117,21 @@ code {
     50% { transform: translateY(-12px); }
     100% { transform: translateY(0); }
 }
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.footer-section{
+  margin:0;
+  padding: 50px;
+}

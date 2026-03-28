@@ -25,7 +25,10 @@ export default function Hero() {
 
                 </div>
                 <div className="hero-right">
-                    <Carousel />
+                    <Carousel autoplay={true}
+          autoplayDelay={2200}
+          pauseOnHover={true}
+          />
                 </div>
             </div>
         </div>
