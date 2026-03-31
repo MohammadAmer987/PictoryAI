@@ -109,7 +109,7 @@
    HERO
 ════════════════════════ */
 .hero {
-    background: var(--bg);
+    background: var(--white);
     padding: 80px 56px 72px;
     font-family: 'DM Sans', sans-serif;
 }
@@ -508,9 +508,13 @@
 
 .hero-right{
     margin: auto;
+    position: relative;
+    z-index: 1;
 }
 .hero-left{
     margin: auto;
+    position: relative;
+    z-index: 1;
 }
 
 .carousel-img{

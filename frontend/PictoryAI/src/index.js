@@ -15,17 +15,24 @@ import CaptionGenerating from './pages/captionGenerating';
 import './css/captionGenerator.css'
 import'./css/footer.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import AnimatedBackground from './components/AnimatedBackground';
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 function App() {
     const navigate = useNavigate();
-
+const handleLogout = () => {
+    // Clear auth state, remove tokens, etc.
+    setUser(null);
+  };
+  const [user, setUser] = React.useState({
+    name: "John Doe",
+    email: "john@example.com",
+    plan: "Premium"
+  });
     return (
         <>
-            <Navbar onNavigate={(route) => navigate(route)} />
-              <AnimatedBackground />
+            <Navbar user={user} onNavigate={(route) => navigate(route)} onLogout={handleLogout} />
+             < AnimatedBackground />
             <Routes>
                 <Route path="/" element={
                     <>
