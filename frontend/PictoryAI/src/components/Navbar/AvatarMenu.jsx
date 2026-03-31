@@ -3,6 +3,7 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
     const initials = user
         ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
         : ""
+        
 
     return (
         <div className="nav-right">
