@@ -19,9 +19,9 @@ body {
 }
 
 /* ── Navbar shell ── */
-.navbar {
+.navbar-react {
     width: 100%;
-    background: var(--white);
+    background: #f7f5f5;
     border-bottom: 1.5px solid var(--border);
     height: 68px;
     display: flex;
@@ -30,6 +30,7 @@ body {
     padding: 0 2.5rem;
     position: sticky;
     top: 0;
+    
     z-index: 100;
 }
 

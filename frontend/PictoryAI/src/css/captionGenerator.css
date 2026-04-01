@@ -1,0 +1,241 @@
+
+:root {
+  --primary-green: #0f3f34;
+  --secondary-green: #71967d;
+  --light-bg-green: #f8fdfb;
+  --accent-green: #afcab6;
+  --text-gray: #4a5568;
+}
+.hero-bg {
+  background: linear-gradient(
+    135deg,
+    var(--primary-green),
+    var(--secondary-green),
+    var(--accent-green)
+  );
+  border-radius: 20px;
+  padding: 40px;
+}
+
+
+
+
+.hero-title {
+  color: var(--primary-green);
+}
+
+.hero-text {
+  color: var(--text-gray);
+}
+.badge.hero-badge {
+  background-color: var(--accent-green) !important;
+  color: var(--primary-green) !important;
+  border: 1px solid var(--accent-green) !important;
+}
+:root {
+  --primary-green: #0f3f34; 
+  --soft-green: #f0f7f5; 
+  --border-soft: #e2eeeb;
+}
+
+.icon-box-bg {
+  border: 1px solid var(--border-soft); 
+  background-color: white; 
+  
+  border-radius: 15px; 
+  transition: all 0.3s ease; }
+.icon-color {
+  color: var(--secondary-green);
+}
+
+.hero-bg {
+  background: linear-gradient(
+    135deg,
+    white,
+    var(--light-bg-green)
+  );
+}
+
+
+
+
+body {
+  background-color: var(--light-bg-green);
+  color: var(--text-gray);
+}
+
+.bg-primary-green { background-color: var(--primary-green) !important; }
+.text-primary-green { color: var(--primary-green) !important; }
+
+.border-dashed {
+  border: 2px dashed var(--accent-green) !important;
+}
+
+.selection-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #eee;
+  background: white;
+}
+
+.selection-card.active {
+  border-color: var(--secondary-green) !important;
+  background-color: rgba(113, 150, 125, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(15, 63, 52, 0.05);
+}
+
+.btn-generate {
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  transition: opacity 0.3s;
+}
+
+.btn-generate:hover:not(:disabled) {
+  opacity: 0.9;
+  color: white;
+}
+
+.extra-small { font-size: 0.75rem; }
+
+
+
+
+.main-page-wrapper {
+  overflow-x: hidden; 
+}
+
+.h-100 {
+  display: flex;
+  flex-direction: column;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--light-bg-green);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--accent-green);
+  border-radius: 10px;
+}
+
+
+
+.custom-breadcrumb a {
+  text-decoration: none !important; 
+  color: #6c757d !important; 
+  transition: color 0.2s ease-in-out;
+}
+
+.custom-breadcrumb a:hover {
+  color: var(--primary-green) !important; 
+}
+
+
+
+.generator-card {
+  border: none !important;
+  overflow: hidden;
+}
+
+
+.card-header-custom {
+  background: linear-gradient(
+    135deg,
+    white,
+    var(--light-bg-green)
+  );
+  border-bottom: 1px solid #edf2f7;
+  padding: 1rem !important;
+}
+
+.icon-container-header {
+background: linear-gradient(200deg, var(--secondary-green) 0%, var(--primary-green) 100%);  
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  
+ 
+  border-radius: 8px; 
+}
+
+.upload-zone {
+  background-color: var(--light-bg-green);
+  border: 2px dashed var(--accent-green) !important;
+  transition: all 0.3s ease;
+}
+.btn-upload{
+  background: linear-gradient(200deg, var(--secondary-green) 0%, var(--primary-green) 100%);  
+
+}
+.upload-icon-box {
+  background-color: #e2eeeb; 
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+}
+
+.custom-input {
+  border: 1px solid var(--accent-green) !important;
+  background-color: white !important;
+}
+
+.custom-input:focus {
+  border-color: var(--primary-green) !important;
+  box-shadow: 0 0 0 0.2rem rgba(15, 63, 52, 0.1) !important;
+}
+.btn-upload {
+  background-color: var(--primary-green) !important;
+  border: none !important;
+  padding: 0.5rem 1.5rem !important;
+}
+.btn-generate-active {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%) !important;
+  color: white !important;
+}
+
+.btn-generate-disabled {
+  background-color: #f1f3f5 !important;
+  color: #adb5bd !important;
+  cursor: not-allowed;
+}
+
+.lang-card-active {
+  background-color: var(--light-bg-green);
+  border: 2px solid var(--primary-green) !important;
+  color: var(--primary-green);
+}
+
+.lang-card-inactive {
+  background-color: white;
+  border: 1px solid #edf2f7 !important;
+}
+
+.cursor-pointer { cursor: pointer; }
+.transition-all { transition: all 0.3s ease; }
+.empty-state-icon-box {
+
+  border-radius: 18px;
+  background-color: var(--light-bg-green);
+ 
+}
+
+.placeholder-square {
+  width: 50px;
+  height: 50px;
+  background-color: #f8fdfb;
+  border: 1px solid #edf2f0;
+
+}
+
+.empty-state-description {
+  max-width: 280px;
+  line-height: 1.4;
+}

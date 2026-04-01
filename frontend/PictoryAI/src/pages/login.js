@@ -4,8 +4,8 @@ function LoginPage() {
 
   return (
     <>
-      <div style={{ minHeight: "100vh", background: "#f7fbf8", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Arial, sans-serif", padding: "20px" }}>
-        <div style={{ width: "100%", maxWidth: "420px", backgroundColor: "white", borderRadius: "20px", padding: "35px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", border: "1px solid #afcab8" }}>
+      <div style={{ zindex: "1", minHeight: "100vh", background: "#f7fbf8", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Arial, sans-serif", padding: "20px" }}>
+        <div style={{ width: "100%", maxWidth: "420px", backgroundColor: "white", borderRadius: "20px", padding: "35px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", border: "1px solid #afcab8",position: "relative", zIndex: "2" }}>
           
           <h1 style={{ color: "#045f34", marginBottom: "10px" }}>Login</h1>
 

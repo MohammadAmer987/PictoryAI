@@ -109,7 +109,7 @@
    HERO
 ════════════════════════ */
 .hero {
-    background: var(--bg);
+    background: var(--white);
     padding: 80px 56px 72px;
     font-family: 'DM Sans', sans-serif;
 }
@@ -379,6 +379,7 @@
     padding: 16px;
     --outer-r: 24px;
     --p-distance: 12px;
+    
 
 }
 
@@ -504,18 +505,16 @@
     transition: background-color 150ms;
 }
 
-.carousel-indicator.active {
-    background-color: #fff;
-}
 
-.carousel-indicator.inactive {
-    background-color: #555;
-}
 .hero-right{
     margin: auto;
+    position: relative;
+    z-index: 1;
 }
 .hero-left{
     margin: auto;
+    position: relative;
+    z-index: 1;
 }
 
 .carousel-img{
