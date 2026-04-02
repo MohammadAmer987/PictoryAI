@@ -1,0 +1,56 @@
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 14px;
+    margin: 5px 0;
+    background: var(--white);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: background var(--transition), border-color var(--transition);
+}
+
+.toggle-row:hover {
+    border-color: var(--green-light);
+    background: var(--surface);
+}
+
+.toggle-row span {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--green-deep);
+}
+
+/* ── Toggle switch — slim & elegant ──────────────────── */
+.toggle-switch {
+    width: 36px;
+    height: 20px;
+    border: none;
+    border-radius: 999px;
+    background: var(--green-light);
+    position: relative;
+    cursor: pointer;
+    transition: background var(--transition);
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.toggle-circle {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--white);
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: left var(--transition);
+    box-shadow: 0 1px 3px rgba(45, 106, 90, 0.2);
+}
+
+.toggle-switch.active {
+    background: var(--green-mid);
+}
+
+.toggle-switch.active .toggle-circle {
+    left: 19px;
+}
