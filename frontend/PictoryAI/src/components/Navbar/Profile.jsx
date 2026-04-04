@@ -1,17 +1,33 @@
 import { useState } from 'react';
-import { X, Clock, ChevronDown, MoreVertical, Mail } from 'lucide-react';
+import { X,  Mail } from 'lucide-react';
 import '../../css/Profile.css';
-
+import EditCredentials from './EditCredentials';
+import EditName from './EditName';
 export default function Profile({
   isOpen,
   onClose,
   userName = 'Mohammad Nooh',
   userEmail = 'n321632408@stuxtrials.edu',
-  userStatus = 'Away',
-  userTime = '3:32 PM local time',
+  storeName = 'My Store',
+  onStoreNameChange,
   avatarUrl,
 }) {
-  const [, setIsHovered] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditName, setShowEditName] = useState(false);
+  const [userNameState, setCurrentName] = useState(userName);
+  const [showStoreModal, setShowStoreModal] = useState(false); 
+  const [editStoreName, setEditStoreName] = useState(storeName);
+   const handleSaveStoreName = () => {
+    if (onStoreNameChange) {
+      onStoreNameChange(editStoreName);
+    }
+    setShowStoreModal(false);
+  };
+
+  const handleCancelStoreEdit = () => {
+    setEditStoreName(storeName);
+    setShowStoreModal(false);
+  };
 
   return (
     <>
@@ -39,7 +55,7 @@ export default function Profile({
 
         <div className="profile-content">
           <div className="profile-banner">
-            <button className="btn btn-light btn-upload">
+            <button className="btn-upload">
               Upload Photo
             </button>
           </div>
@@ -63,49 +79,29 @@ export default function Profile({
           <div className="profile-info">
             <div className="profile-name-section">
               <h3 className="profile-name">{userName}</h3>
-              <button className="btn-link-green">
+              <button className="btn-link-green" onClick={()=>setShowEditName(true)}>
                 Edit
               </button>
             </div>
-
-            <button className="btn-link-green-sm">
-              + Add name pronunciation
-            </button>
-
-            <div className="status-badge">
-              <span className="status-dot"></span>
-              <span className="status-text">{userStatus}</span>
-            </div>
-
-            <div className="time-info">
-              <Clock className="icon-xs" />
-              <span className="time-text">{userTime}</span>
-            </div>
-
-            <div className="profile-actions">
-              <button className="btn btn-outline-secondary btn-action">
-                Set a status
-              </button>
-              <div className="action-group">
+              <div className="store-name-section">
+              <div className="store-name-label">Store Name</div>
+              <div className="store-name-display">
+                <span className="store-name-text">{storeName}</span>
                 <button
-                  className="btn btn-outline-secondary btn-action"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
+                  className="btn-link-green"
+                  onClick={() => setShowStoreModal(true)}
                 >
-                  View as
-                  <ChevronDown className="icon-xs ms-2" />
-                </button>
-                <button className="btn btn-outline-secondary btn-icon">
-                  <MoreVertical className="icon-xs" />
+                  Edit
                 </button>
               </div>
-            </div>
+            </div>      
           </div>
+          
 
           <div className="profile-contact">
             <div className="contact-header">
               <h4 className="contact-title">Contact information</h4>
-              <button className="btn-link-green">
+              <button className="btn-link-green" onClick={() => setShowEditModal(true)}>
                 Edit
               </button>
             </div>
@@ -125,6 +121,53 @@ export default function Profile({
           </div>
         </div>
       </div>
+      <EditCredentials show={showEditModal} onHide={() => setShowEditModal(false)} currentEmail={userEmail} />
+        <EditName
+        show={showEditName}
+        onHide={() => setShowEditName(false)}
+        currentName={userNameState}
+        onNameUpdate={(newName) => setCurrentName(newName)}
+      />
+            {showStoreModal && (
+        <div className="modal-overlay" onClick={handleCancelStoreEdit}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h5 className="modal-title">Edit Store Name</h5>
+              <button
+                onClick={handleCancelStoreEdit}
+                className="btn-close"
+                aria-label="Close modal"
+              >
+                <X className="icon-sm" />
+              </button>
+            </div>
+            <div className="modal-body">
+              <input
+                type="text"
+                className="form-control"
+                value={editStoreName}
+                onChange={(e) => setEditStoreName(e.target.value)}
+                placeholder="Enter store name"
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={handleCancelStoreEdit}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-success"
+                style={{ backgroundColor: 'var(--dark-green)', borderColor: 'var(--dark-green)' }}
+                onClick={handleSaveStoreName}
+              >
+                Save Store Name
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

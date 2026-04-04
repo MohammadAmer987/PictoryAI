@@ -72,8 +72,7 @@ const EditCredentials = ({ show, onHide, currentEmail }) => {
     setMessage({ type: '', text: '' });
 
     try {
-     
-
+      
       setMessage({ type: 'success', text: 'Password updated successfully!' });
       setTimeout(() => handleClose(), 2000);
     } catch (error) {
