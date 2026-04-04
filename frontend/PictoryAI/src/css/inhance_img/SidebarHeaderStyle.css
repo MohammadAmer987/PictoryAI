@@ -1,13 +1,14 @@
 /* Keep existing styles + add below */
 
 .sidebar {
-    background: var(--white);
-    border-right: 1px solid var(--border);
-    min-height: 100vh;
-    font-family: 'DM Sans', sans-serif;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--green-light) transparent;
+    overflow: hidden; /* مهم عشان ما يطلع المحتوى برا الزوايا */
+    background: #fff; /* إذا بدك نفس شكل الكروت */
+    border: 1px solid #e5e5e5; /* نفس border خفيف */
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-left: 10px;
+    margin-right: 5px;
+
 }
 
 .sidebar::-webkit-scrollbar { width: 4px; }
@@ -16,14 +17,17 @@
     border-radius: 99px;
 }
 
+/* ── Sidebar Tabs (Modified to White Theme) ── */
+
 .sidebar-tabs {
     display: flex;
-    background: var(--green-deep);
+    background: var(--white); /* تغيير الخلفية للأبيض */
     padding: 8px 10px;
     gap: 6px;
     position: sticky;
     top: 0;
     z-index: 10;
+    border-bottom: 1px solid var(--border); /* إضافة حد بسيط ليفصلها عن المحتوى */
 }
 
 .tab-btn {
@@ -31,7 +35,7 @@
     border: none;
     padding: 9px 4px;
     background: transparent;
-    color: rgba(255,255,255,0.5);
+    color: var(--green-mid); /* لون النص الأساسي أخضر متوسط بدل الشفافية */
     cursor: pointer;
     font-family: 'DM Sans', sans-serif;
     font-size: 11px;
@@ -47,33 +51,37 @@
     gap: 3px;
 }
 
+/* Hover state: خلفية خضراء خفيفة جداً */
 .tab-btn:hover:not(.active) {
-    background: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.85);
+    background: var(--green-light);
+    color: var(--green-deep);
 }
 
+/* Active state: خلفية خضراء غامقة ونص أبيض ليبرز التاب */
 .tab-btn.active {
-    background: var(--white);
-    color: var(--green-deep);
+    background: var(--green-deep);
+    color: var(--white);
     font-weight: 600;
     box-shadow: var(--shadow-sm);
 }
 
 /* Locked tab styling */
 .tab-btn.tab-locked {
-    color: rgba(255,255,255,0.35);
+    color: #ccc; /* لون رمادي باهت للقفل */
+    opacity: 0.6;
 }
 
 .tab-btn.tab-locked:hover:not(.active) {
-    background: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.55);
+    background: #f5f5f5;
+    color: #999;
 }
 
 .tab-btn.tab-locked.active {
-    background: var(--white);
-    color: var(--green-deep);
-    opacity: 0.8;
+    background: var(--green-mid); /* لون أخضر أخف للتاب المقفل المفعل */
+    color: var(--white);
+    opacity: 0.7;
 }
+
 
 .lock-dot {
     font-size: 9px;

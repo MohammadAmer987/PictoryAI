@@ -18,6 +18,10 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import AnimatedBackground from './components/AnimatedBackground';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
+import InhanceImg from './pages/InhanceImgPage';
+import './css/inhance_img/InhanceImgPage.css'
+
+
 function App() {
     const navigate = useNavigate();
 const handleLogout = () => {
@@ -33,10 +37,10 @@ const handleLogout = () => {
     return (
         <>
             <Navbar user={user} onNavigate={(route) => navigate(route)} onLogout={handleLogout} />
-             < AnimatedBackground />
             <Routes>
                 <Route path="/" element={
                     <>
+                        <AnimatedBackground />
                         <PictorySimple />
                         <Aboutpart />
                         <Pricingpart />
@@ -49,8 +53,9 @@ const handleLogout = () => {
                 <Route path="/features" element={<Featurepart />} />
                 <Route path="/login" element={<LoginPage/>} />
                 <Route path="/signup" element={<SignupPage/>} />
-                <Route path="/tools" element={<AiToolsPage />} />  
-                <Route path="/tools/caption-generator" element={<CaptionGenerating />} /> 
+                <Route path="/tools" element={<AiToolsPage />} />
+                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
+                <Route path="/tools/enhance-image" element={<InhanceImg />}/>
             </Routes>
             
             <Footerpart />

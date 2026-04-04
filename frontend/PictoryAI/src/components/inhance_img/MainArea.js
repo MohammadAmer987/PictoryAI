@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import "../../../css/inhance_img/MainAreaStyle.css";
+import "../../css/inhance_img/MainAreaStyle.css";
 
 function MainArea({ isPro, isReady }) {
     const [uploadedImage, setUploadedImage] = useState(null);

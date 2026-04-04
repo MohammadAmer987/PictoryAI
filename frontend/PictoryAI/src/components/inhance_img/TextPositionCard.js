@@ -1,4 +1,4 @@
-import "../../../css/inhance_img/TextPositionCardStyle.css";
+import "../../css/inhance_img/TextPositionCardStyle.css";
 
 function TextPositionCard({ label, position, selected, onClick }) {
     return (

@@ -1,4 +1,4 @@
-import "../../../css/inhance_img/CardWithIconStyle.css"
+import "../../css/inhance_img/CardWithIconStyle.css"
 function CardWithIcon({icon, label, selected, onClick}){
     return(
         <div

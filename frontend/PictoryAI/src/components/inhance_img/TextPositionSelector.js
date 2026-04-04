@@ -1,5 +1,5 @@
 import TextPositionCard from "./TextPositionCard";
-import '../../../css/inhance_img/TextPositionSelectorStyle.css';
+import '../../css/inhance_img/TextPositionSelectorStyle.css';
 
 const positions = [
     { label: "Center",        value: "center" },
