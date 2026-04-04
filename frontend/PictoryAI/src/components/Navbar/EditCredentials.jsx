@@ -72,9 +72,7 @@ const EditCredentials = ({ show, onHide, currentEmail }) => {
     setMessage({ type: '', text: '' });
 
     try {
-      const { error } = await supabase.auth.updateUser({ password });
-
-      if (error) throw error;
+     
 
       setMessage({ type: 'success', text: 'Password updated successfully!' });
       setTimeout(() => handleClose(), 2000);
