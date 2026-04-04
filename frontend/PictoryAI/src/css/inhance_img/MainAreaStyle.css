@@ -6,8 +6,13 @@
     flex: 1;
     min-height: 100%;
     height: 100%;
-
-    background: var(--green-bg);
+    background: white;
+    overflow: hidden; /* مهم عشان ما يطلع المحتوى برا الزوايا */
+    border: 1px solid #e5e5e5; /* نفس border خفيف */
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-left: 0px;
+    margin-right: 10px;
 }
 
 .idle-state {

@@ -1,12 +1,12 @@
 import TitleAndTextArea from "./TitleAndTextArea";
-import "../../../css/inhance_img/ExtraPlaneStyle.css";
+import "../../css/inhance_img/ExtraPlaneStyle.css";
 import RatioGroup from "./RatioGroup";
 import Group from "./Group";
-import Front from "../../../assets/inhance_img/angles/Front.jpg";
-import Angle45 from "../../../assets/inhance_img/angles/Angle45.jpg";
-import FlatLay from "../../../assets/inhance_img/angles/Flat Lay.jpg";
-import Side from "../../../assets/inhance_img/angles/Side.jpg";
-import Top from "../../../assets/inhance_img/angles/Top.jpg";
+import Front from "../../assets/inhance_img/angles/Front.jpg";
+import Angle45 from "../../assets/inhance_img/angles/Angle45.jpg";
+import FlatLay from "../../assets/inhance_img/angles/Flat Lay.jpg";
+import Side from "../../assets/inhance_img/angles/Side.jpg";
+import Top from "../../assets/inhance_img/angles/Top.jpg";
 
 const angles = [
     { name: 'Front',      image: Front },

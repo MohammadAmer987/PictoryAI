@@ -1,4 +1,4 @@
-import "../../../css/inhance_img/SidebarHeaderStyle.css";
+import "../../css/inhance_img/SidebarHeaderStyle.css";
 
 function SidebarHeader({ tab, setTab, isPro }) {
     return (

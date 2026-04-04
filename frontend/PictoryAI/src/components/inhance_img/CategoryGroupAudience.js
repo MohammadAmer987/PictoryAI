@@ -2,7 +2,7 @@ import CardWithIcon from "./CardWithIcon";
 import { FaFemale, FaMale, FaUsers } from "react-icons/fa";
 import { PiBaby } from "react-icons/pi";
 import { HiUsers } from "react-icons/hi2";
-import "../../../css/inhance_img/CategoryGroupAudienceStyle.css";
+import "../../css/inhance_img/CategoryGroupAudienceStyle.css";
 
 function CategoryGroupAudience({ selected, onChange }) {
     return (

@@ -1,4 +1,4 @@
-import "../../../css/inhance_img/ToggleSwitchStyle.css";
+import "../../css/inhance_img/ToggleSwitchStyle.css";
 
 function ToggleSwitch({ label, checked, onChange }) {
     return (

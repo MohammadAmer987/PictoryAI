@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../../../css/inhance_img/ColorPickerAndRangeStyle.css";
+import "../../css/inhance_img/ColorPickerAndRangeStyle.css";
 
 function ColorPickerAndRange({ title1, title2 ,text , maxValue , minValue , color , setColor ,  range , setRange}) {
     return (

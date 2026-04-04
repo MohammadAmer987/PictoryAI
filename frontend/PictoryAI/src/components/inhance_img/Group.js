@@ -1,6 +1,6 @@
 
 import CardWithImg from "./CardWithImg";
-import '../../../css/inhance_img/GroupStyle.css'
+import '../../css/inhance_img/GroupStyle.css'
 function Group({title , array , imgWidth , colsNum , selected , onClick})
 {
     return(

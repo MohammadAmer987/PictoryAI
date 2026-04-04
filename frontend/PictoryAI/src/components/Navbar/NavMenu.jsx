@@ -28,7 +28,8 @@ export default function NavMenu({ openMenu, toggle, handleNavigate }) {
                             className="dropdown-item"
                             onClick={() => handleNavigate('/tools/caption-generator')}
                         >
-                            <span className="dropdown-icon"><i className={`bi bi-magic fs-4 bg-primary-green text-white rounded 6`}></i>
+                            <span className="dropdown-icon">
+                              <i className="bi bi-magic fs-4 bg-primary-green text-white rounded p-2"></i>
                             </span>
                             <div>
                                 <div className="dropdown-item-title">Caption for Images</div>
@@ -36,15 +37,16 @@ export default function NavMenu({ openMenu, toggle, handleNavigate }) {
                             </div>
                         </div>
 
-                        <div 
+                        <div
                             className="dropdown-item"
-                            onClick={() => handleNavigate('/tools/script-generator')}
+                            onClick={() => handleNavigate('/tools/enhance-image')}
                         >
-                                <span className="dropdown-icon"><i className={`bi bi-layers-half fs-4 bg-primary-green text-white rounded 6`}></i>
+                            <span className="dropdown-icon">
+                              <i className="bi bi-stars fs-4 bg-primary-green text-white rounded p-2"></i>
                             </span>
                         <div>
-                                <div className="dropdown-item-title">Background Remover</div>
-                                <div className="dropdown-item-desc">Remove backgrounds from your images</div>
+                                <div className="dropdown-item-title">Enhance Product Image</div>
+                                <div className="dropdown-item-desc">Turn your product image into a professional marketing photo</div>
                             </div>
                         </div>
 

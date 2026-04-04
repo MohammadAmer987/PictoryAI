@@ -1,7 +1,9 @@
-import '../../css/inhance_img/InhanceImgPage.css';
-import Sidebar from "../../components/inhance_img/Sidebar";
-import MainArea from "../../components/inhance_img/MainArea";
+import '../css/inhance_img/InhanceImgPage.css';
+import Sidebar from '../components/inhance_img/Sidebar';
+import MainArea from '../components/inhance_img/MainArea';
 import { useState } from "react";
+import Hero from "../components/ReusableHero";
+
 
 function App() {
     const [isPro, setIsPro] = useState(false);
@@ -53,20 +55,31 @@ function App() {
     };
 
     return (
-        <>
-            <div className="row">
-                <div className="col-12">
-                    <header className="app-header">
-                        <span>✦ ProductShot AI</span>
-                        <button
-                            className={`user-type-toggle ${isPro ? "pro" : "free"}`}
-                            onClick={() => setIsPro(!isPro)}
-                        >
-                            {isPro ? "PRO user" : "Free user"} · Click to switch
-                        </button>
-                    </header>
-                </div>
-            </div>
+        <div className="enhance-page-wrapper">
+            <Hero
+                title="AI Image Enhancer"
+                description="Upload your product image and enhance it into a professional marketing visual using AI."
+                breadcrumb={[
+                    { label: "Home", path: "/" },
+                    { label: "AI Tools", path: "/tools" },
+                    { label: "Enhance Image", active: true }
+                ]}
+            />
+
+            {/*<div className="row">*/}
+            {/*    <div className="col-12">*/}
+            {/*        <header className="app-header">*/}
+            {/*            <span>✦ ProductShot AI</span>*/}
+            {/*            <button*/}
+            {/*                className={`user-type-toggle ${isPro ? "pro" : "free"}`}*/}
+            {/*                onClick={() => setIsPro(!isPro)}*/}
+            {/*            >*/}
+            {/*                {isPro ? "PRO user" : "Free user"} · Click to switch*/}
+            {/*            </button>*/}
+            {/*        </header>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
+
 
             <div className="row g-0 main-content-wrapper">
                 <div className="col-lg-3 col-md-4">
@@ -76,13 +89,7 @@ function App() {
                     <MainArea isPro={isPro} isReady={isSettingsComplete()} />
                 </div>
             </div>
-
-            <div className="row">
-                <div className="col-12">
-                    <footer>Footer</footer>
-                </div>
-            </div>
-        </>
+        </div>
     );
 }
 

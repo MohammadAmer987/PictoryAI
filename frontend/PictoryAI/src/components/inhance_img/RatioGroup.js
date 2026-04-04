@@ -1,5 +1,5 @@
 import RatioCard from "./RatioCard";
-import "../../../css/inhance_img/RatioGroup.css";
+import "../../css/inhance_img/RatioGroup.css";
 
 const ratios = [
     { ratio: "1:1",  label: "Square" },

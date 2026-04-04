@@ -22,9 +22,11 @@
 body {
     margin: 0;
     font-family: 'DM Sans', sans-serif;
-    background: var(--green-bg);
+    background: white;
     color: var(--green-deep);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+
 }
 
 .ProductPlane, .BackgroundPlane, .StylePlane, .TextPlane, .ExtraPlane {
@@ -92,14 +94,25 @@ textarea.input-fields { min-height: 80px; }
 }
 
 
-.main-content-wrapper {
-    display: flex;
-    align-items: stretch;
-    min-height: calc(100vh - 120px);
-    background-color: var(--green-bg);
+.enhance-page-wrapper {
+    background-color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-.main-content-wrapper > div {
-    display: flex;
-    flex-direction: column;
+.enhance-page-wrapper .app-header {
+    margin: 0 0 0 0;
+    padding: 16px 24px;
+    background: white;
+    border-top: 1px solid #e8f0ec;
+    border-bottom: 1px solid #e8f0ec;
+}
+
+.enhance-page-wrapper .main-content-wrapper {
+    margin: 0;
+}
+
+.enhance-page-wrapper .hero-bg {
+    margin-top: 32px !important;
+    margin-bottom: 24px;
 }

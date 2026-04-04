@@ -1,4 +1,4 @@
-import "../../../css/inhance_img/RatioCardStyle.css";
+import "../../css/inhance_img/RatioCardStyle.css";
 
 function RatioCard({ ratio, label, selected, onClick }) {
     return (
