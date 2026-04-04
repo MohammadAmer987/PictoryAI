@@ -24,6 +24,7 @@ const handleLogout = () => {
     // Clear auth state, remove tokens, etc.
     setUser(null);
   };
+  
   const [user, setUser] = React.useState({
     name: "John Doe",
     email: "john@example.com",
