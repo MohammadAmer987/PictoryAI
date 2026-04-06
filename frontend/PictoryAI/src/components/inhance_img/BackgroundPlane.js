@@ -42,8 +42,8 @@ function BackgroundPlane({ settings, updateSetting }) {
                 selected={settings.background}
             />
             <ColorPickerAndRange
-                title1='Background Color:'
-                title2='Background Blur:'
+                title1='Background Color (Optional)'
+                title2='Background Blur (Optional)'
                 text=''
                 maxValue={10}
                 minValue={0}

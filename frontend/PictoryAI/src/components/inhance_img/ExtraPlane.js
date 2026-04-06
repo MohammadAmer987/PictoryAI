@@ -46,7 +46,7 @@ function ExtraPlane({ isPro, settings, updateSetting }) {
                 onChange={(v) => updateSetting("imageRatio", v)}
             />
             <Group
-                title='Camera Angle:'
+                title='Camera Angle (Optional)'
                 imgWidth={80}
                 array={angles}
                 colsNum={3}
