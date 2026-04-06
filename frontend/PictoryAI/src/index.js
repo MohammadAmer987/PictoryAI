@@ -28,7 +28,7 @@ const handleLogout = () => {
     // Clear auth state, remove tokens, etc.
     setUser(null);
   };
-  
+
   const [user, setUser] = React.useState({
     name: "John Doe",
     email: "john@example.com",
@@ -57,7 +57,7 @@ const handleLogout = () => {
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/tools/enhance-image" element={<InhanceImg />}/>
             </Routes>
-            
+
             <Footerpart />
         </>
     );
@@ -72,8 +72,12 @@ root.render(
         </BrowserRouter>
 
     </React.StrictMode>
-    
+
 );
 
 
-  
+
+
+
+
+
