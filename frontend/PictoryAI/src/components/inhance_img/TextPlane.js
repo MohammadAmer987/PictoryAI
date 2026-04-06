@@ -17,8 +17,8 @@ function TextPlane({ settings, updateSetting }) {
                 onChange={(v) => updateSetting("textPosition", v)}
             />
             <ColorPickerAndRange
-                title1='Text Color:'
-                title2='Text Size:'
+                title1='Text Color (Optional)'
+                title2='Text Size (Optional)'
                 text='px'
                 maxValue={72}
                 minValue={12}

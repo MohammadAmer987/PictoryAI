@@ -16,7 +16,7 @@ const positions = [
 function TextPositionSelector({ selected, onChange }) {
     return (
         <div className='m-3'>
-            <p>Text Position:</p>
+            <p>Text Position (Optional)</p>
             <div className='group'>
                 {positions.map((item) => (
                     <TextPositionCard

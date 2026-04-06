@@ -28,7 +28,7 @@ function App() {
         textOnImage: "",
         textPosition: "",
         textColor: "",
-        textSize: 18,
+        textSize: 0,
         textShadow: false,
         textBackground: false,
 
@@ -48,9 +48,7 @@ function App() {
             settings.background !== "" &&
             settings.lightType !== "" &&
             settings.styleType !== "" &&
-            settings.textPosition !== "" &&
-            settings.textColor.trim() !== "" &&
-            (isPro ? (settings.cameraAngle !== "" && settings.imageRatio !== "") : true)
+            (isPro ? (settings.imageRatio !== "") : true)
         );
     };
 
