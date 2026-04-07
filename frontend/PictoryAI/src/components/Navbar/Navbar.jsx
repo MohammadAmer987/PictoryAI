@@ -1,6 +1,5 @@
 import '../../css/Mainpagestyles.css'
 import { useState, useEffect, useRef } from "react"
-
 import Logo from "./Logo"
 import NavMenu from "./NavMenu"
 import AvatarMenu from "./AvatarMenu"

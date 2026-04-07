@@ -19,12 +19,19 @@ import './css/content-studio.css'
 import AnimatedBackground from './components/AnimatedBackground';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import ContentStudioPage from "./pages/User/ContentStudioPage";
+=======
+
+import InhanceImg from './pages/InhanceImgPage';
+import './css/inhance_img/InhanceImgPage.css'
+
+
 function App() {
     const navigate = useNavigate();
 const handleLogout = () => {
     // Clear auth state, remove tokens, etc.
     setUser(null);
   };
+
   const [user, setUser] = React.useState({
     name: "John Doe",
     email: "john@example.com",
@@ -33,10 +40,10 @@ const handleLogout = () => {
     return (
         <>
             <Navbar user={user} onNavigate={(route) => navigate(route)} onLogout={handleLogout} />
-             < AnimatedBackground />
             <Routes>
                 <Route path="/" element={
                     <>
+                        <AnimatedBackground />
                         <PictorySimple />
                         <Aboutpart />
                         <Pricingpart />
@@ -53,8 +60,12 @@ const handleLogout = () => {
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/history" element={<ContentStudioPage />} />
 
+=======
+                <Route path="/tools" element={<AiToolsPage />} />
+                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
+                <Route path="/tools/enhance-image" element={<InhanceImg />}/>
             </Routes>
-            
+
             <Footerpart />
         </>
     );
@@ -69,8 +80,12 @@ root.render(
         </BrowserRouter>
 
     </React.StrictMode>
-    
+
 );
 
 
-  
+
+
+
+
+

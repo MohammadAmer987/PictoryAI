@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/Carousel.css';
 
 import Imge1 from '../../images/Imge1.jpg';
-import Imge2 from '../../images/Imge2.jpg';
+
 import Imge3 from '../../images/Imge3.jpg';
 import Imge4 from '../../images/Imge4.jpg';
 import Imge5 from '../../images/Imge5.jpg';
@@ -13,10 +13,7 @@ const carouselItems = [
     id: 1,
     image: Imge1
   },
-  {
-    id: 2,
-    image: Imge2
-  },
+
   {
     id: 3,
     image: Imge3

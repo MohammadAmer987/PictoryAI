@@ -1,0 +1,119 @@
+.color-range-box {
+    margin: 8px 16px;
+    padding: 14px 16px;
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    transition: box-shadow var(--transition);
+}
+
+.color-range-box:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+/* Section label */
+.color-range-box > p {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--green-mid);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+}
+
+/* ── Color picker row ─────────────────────────────────── */
+.color-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+/* Hex text input */
+.hex-input {
+    flex: 1;
+    height: 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-family: 'DM Mono', 'Courier New', monospace;
+    outline: none;
+    background: var(--surface);
+    color: var(--green-deep);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.hex-input:focus {
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(95,166,138,0.12);
+    background: var(--white);
+}
+
+/* Color swatch — small elegant circle */
+.color-input {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;          /* دايرة */
+    padding: 3px;
+    background: transparent;
+    cursor: pointer;
+    transition: border-color var(--transition), transform var(--transition);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.color-input:hover {
+    border-color: var(--green-mid);
+    transform: scale(1.08);
+}
+
+.color-input::-webkit-color-swatch-wrapper { padding: 0; border-radius: 50%; }
+.color-input::-webkit-color-swatch         { border: none; border-radius: 50%; }
+
+/* ── Range row ────────────────────────────────────────── */
+.range-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.range-value {
+    min-width: 46px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green-deep);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    text-align: center;
+}
+
+.range-input {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--green-pale);
+    outline: none;
+    cursor: pointer;
+}
+
+.range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--green-mid);
+    border: 2px solid var(--white);
+    box-shadow: 0 1px 6px rgba(45,106,90,0.25);
+    cursor: pointer;
+    transition: transform var(--transition);
+}
+
+.range-input::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}

@@ -15,21 +15,21 @@
     position: relative;
     height: 650px;
     width: 100%;
-    
+
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 150px;
-    
+
     padding: 50px;
-    
-    
+
+
 }
 .left{
-    position: relative z-10;
+    position: relative ;
 }
 .right{
-    position: relative z-10;
+    position: relative ;
 }
 /* الكارد */
 .pricing-card {
@@ -37,7 +37,7 @@
    width: 250px;
     height: 450px;
     border-radius: 25px;
-    background: linear-gradient(145deg, #0f5e49, #3a7d6f, #5f9c8f, #c8dbd3);
+    background: linear-gradient(145deg, #3a7d6f,#71967D, #c8dbd3);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -87,6 +87,7 @@
     font-size: 30px;
     font-weight: 800;
     margin-bottom: 15px;
+    color : #06382f;
 }
 
 /* السعر */
@@ -123,7 +124,7 @@
     content: '✔';
     position: absolute;
     left: 0;
-    color: var(--mint-green);
+    color:  #043F34;
     font-weight: bold;
 }
 
@@ -131,7 +132,7 @@
 .trial-btn {
     display: inline-block;
     background-color: var(--accent);
-    color: var(--white);
+    color: #ffffff;
     border: none;
     padding: 14px 35px;
     border-radius: 30px;
@@ -146,7 +147,7 @@
 }
 
 .trial-btn:hover {
-    background-color: var(--soft-green);
+    background-color: #89a6a0;
     transform: scale(1.1);
     box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
@@ -158,35 +159,7 @@
 .pricing-card.primary {
     background: linear-gradient(145deg, #043F34, #2e6f5e, #4f8f7e, #a8d5c2);
 }
-.div-on-tp-feature{
-    display: flex;
-    justify-content: center;
-    gap: 50px;
 
-    background: linear-gradient(145deg,
-    var(--green-deep) 0%,
-    var(--green-mid) 35%,
-    var(--green-light) 100%);
-    padding: 12%;
-}
-.card-style-1{
-    flex: 1;
-    width: 270px;
-    height:270px;
-    border-radius: 50%;
-    background: linear-gradient(145deg,#2e6f5e,#3a7d6f ,#5f9c8f );
-
-}
-.card-style-2{
-    flex:1;
-
-    width: 270px;
-    height:270px;
-    border-radius: 50%;
-    background: linear-gradient(145deg,#2e6f5e,#3a7d6f ,#5f9c8f );
-
-
-}
 
 .canvas-background {
     position: absolute;
@@ -195,21 +168,8 @@
     height: 100%;
     z-index: 0;
     opacity: 0.75;
-    
-}
-.card-style-3{
-    flex: 1;
-    width: 270px;
-    height:270px;
-    border-radius: 50%;
-    background: linear-gradient(145deg,#2e6f5e,#3a7d6f ,#5f9c8f );}
-.card-style-4{
-    flex: 1;
 
-    width: 270px;
-    height:270px;
-    border-radius: 50%;
-    background: linear-gradient(145deg,#2e6f5e,#3a7d6f ,#5f9c8f );}
+}
 
 
 .card-link {

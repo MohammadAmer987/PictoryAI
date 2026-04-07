@@ -11,6 +11,14 @@ function AiToolsPage() {
       status: "Active"
     },
     {
+      title: "Enhance Image",
+      desc: "Transform your product image into a professional marketing visual.",
+      path: "/tools/enhance-image",
+      icon: "bi-stars",
+      status: "Active"
+    },
+
+    {
       title: "Background Remover",
       desc: "Instantly remove backgrounds from your product photos.",
       path: "#", // غير مفعلة حالياً

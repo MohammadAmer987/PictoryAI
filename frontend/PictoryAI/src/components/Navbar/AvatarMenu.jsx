@@ -1,10 +1,12 @@
+import { useState } from 'react';
+import Profile from './Profile';
 export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onLogout }) {
 
     const initials = user
         ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
         : ""
         
-
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     return (
         <div className="nav-right">
 
@@ -26,7 +28,7 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
                             </div>
                         </div>
 
-                        <div className="avatar-item" onClick={() => handleNavigate('/account')}>
+                        <div className="avatar-item" onClick={() => setIsProfileOpen(true)}>
                             My Account
                         </div>
 
@@ -45,6 +47,14 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
                         </div>
 
                     </div>
+                    <Profile
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        userName={user.name}
+        userEmail={user.email}
+        userStatus="Away"
+        userTime="3:32 PM local time"
+      />
 
                 </div>
 

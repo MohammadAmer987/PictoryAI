@@ -1,0 +1,130 @@
+/* Keep existing styles + add below */
+
+.sidebar {
+    overflow: hidden; /* مهم عشان ما يطلع المحتوى برا الزوايا */
+    background: #fff; /* إذا بدك نفس شكل الكروت */
+    border: 1px solid #e5e5e5; /* نفس border خفيف */
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-left: 10px;
+    margin-right: 5px;
+
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--green-light);
+    border-radius: 99px;
+}
+
+/* ── Sidebar Tabs (Modified to White Theme) ── */
+
+.sidebar-tabs {
+    display: flex;
+    background: var(--white); /* تغيير الخلفية للأبيض */
+    padding: 8px 10px;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--border); /* إضافة حد بسيط ليفصلها عن المحتوى */
+}
+
+.tab-btn {
+    flex: 1;
+    border: none;
+    padding: 9px 4px;
+    background: transparent;
+    color: var(--green-mid); /* لون النص الأساسي أخضر متوسط بدل الشفافية */
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    border-radius: 8px;
+    transition: var(--transition);
+    white-space: nowrap;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+/* Hover state: خلفية خضراء خفيفة جداً */
+.tab-btn:hover:not(.active) {
+    background: var(--green-light);
+    color: var(--green-deep);
+}
+
+/* Active state: خلفية خضراء غامقة ونص أبيض ليبرز التاب */
+.tab-btn.active {
+    background: var(--green-deep);
+    color: var(--white);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Locked tab styling */
+.tab-btn.tab-locked {
+    color: #ccc; /* لون رمادي باهت للقفل */
+    opacity: 0.6;
+}
+
+.tab-btn.tab-locked:hover:not(.active) {
+    background: #f5f5f5;
+    color: #999;
+}
+
+.tab-btn.tab-locked.active {
+    background: var(--green-mid); /* لون أخضر أخف للتاب المقفل المفعل */
+    color: var(--white);
+    opacity: 0.7;
+}
+
+
+.lock-dot {
+    font-size: 9px;
+    line-height: 1;
+}
+
+/* ── App Header ─────────────────────────────────────── */
+.app-header {
+    padding: 14px 24px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--green-deep);
+    letter-spacing: 0.02em;
+}
+
+.user-type-toggle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.user-type-toggle.free {
+    background: var(--surface);
+    color: var(--green-mid);
+}
+
+.user-type-toggle.pro {
+    background: var(--green-deep);
+    color: white;
+    border-color: var(--green-deep);
+}
+
+.user-type-toggle:hover {
+    opacity: 0.8;
+}

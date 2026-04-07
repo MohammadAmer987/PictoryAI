@@ -1,0 +1,80 @@
+.card {
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: var(--surface);
+    border: 1.5px solid transparent;
+    transition: var(--transition);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(113,150,125,0.08), transparent);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.card:hover {
+    border-color: var(--green-light);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+
+.card:hover::before { opacity: 1; }
+
+.card .img {
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.card img {
+    border-radius: 6px;
+    display: block;
+    margin: 0 auto;
+    transition: transform 0.35s ease;
+    object-fit: cover;
+}
+
+.card:hover img { transform: scale(1.05); }
+
+.card p {
+    margin: 5px 0 0;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--green-deep);
+    letter-spacing: 0.02em;
+}
+
+.card.active {
+    background: var(--white);
+    transform: translateY(-2px);
+    border-color: var(--green-mid);
+    background: rgba(182, 229, 210, 0.18);
+    box-shadow: 0 0 0 3px rgba(113,150,125,0.15);
+}
+
+.card.active::after {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: var(--green-mid);
+    color: white;
+    border-radius: 50%;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card.active p {
+    color: var(--green-mid);
+    font-weight: 600;
+}
