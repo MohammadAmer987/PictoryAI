@@ -1,7 +1,6 @@
 import { Form, Button, Card, Spinner } from 'react-bootstrap';
 import { useState, useRef } from 'react';
 import SelectionGroup from './SelectionGroup';
-import alert from "bootstrap/js/src/alert";
 
 function GeneratorForm({ onGenerate, isParentLoading }) {
   const [productName, setProductName] = useState('');
@@ -111,7 +110,7 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
           <Form onSubmit={handleGenerate}>
             {/* Image Upload Area */}
             <Form.Group className="mb-4 text-start">
-              <Form.Label className="text-black fw-bold small" column={}>Product Image <span className="text-danger">*</span></Form.Label>
+              <Form.Label className="text-black fw-bold small">Product Image <span className="text-danger">*</span></Form.Label>
 
               <input
                   type="file"
@@ -160,7 +159,7 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
 
             {/* Product Name */}
             <Form.Group className="mb-3  text-start">
-              <Form.Label className="text-black fw-bold small" column={}>Product Name <span className="text-danger">*</span></Form.Label>
+              <Form.Label className="text-black fw-bold small">Product Name <span className="text-danger">*</span></Form.Label>
               <Form.Control
                   type="text"
                   value={productName}
@@ -172,7 +171,7 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
 
             {/* Description */}
             <Form.Group className="mb-4  text-start">
-              <Form.Label className="text-black fw-bold small" column={}>Product Description <span className="text-danger">*</span></Form.Label>
+              <Form.Label className="text-black fw-bold small">Product Description <span className="text-danger">*</span></Form.Label>
               <Form.Control
                   as="textarea"
                   rows={3}
