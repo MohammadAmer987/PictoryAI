@@ -135,3 +135,10 @@ code {
   margin:0;
   padding: 50px;
 }
+
+
+
+
+.direction-image {
+    pointer-events: none;
+}

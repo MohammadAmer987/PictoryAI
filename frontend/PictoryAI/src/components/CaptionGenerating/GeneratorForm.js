@@ -14,7 +14,26 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
   const [loading, setLoading] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const processImageFile = (file) => {
+    if (!file) return;
 
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload a PNG, JPG, or WEBP image.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image size must be less than 10MB.');
+      return;
+    }
+
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
+    setImageUploaded(true);
+  };
   const audienceList = [
     { name: 'Women', icon: 'bi-gender-female' },
     { name: 'Men', icon: 'bi-gender-male' },
@@ -36,11 +55,27 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setPreview(URL.createObjectURL(file));
-      setImageUploaded(true);
-    }
+    processImageFile(file);
+  };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files[0];
+    processImageFile(file);
   };
 
   const handleGenerate = (e) => {
@@ -85,7 +120,20 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
                   hidden
               />
 
-              <div className="upload-zone rounded-4 p-5 text-center">
+              <div
+                  className={`upload-zone rounded-4 p-5 text-center ${isDragging ? 'drag-active' : ''}`}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      fileInputRef.current?.click();
+                    }
+                  }}
+              >
                 {preview ? (
                     <div className="mb-3">
                       <img src={preview} alt="preview" className="rounded-3 shadow-sm" style={{ width: '100px', height: '100px', objectFit: 'cover' }} />
