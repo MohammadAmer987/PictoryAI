@@ -19,8 +19,6 @@ import './css/content-studio.css'
 import AnimatedBackground from './components/AnimatedBackground';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import ContentStudioPage from "./pages/User/ContentStudioPage";
-=======
-
 import InhanceImg from './pages/InhanceImgPage';
 import './css/inhance_img/InhanceImgPage.css'
 
@@ -57,10 +55,7 @@ const handleLogout = () => {
                 <Route path="/login" element={<LoginPage/>} />
                 <Route path="/signup" element={<SignupPage/>} />
                 <Route path="/tools" element={<AiToolsPage />} />  
-                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/history" element={<ContentStudioPage />} />
-
-=======
                 <Route path="/tools" element={<AiToolsPage />} />
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/tools/enhance-image" element={<InhanceImg />}/>

@@ -238,3 +238,20 @@ body::-webkit-scrollbar-thumb {
   max-width: 280px;
   line-height: 1.4;
 }
+
+
+
+
+
+
+
+.generator-card {
+  position: relative;
+  z-index: 20;
+}
+
+.generator-card,
+.generator-card * {
+  position: relative;
+  z-index: 20;
+}
