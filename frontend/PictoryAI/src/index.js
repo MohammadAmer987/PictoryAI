@@ -15,9 +15,10 @@ import CaptionGenerating from './pages/captionGenerating';
 import'./css/footer.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './css/captionGenerator.css'
+import './css/content-studio.css'
 import AnimatedBackground from './components/AnimatedBackground';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-
+import ContentStudioPage from "./pages/User/ContentStudioPage";
 function App() {
     const navigate = useNavigate();
 const handleLogout = () => {
@@ -49,7 +50,9 @@ const handleLogout = () => {
                 <Route path="/login" element={<LoginPage/>} />
                 <Route path="/signup" element={<SignupPage/>} />
                 <Route path="/tools" element={<AiToolsPage />} />  
-                <Route path="/tools/caption-generator" element={<CaptionGenerating />} /> 
+                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
+                <Route path="/history" element={<ContentStudioPage />} />
+
             </Routes>
             
             <Footerpart />
