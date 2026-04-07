@@ -9,11 +9,11 @@ function SelectionGroup({
 }) {
   return (
     <div className="mb-4">
-      <label className="fw-bold small mb-2 d-block text-dark">
+      <label className="text-black  text-start fw-bold small mb-2 d-block text-dark">
         {title}
       </label>
 
-      <Row className="g-2">
+      <Row className="text-black g-2">
         {options.map((opt) => {
           const isActive = activeValue === opt.name;
 

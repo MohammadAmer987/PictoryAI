@@ -12,11 +12,14 @@ import LoginPage from "./pages/login";
 import SignupPage from './pages/signup';
 import AiToolsPage from './pages/tools';
 import CaptionGenerating from './pages/captionGenerating';
-import './css/captionGenerator.css'
 import'./css/footer.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import './css/captionGenerator.css'
+import './css/content-studio.css'
 import AnimatedBackground from './components/AnimatedBackground';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import ContentStudioPage from "./pages/User/ContentStudioPage";
+=======
 
 import InhanceImg from './pages/InhanceImgPage';
 import './css/inhance_img/InhanceImgPage.css'
@@ -53,6 +56,11 @@ const handleLogout = () => {
                 <Route path="/features" element={<Featurepart />} />
                 <Route path="/login" element={<LoginPage/>} />
                 <Route path="/signup" element={<SignupPage/>} />
+                <Route path="/tools" element={<AiToolsPage />} />  
+                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
+                <Route path="/history" element={<ContentStudioPage />} />
+
+=======
                 <Route path="/tools" element={<AiToolsPage />} />
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/tools/enhance-image" element={<InhanceImg />}/>

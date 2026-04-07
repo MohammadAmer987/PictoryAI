@@ -1,6 +1,6 @@
-import { Button } from 'react-bootstrap';
-
+import { useNavigate } from 'react-router-dom';
 function ProTips() {
+  const navigate = useNavigate();
   return (
     <div className="mt-5 pb-5">
       <div 
@@ -31,11 +31,13 @@ function ProTips() {
         </div>
 
         {/* BUTTON */}
-        <Button 
-          className="bg-white text-dark rounded-pill fw-bold px-4 extra-small shadow-sm border-0 py-2 align-self-md-center"
+        <button
+            className="studio-upgrade-btn"
+            onClick={() => navigate('/pricing')}
         >
-          Upgrade to Pro
-        </Button>
+          Subscribe Now
+          <i className="bi bi-arrow-right-short ms-1"></i>
+        </button>
       </div>
     </div>
   );

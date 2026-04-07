@@ -1,9 +1,10 @@
+
 import { Container, Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
-import Hero from '../components/Hero'; 
-import GeneratorForm from '../components/GeneratorForm';
-import PreviewSection from '../components/PreviewSection';
-import ProTips from '../components/ProTips';
+import Hero from '../components/CaptionGenerating/Hero';
+import GeneratorForm from '../components/CaptionGenerating/GeneratorForm';
+import PreviewSection from '../components/CaptionGenerating/PreviewSection';
+import ProTips from '../components/CaptionGenerating/ProTips';
 function CaptionGenerating() {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
