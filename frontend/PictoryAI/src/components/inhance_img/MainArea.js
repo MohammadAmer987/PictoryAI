@@ -1,19 +1,33 @@
 import { useState, useRef } from "react";
 import "../../css/inhance_img/MainAreaStyle.css";
 
-function MainArea({ isPro, isReady }) {
+function MainArea({ isPro, isReady, settings }) {
     const [uploadedImage, setUploadedImage] = useState(null);
+    const [selectedFileObj, setSelectedFileObj] = useState(null);
     const [results, setResults] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [selectedResult, setSelectedResult] = useState(0);
+    const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
+
+    // دالة التحميل
+    const handleDownload = (imageUrl, index) => {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = `generated-image-${index + 1}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     const handleFile = (file) => {
         if (!file || !file.type.startsWith("image/")) return;
         const url = URL.createObjectURL(file);
         setUploadedImage(url);
+        setSelectedFileObj(file);
         setResults([]);
+        setError(null);
     };
 
     const handleDrop = (e) => {
@@ -25,22 +39,74 @@ function MainArea({ isPro, isReady }) {
 
     const handleChange = (e) => handleFile(e.target.files[0]);
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
+        if (!selectedFileObj || !isReady || !settings) return;
+
         setIsGenerating(true);
         setResults([]);
-        setTimeout(() => {
-            const count = isPro ? 3 : 1;
-            const fakeResults = Array.from({ length: count }, () => uploadedImage);
-            setResults(fakeResults);
+        setError(null);
+
+        try {
+            const formData = new FormData();
+            formData.append('image', selectedFileObj);
+
+            const fieldMapping = {
+                productName: 'product_name',
+                audience: 'target_audience',
+                productDescription: 'description',
+                background: 'background',
+                backgroundColor: 'background_color',
+                backgroundBlur: 'background_blur',
+                lightType: 'lighting',
+                styleType: 'photo_style',
+                textOnImage: 'text_on_image',
+                textPosition: 'text_position',
+                textColor: 'text_color',
+                textSize: 'text_size',
+                cameraAngle: 'camera_angle',
+                imageRatio: 'aspect_ratio',
+                extraPrompt: 'scene_details',
+            };
+
+            Object.entries(settings).forEach(([key, value]) => {
+                if (value !== null && value !== undefined && value !== '') {
+                    const backendKey = fieldMapping[key] || key;
+                    formData.append(backendKey, value);
+                }
+            });
+
+            formData.append('num_images', isPro ? 3 : 1);
+
+            const response = await fetch('http://localhost:8000/api/image-edit', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Generation failed');
+            }
+
+            setResults(data.edited_urls || []);
             setSelectedResult(0);
+        } catch (err) {
+            console.error("Full Backend Error:", err);
+            let errorMsg = err.message;
+            if (err.response?.data) {
+                const data = err.response.data;
+                errorMsg = data.fal_error?.message || data.fal_error || data.error || data.message || err.message;
+            }
+            setError(errorMsg);
+        } finally {
             setIsGenerating(false);
-        }, 2000);
+        }
     };
 
     return (
         <div className="main-area">
 
-            {/* ── Top row: Upload + Generate ── */}
+            {/* Top row */}
             <div className="top-row">
 
                 {/* Upload card */}
@@ -50,13 +116,12 @@ function MainArea({ isPro, isReady }) {
                         Product Image
                     </div>
 
-                    <div
-                        className={`drop-zone ${isDragging ? "drag-over" : ""} ${uploadedImage ? "filled" : ""}`}
-                        onClick={() => !uploadedImage && fileInputRef.current.click()}
-                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                        onDragLeave={() => setIsDragging(false)}
-                        onDrop={handleDrop}
-                    >
+                    <div className={`drop-zone ${isDragging ? "drag-over" : ""} ${uploadedImage ? "filled" : ""}`}
+                         onClick={() => !uploadedImage && fileInputRef.current.click()}
+                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                         onDragLeave={() => setIsDragging(false)}
+                         onDrop={handleDrop}>
+
                         {uploadedImage ? (
                             <>
                                 <img src={uploadedImage} alt="product" className="preview-img" />
@@ -65,7 +130,7 @@ function MainArea({ isPro, isReady }) {
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                         Change
                                     </button>
-                                    <button className="remove-img-btn" onClick={(e) => { e.stopPropagation(); setUploadedImage(null); setResults([]); }}>
+                                    <button className="remove-img-btn" onClick={(e) => { e.stopPropagation(); setUploadedImage(null); setResults([]); setSelectedFileObj(null); }}>
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
                                         Remove
                                     </button>
@@ -89,7 +154,6 @@ function MainArea({ isPro, isReady }) {
                     <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleChange} />
                 </div>
 
-                {/* Arrow divider */}
                 <div className="flow-arrow">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M5 12h14M13 6l6 6-6 6"/>
@@ -131,27 +195,22 @@ function MainArea({ isPro, isReady }) {
                     </div>
 
                     {uploadedImage && !isReady && (
-                        <p style={{
-                            fontSize: "14px",
-                            color: "#c53030",
-                            textAlign: "center",
-                            margin: "12px 0",
-                            padding: "10px",
-                            backgroundColor: "#fff5f5",
-                            border: "1px solid #feb2b2",
-                            borderRadius: "8px",
-                            fontWeight: "500"
-                        }}>
+                        <p style={{ fontSize: "14px", color: "#c53030", textAlign: "center", margin: "12px 0", padding: "10px", backgroundColor: "#fff5f5", border: "1px solid #feb2b2", borderRadius: "8px", fontWeight: "500" }}>
                             Please complete all settings before generating.
                         </p>
                     )}
 
-                    <button
-                        className={`gen-btn ${(!uploadedImage || !isReady) ? "disabled" : ""} ${isGenerating ? "loading" : ""}`}
-                        onClick={handleGenerate}
-                        disabled={!uploadedImage || !isReady || isGenerating}
-                    >
+                    {error && (
+                        <p style={{ fontSize: "14px", color: "#c53030", textAlign: "center", margin: "12px 0", padding: "10px", backgroundColor: "#fff5f5", border: "1px solid #feb2b2", borderRadius: "8px", fontWeight: "500" }}>
+                            ⚠️ {error}
+                        </p>
+                    )}
 
+                    <button
+                        className={`gen-btn ${(!selectedFileObj || !isReady) ? "disabled" : ""} ${isGenerating ? "loading" : ""}`}
+                        onClick={handleGenerate}
+                        disabled={!selectedFileObj || !isReady || isGenerating}
+                    >
                         {isGenerating ? (
                             <>
                                 <span className="spinner"></span>
@@ -163,13 +222,11 @@ function MainArea({ isPro, isReady }) {
                                 Generate {isPro ? "3 Images" : "Image"}
                             </>
                         )}
-
-
                     </button>
                 </div>
             </div>
 
-            {/* ── Results ── */}
+            {/* Results Area */}
             {results.length > 0 && (
                 <div className="results-area">
                     <div className="results-label">
@@ -179,18 +236,17 @@ function MainArea({ isPro, isReady }) {
                     </div>
 
                     {isPro ? (
-                        /* PRO: big featured + thumbnails */
                         <div className="pro-results">
                             <div className="featured-result">
                                 <img src={results[selectedResult]} alt="Featured result" />
                                 <div className="featured-actions">
-                                    <button className="action-btn primary">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    <button className="action-btn primary" onClick={() => handleDownload(results[selectedResult], selectedResult)}>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
                                         Download HD
-                                    </button>
-                                    <button className="action-btn secondary">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                                        Share
                                     </button>
                                 </div>
                                 <div className="result-num">0{selectedResult + 1}</div>
@@ -198,11 +254,7 @@ function MainArea({ isPro, isReady }) {
 
                             <div className="thumbs-strip">
                                 {results.map((src, i) => (
-                                    <div
-                                        key={i}
-                                        className={`thumb ${selectedResult === i ? "active" : ""}`}
-                                        onClick={() => setSelectedResult(i)}
-                                    >
+                                    <div key={i} className={`thumb ${selectedResult === i ? "active" : ""}`} onClick={() => setSelectedResult(i)}>
                                         <img src={src} alt={`Result ${i + 1}`} />
                                         <span className="thumb-num">0{i + 1}</span>
                                     </div>
@@ -210,13 +262,16 @@ function MainArea({ isPro, isReady }) {
                             </div>
                         </div>
                     ) : (
-                        /* FREE: single result — clean & confident */
                         <div className="free-result">
                             <div className="free-result-img-wrap">
                                 <img src={results[0]} alt="Generated result" />
-                                <button className="dl-btn">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                    Save Image
+                                <button className="dl-btn" onClick={() => handleDownload(results[0], 0)}>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7 10 12 15 17 10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Download
                                 </button>
                             </div>
 
@@ -225,16 +280,14 @@ function MainArea({ isPro, isReady }) {
                                     <p className="upsell-title">Want more results?</p>
                                     <p className="upsell-sub">Upgrade to Pro — get 3 images per generation, advanced controls & unlimited runs.</p>
                                 </div>
-                                <button className="upsell-btn">
-                                    ✦ Go Pro
-                                </button>
+                                <button className="upsell-btn">✦ Go Pro</button>
                             </div>
                         </div>
                     )}
                 </div>
             )}
 
-            {/* ── Empty state ── */}
+            {/* Idle state */}
             {!uploadedImage && results.length === 0 && !isGenerating && (
                 <div className="idle-state">
                     <div className="idle-visual">
