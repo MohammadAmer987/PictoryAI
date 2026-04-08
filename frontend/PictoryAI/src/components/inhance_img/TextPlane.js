@@ -27,18 +27,6 @@ function TextPlane({ settings, updateSetting }) {
                 range={settings.textSize}
                 setRange={(v) => updateSetting("textSize", v)}
             />
-            <div className='m-3'>
-                <ToggleSwitch
-                    label='Text Shadow'
-                    checked={settings.textShadow}
-                    onChange={() => updateSetting("textShadow", !settings.textShadow)}
-                />
-                <ToggleSwitch
-                    label='Text Background'
-                    checked={settings.textBackground}
-                    onChange={() => updateSetting("textBackground", !settings.textBackground)}
-                />
-            </div>
         </div>
     );
 }

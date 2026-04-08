@@ -21,6 +21,12 @@ function ProductPlane({ settings, updateSetting }) {
                 value={settings.productDescription}
                 onChange={(v) => updateSetting("productDescription", v)}
             />
+            <TitleAndTextArea
+                title="Describe the image in your own words"
+                placeholder="Describe your idea... e.g. a perfume placed on the beach in a basket"
+                value={settings.extraPrompt}
+                onChange={(v) => updateSetting("extraPrompt", v)}
+            />
         </div>
     );
 }
