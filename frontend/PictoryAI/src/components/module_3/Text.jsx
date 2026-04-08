@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../../module3styles.css";
+import '../../css/module3styles.css'
 import ColorPicker from "./ColorPicker";
 import Imegetypepicker from "./Imagetypepicker"
 

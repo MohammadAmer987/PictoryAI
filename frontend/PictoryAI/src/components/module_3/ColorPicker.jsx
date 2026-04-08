@@ -1,5 +1,4 @@
-
-import "../../module3styles.css";
+import '../../css/module3styles.css'
 
 import { useState, useRef } from "react";
 /**

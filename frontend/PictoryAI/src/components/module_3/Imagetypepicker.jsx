@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../../module3styles.css";
+import '../../css/module3styles.css'
 
 const IMAGE_TYPES = [
     { id: "post",      label: "Post",      ratio: "1:1",  w: 1,  h: 1,  desc: "Square"     },
