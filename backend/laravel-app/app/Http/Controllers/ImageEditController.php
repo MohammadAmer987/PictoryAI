@@ -23,7 +23,7 @@ class ImageEditController extends Controller
             'text_on_image'      => 'nullable|string|max:255',
             'text_position'      => 'nullable|string|max:50',
             'text_color'         => 'nullable|string|max:100',
-            'text_size'          => 'nullable|numeric|min:0|max:72',
+            'text_size'          => 'nullable|numeric|min:12|max:100',
             'camera_angle'       => 'nullable|string|max:255',
             'aspect_ratio'       => 'nullable|in:1:1,16:9,3:4,9:16,4:5',
             'scene_details'      => 'required|string|max:1500',       // extraPrompt
@@ -167,7 +167,6 @@ class ImageEditController extends Controller
         // ====================== تحسين قوي لحجم الكتابة ======================
         if ($textOnImage) {
             $textWeight = '';
-
             if ($textSize >= 70) {
                 $textWeight = "very large, prominent, bold";
             } elseif ($textSize >= 50) {
@@ -178,7 +177,11 @@ class ImageEditController extends Controller
                 $textWeight = "medium sized, elegant";
             }
 
-            $prompt .= " Add {$textWeight} elegant {$textColor} text '{$textOnImage}' in the {$textPosition} of the image using modern luxury font, highly visible, sharp edges, very good readability, soft glow effect.";
+            $prompt .= " Add the EXACT text: '{$textOnImage}' ";
+            $prompt .= "in the {$textPosition} of the image. ";
+            $prompt .= "Make this text {$textWeight}, modern luxury font, ";
+            $prompt .= "EXACT color {$textColor}, highly visible, sharp edges, ";
+            $prompt .= "excellent readability, soft glow effect, high contrast.";
         }
         // =====================================================================
 

@@ -20,7 +20,7 @@ function TextPlane({ settings, updateSetting }) {
                 title1='Text Color (Optional)'
                 title2='Text Size (Optional)'
                 text='px'
-                maxValue={72}
+                maxValue={100}
                 minValue={12}
                 color={settings.textColor}
                 setColor={(v) => updateSetting("textColor", v)}
