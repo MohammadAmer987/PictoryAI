@@ -16,7 +16,6 @@ import'./css/footer.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './css/captionGenerator.css'
 import './css/content-studio.css'
-import AnimatedBackground from './components/AnimatedBackground';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import ContentStudioPage from "./pages/User/ContentStudioPage";
 import InhanceImg from './pages/InhanceImgPage';
@@ -41,7 +40,6 @@ const handleLogout = () => {
             <Routes>
                 <Route path="/" element={
                     <>
-                        <AnimatedBackground />
                         <PictorySimple />
                         <Aboutpart />
                         <Pricingpart />
