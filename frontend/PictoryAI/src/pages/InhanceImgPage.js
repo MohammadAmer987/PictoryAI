@@ -55,6 +55,23 @@ function App() {
                     { label: "AI Tools", path: "/tools" },
                     { label: "Enhance Image", active: true }
                 ]}
+                features={[
+                    {
+                        icon: "bi-palette",
+                        title: "Custom Style",
+                        subtitle: "Background & Colors",
+                    },
+                    {
+                        icon: "bi-brush",
+                        title: "Retouch",
+                        subtitle: "Clean Look",
+                    },
+                    {
+                        icon: "bi-stars",
+                        title: "AI Magic",
+                        subtitle: "Smart Enhance",
+                    },
+                ]}
             />
 
             {/*<div className="row">*/}

@@ -6,7 +6,8 @@ function Hero({
                   title,
                   description,
                   breadcrumb = [],
-                  badgeText = "AI-POWERED TOOL"
+                  badgeText = "AI-POWERED TOOL",
+                  features = []
               }) {
     return (
         <Container className="hero-bg mt-5 pt-4">
@@ -49,25 +50,7 @@ function Hero({
                     </div>
                 </Col>
 
-                <HeroFeatureList
-                    items={[
-                        {
-                            icon: "bi-palette",
-                            title: "Custom Style",
-                            subtitle: "Background & Colors",
-                        },
-                        {
-                            icon: "bi-brush",
-                            title: "Retouch",
-                            subtitle: "Clean Look",
-                        },
-                        {
-                            icon: "bi-stars",
-                            title: "AI Magic",
-                            subtitle: "Smart Enhance",
-                        },
-                    ]}
-                />
+                <HeroFeatureList items={features} />
             </Row>
         </Container>
     );

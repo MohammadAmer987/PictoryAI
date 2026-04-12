@@ -50,6 +50,19 @@ export default function NavMenu({ openMenu, toggle, handleNavigate }) {
                             </div>
                         </div>
 
+                        <div
+                            className="dropdown-item"
+                            onClick={() => handleNavigate('/tools/theme-image-generation')}
+                        >
+                            <span className="dropdown-icon">
+                                <i className="bi bi-palette-fill fs-4 bg-primary-green text-white rounded p-2"></i>
+                            </span>
+                            <div>
+                                <div className="dropdown-item-title">Theme Image Generation</div>
+                                <div className="dropdown-item-desc">Create ready-made images based on a selected theme</div>
+                            </div>
+                        </div>
+
                         
                     </div>
                 </div>
