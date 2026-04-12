@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 
 const inputStyle = {
   width: "100%",
@@ -10,6 +11,7 @@ const inputStyle = {
 };
 
 function SignupPage() {
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -20,6 +22,7 @@ function SignupPage() {
         justifyContent: "center",
         fontFamily: "Arial, sans-serif",
         padding: "20px",
+        zIndex: "1",
       }}
     >
       <div
@@ -31,6 +34,7 @@ function SignupPage() {
           padding: "35px",
           boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
           border: "1px solid #afcab8",
+          position: "relative",
         }}
       >
         <h1 style={{ color: "#045f34", marginBottom: "10px" }}>Sign Up</h1>
@@ -62,7 +66,7 @@ function SignupPage() {
           Create Account
         </button>
 
-        <p style={{ textAlign: "center", marginTop: "15px", color: "#71967d" }}>
+        <p style={{ textAlign: "center", marginTop: "15px", color: "#71967d", cursor: "pointer" }} onClick={()=>navigate('/')} >
           Back to Home
         </p>
       </div>

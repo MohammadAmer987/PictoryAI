@@ -1,6 +1,5 @@
 import '../../css/Mainpagestyles.css'
 import { useState, useEffect, useRef } from "react"
-
 import Logo from "./Logo"
 import NavMenu from "./NavMenu"
 import AvatarMenu from "./AvatarMenu"
@@ -30,10 +29,9 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
     }
 
     return (
-        <nav className="navbar" ref={navRef} aria-label="Main navigation">
-
+        <nav className="navbar-react" ref={navRef} aria-label="Main navigation">
+        
             <Logo />
-
             <NavMenu
                 openMenu={openMenu}
                 toggle={toggle}

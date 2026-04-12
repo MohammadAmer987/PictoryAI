@@ -1,7 +1,7 @@
 import React from 'react';
+import  'bootstrap/dist/css/bootstrap.min.css';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-
 import Navbar from "./components/Navbar/Navbar";
 import Aboutpart from "./components/About/Aboutpart";
 import PictorySimple from "./components/UnderNavbar/PictorySimple";
@@ -10,16 +10,34 @@ import Pricingpart from "./components/PricingSection/Pricingpart";
 import Featurepart from "./components/features/Featurepart";
 import LoginPage from "./pages/login";
 import SignupPage from './pages/signup';
-
+import AiToolsPage from './pages/tools';
+import CaptionGenerating from './pages/captionGenerating';
+import'./css/footer.css'
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import './css/captionGenerator.css'
+import './css/content-studio.css'
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import ContentStudioPage from "./pages/User/ContentStudioPage";
+import InhanceImg from './pages/InhanceImgPage';
+import './css/inhance_img/InhanceImgPage.css'
+import ThemeImgPage from "./pages/ThemeImgPage";
+import './css/theme_img/ThemeImgPage.css'
 
 function App() {
     const navigate = useNavigate();
+const handleLogout = () => {
+    // Clear auth state, remove tokens, etc.
+    setUser(null);
+  };
 
+  const [user, setUser] = React.useState({
+    name: "John Doe",
+    email: "john@example.com",
+    plan: "Premium"
+  });
     return (
         <>
-            <Navbar onNavigate={(route) => navigate(route)} />
-
+            <Navbar user={user} onNavigate={(route) => navigate(route)} onLogout={handleLogout} />
             <Routes>
                 <Route path="/" element={
                     <>
@@ -34,8 +52,13 @@ function App() {
                 <Route path="/pricing" element={<Pricingpart />} />
                 <Route path="/features" element={<Featurepart />} />
                 <Route path="/login" element={<LoginPage/>} />
-                 <Route path="/signup" element={<SignupPage/>} />
-
+                <Route path="/signup" element={<SignupPage/>} />
+                <Route path="/tools" element={<AiToolsPage />} />  
+                <Route path="/history" element={<ContentStudioPage />} />
+                <Route path="/tools" element={<AiToolsPage />} />
+                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
+                <Route path="/tools/enhance-image" element={<InhanceImg />}/>
+                <Route path="/tools/theme-image-generation" element={<ThemeImgPage />}/>
             </Routes>
 
             <Footerpart />
@@ -52,8 +75,12 @@ root.render(
         </BrowserRouter>
 
     </React.StrictMode>
-    
+
 );
 
 
- 
+
+
+
+
+
