@@ -11,6 +11,8 @@ return [
         'http://127.0.0.1:3000',
         'http://localhost:3001',      // ← أضف هذا
         'http://127.0.0.1:3001',      // ← وهذا
+        'http://localhost:3002',      // ← أضف هذا
+        'http://127.0.0.1:3002',      // ← وهذا
     ],
 
     'allowed_origins_patterns' => [],

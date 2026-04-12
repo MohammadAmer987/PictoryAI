@@ -475,3 +475,40 @@
     width: 40px;
     height: 54px;
 }
+
+/* Wrapper للصورة */
+.result-image-wrapper {
+    position: absolute;
+    inset: 0;
+}
+
+/* زر التحميل */
+.download-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(4, 87, 52, 0.9);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.2s ease;
+}
+
+/* يظهر عند hover */
+.result-image-wrapper:hover .download-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* تأثير خفيف على الصورة */
+.result-image-wrapper:hover .result-image {
+    filter: brightness(0.85);
+}
