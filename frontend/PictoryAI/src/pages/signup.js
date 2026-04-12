@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../services/authService";
+import { register } from "../Services/authService";
 const inputStyle = {
   width: "100%",
   padding: "14px",
