@@ -94,7 +94,7 @@ function PreviewSection({ results, loading, onRegenerate }) {
     <Card className="generator-card shadow-sm rounded-4 bg-white h-100 p-0 border-0">
       <RenderHeader showAction={true} />
 
-      <div className="p-4 overflow-auto" style={{ maxHeight: '750px' }}>
+      <div className="p-4 overflow-auto" style={{ maxHeight: '1100px' }}>
         <div className="mb-3 d-flex justify-content-between align-items-center">
           <span className="small fw-bold" style={{ color: 'var(--secondary-green)' }}>
              <i className="bi bi-circle-fill me-2 extra-small" style={{ fontSize: '8px' }}></i>
@@ -129,7 +129,18 @@ function PreviewSection({ results, loading, onRegenerate }) {
                   {copiedIndex === index ? 'Copied!' : 'Copy'}
                 </Button>
               </div>
-              <p className="small text-secondary mb-3 lh-base">{item.content}</p>
+                <p
+                    className="align-content-lg-start text-secondary mb-3 fw-medium"
+                    style={{
+                        fontSize: '1rem',
+                        lineHeight: '1.9',
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                        overflow: 'visible',
+                    }}
+                >
+                    {item.content}
+                </p>
               <div className="d-flex flex-wrap gap-2">
                 {item.tags.map(tag => (
                   <Badge key={tag} bg="light" text="success" className="fw-normal border border-success-subtle extra-small py-1 px-3 rounded-pill">#{tag}</Badge>

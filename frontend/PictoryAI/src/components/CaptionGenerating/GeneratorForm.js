@@ -88,8 +88,7 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
     }
   };
 
-
-  const isReady = imageUploaded && productName.trim() !== '' && description.trim() !== '' && !loading;
+  const isReady = imageUploaded && productName.trim() !== '' && !loading;
   const showWarning = !isReady && !loading && !isGenerated;
   return (
       <Card className="generator-card shadow-sm rounded-4 bg-white border-0">
@@ -171,7 +170,7 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
 
             {/* Description */}
             <Form.Group className="mb-4  text-start">
-              <Form.Label className="text-black fw-bold small">Product Description <span className="text-danger">*</span></Form.Label>
+              <Form.Label className="text-black fw-bold small">Product Description <span className="text-muted fw-normal">optional</span></Form.Label>
               <Form.Control
                   as="textarea"
                   rows={3}
