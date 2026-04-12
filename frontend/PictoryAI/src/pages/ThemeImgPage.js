@@ -3,8 +3,7 @@ import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import Hero from "../components/ReusableHero";
 
 import RatioCard from "../components/inhance_img/RatioCard";
-import '../css/theme_img/ThemeImgPage.css';
-import { Star, Sparkles } from "lucide-react";
+import "../css/theme_img/ThemeImgPage.css";
 import {
     TreePine,
     Moon,
@@ -16,7 +15,6 @@ import {
     BookOpen
 } from "lucide-react";
 
-
 function ThemeImagePage() {
     const [theme, setTheme] = useState("");
     const [imageSize, setImageSize] = useState("");
@@ -27,21 +25,37 @@ function ThemeImagePage() {
     const [isGenerating, setIsGenerating] = useState(false);
 
     const themes = [
-        "Eid al-Fitr", "Eid al-Adha", "Christmas",  "Black Friday", "Valentine's Day",
-        "Graduation", "New Year",
-        "Mother's Day", "Back to School","Ramadan",
+        "Eid al-Fitr",
+        "Eid al-Adha",
+        "Christmas",
+        "Black Friday",
+        "Valentine's Day",
+        "Graduation",
+        "New Year",
+        "Mother's Day",
+        "Back to School",
+        "Ramadan",
     ];
+
+    const isFormValid = theme && imageSize && uploadedFile;
 
     const handleImageUpload = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
         setUploadedFile(file);
         setUploadedPreview(URL.createObjectURL(file));
     };
 
     const handleGenerate = async (e) => {
         e.preventDefault();
+
+        if (!theme || !imageSize || !uploadedFile) {
+            return;
+        }
+
         setIsGenerating(true);
+
         try {
             setTimeout(() => {
                 if (uploadedPreview) {
@@ -54,6 +68,18 @@ function ThemeImagePage() {
             setIsGenerating(false);
         }
     };
+
+    const handleDownload = () => {
+        if (!generatedImage) return;
+
+        const link = document.createElement("a");
+        link.href = generatedImage;
+        link.download = "generated-image.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
 
     return (
         <div className="theme-image-page">
@@ -87,7 +113,6 @@ function ThemeImagePage() {
             <section className="theme-generator-section">
                 <Container>
                     <Row className="g-4 align-items-start">
-                        {/* LEFT: Form */}
                         <Col lg={5}>
                             <div className="theme-form-box">
                                 <p className="panel-title">Configuration</p>
@@ -119,6 +144,7 @@ function ThemeImagePage() {
                                                 onChange={handleImageUpload}
                                                 className="upload-input"
                                             />
+
                                             {uploadedPreview ? (
                                                 <div className="upload-preview-wrap">
                                                     <img
@@ -127,7 +153,9 @@ function ThemeImagePage() {
                                                         className="upload-preview-image"
                                                     />
                                                     <div className="upload-preview-info">
-                                                        <span className="upload-file-name">{uploadedFile?.name}</span>
+                                                        <span className="upload-file-name">
+                                                            {uploadedFile?.name}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             ) : (
@@ -178,7 +206,7 @@ function ThemeImagePage() {
                                     <Button
                                         type="submit"
                                         className="theme-generate-btn"
-                                        disabled={isGenerating}
+                                        disabled={isGenerating || !isFormValid}
                                     >
                                         {isGenerating ? (
                                             <>
@@ -196,17 +224,26 @@ function ThemeImagePage() {
                             </div>
                         </Col>
 
-                        {/* RIGHT: Result */}
                         <Col lg={7}>
                             <div className="theme-result-box">
                                 <p className="panel-title">Result preview</p>
-                                <div className={`result-frame ${getRatioClass(imageSize)}`}>
+
+                                <div className={`result-frame ${getRatioClass(imageSize || "1:1")}`}>
                                     {generatedImage ? (
-                                        <img
-                                            src={generatedImage}
-                                            alt="Generated result"
-                                            className="result-image"
-                                        />
+                                        <div className="result-image-wrapper">
+                                            <img
+                                                src={generatedImage}
+                                                alt="Generated result"
+                                                className="result-image"
+                                            />
+
+                                            <button
+                                                className="download-btn"
+                                                onClick={handleDownload}
+                                            >
+                                                Download
+                                            </button>
+                                        </div>
                                     ) : (
                                         <div className="result-placeholder">
                                             <div className="empty-icon-circle">
@@ -230,35 +267,18 @@ function ThemeImagePage() {
 }
 
 function themeIcon(theme) {
-    const common = {
-        viewBox: "0 0 24 24",
-        fill: "none",
-        stroke: "currentColor",
-        strokeWidth: "2",
-        strokeLinecap: "round",
-        strokeLinejoin: "round",
-    };
-
     const icons = {
         "Eid al-Fitr": (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                {/* moon */}
                 <path d="M14 3a9 9 0 1 0 6 15 7 7 0 1 1-6-15Z" />
-
-                {/* star moved */}
-                <path d="M18 7l0.6 1.8L20.5 9l-1.5 1.2L19.5 12 18 11l-1.5 1 0.5-1.8L15.5 9l1.9-0.2L18 7Z"/>
+                <path d="M18 7l0.6 1.8L20.5 9l-1.5 1.2L19.5 12 18 11l-1.5 1 0.5-1.8L15.5 9l1.9-0.2L18 7Z" />
             </svg>
         ),
         "Eid al-Adha": (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                {/* body */}
-                <rect x="5" y="6" width="14" height="12" rx="1.5"/>
-
-                {/* top line (roof effect) */}
-                <line x1="5" y1="6" x2="19" y2="6"/>
-
-                {/* band */}
-                <line x1="5" y1="10" x2="19" y2="10"/>
+                <rect x="5" y="6" width="14" height="12" rx="1.5" />
+                <line x1="5" y1="6" x2="19" y2="6" />
+                <line x1="5" y1="10" x2="19" y2="10" />
             </svg>
         ),
         "Christmas": <TreePine size={22} />,
@@ -276,12 +296,17 @@ function themeIcon(theme) {
 
 function getRatioClass(ratio) {
     switch (ratio) {
-        case "16:9": return "frame-16-9";
-        case "9:16": return "frame-9-16";
-        case "4:5":  return "frame-4-5";
-        case "3:4":  return "frame-3-4";
+        case "16:9":
+            return "frame-16-9";
+        case "9:16":
+            return "frame-9-16";
+        case "4:5":
+            return "frame-4-5";
+        case "3:4":
+            return "frame-3-4";
         case "1:1":
-        default:     return "frame-1-1";
+        default:
+            return "frame-1-1";
     }
 }
 
