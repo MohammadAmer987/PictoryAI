@@ -123,10 +123,10 @@ export default function AnimatedBackground() {
   }, []);
 
   return (
-     <></>
-    // <canvas
-    //   ref={canvasRef}
-    //   className="canvas-background"
-    // />
+     <canvas
+       ref={canvasRef}
+       className="canvas-background"
+     />
+     
   );
 }
