@@ -20,7 +20,8 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import ContentStudioPage from "./pages/User/ContentStudioPage";
 import InhanceImg from './pages/InhanceImgPage';
 import './css/inhance_img/InhanceImgPage.css'
-
+import ThemeImgPage from "./pages/ThemeImgPage";
+import './css/theme_img/ThemeImgPage.css'
 
 function App() {
     const navigate = useNavigate();
@@ -57,6 +58,7 @@ const handleLogout = () => {
                 <Route path="/tools" element={<AiToolsPage />} />
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/tools/enhance-image" element={<InhanceImg />}/>
+                <Route path="/tools/theme-image-generation" element={<ThemeImgPage />}/>
             </Routes>
 
             <Footerpart />
