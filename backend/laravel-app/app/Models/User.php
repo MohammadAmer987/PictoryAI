@@ -9,6 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Profile;
 use App\Models\Subscription;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -43,7 +44,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Subscription::class);
     }
-
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
     public function activeSubscription()
     {
         return $this->hasOne(Subscription::class)
