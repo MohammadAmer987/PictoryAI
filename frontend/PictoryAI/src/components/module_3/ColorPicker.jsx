@@ -41,6 +41,78 @@ function isLight(hex) {
     return (r * 299 + g * 587 + b * 114) / 1000 > 155;
 }
 
+function buildApiColorPayload(hex) {
+    const colorName = describeColor(hex);
+
+    return {
+        hex,
+        colorName,
+        promptText: `Use ${colorName} as the main dominant color in the image design.`,
+        paletteText: `Match the visual style closely to a ${colorName} palette. Avoid shifting to pink, purple, magenta, or unrelated colors.`,
+    };
+}
+
+function describeColor(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+    const lightness = (max + min) / 510;
+
+    let hue = 0;
+
+    if (delta !== 0) {
+        if (max === r) {
+            hue = 60 * (((g - b) / delta) % 6);
+        } else if (max === g) {
+            hue = 60 * (((b - r) / delta) + 2);
+        } else {
+            hue = 60 * (((r - g) / delta) + 4);
+        }
+    }
+
+    if (hue < 0) {
+        hue += 360;
+    }
+
+    const tone = lightness < 0.25
+        ? "very dark"
+        : lightness < 0.42
+            ? "deep"
+            : lightness > 0.78
+                ? "very light"
+                : lightness > 0.62
+                    ? "light"
+                    : "rich";
+
+    const family = hue >= 330 || hue < 15
+        ? "red"
+        : hue < 40
+            ? "orange"
+            : hue < 65
+                ? "yellow"
+                : hue < 90
+                    ? "lime green"
+                    : hue < 150
+                        ? "green"
+                        : hue < 185
+                            ? "teal"
+                            : hue < 210
+                                ? "cyan blue"
+                                : hue < 250
+                                    ? "blue"
+                                    : hue < 285
+                                        ? "indigo"
+                                        : hue < 320
+                                            ? "purple"
+                                            : "pink";
+
+    return `${tone} ${family}`;
+}
+
 export default function ColorPicker({ selectedColor = "#043F34", onChange }) {
     const [hsva, setHsva]         = useState(() => hexToHsva(selectedColor));
     const [hexInput, setHexInput] = useState(selectedColor.toUpperCase());
@@ -56,7 +128,7 @@ export default function ColorPicker({ selectedColor = "#043F34", onChange }) {
         const hex = hsvaToHex(newHsva);
         setHexInput(hex);
         setInputError(false);
-        onChange?.(hex);
+        onChange?.(hex, buildApiColorPayload(hex));
     };
 
     /* ── Gradient (SV) drag ── */
@@ -96,7 +168,7 @@ export default function ColorPicker({ selectedColor = "#043F34", onChange }) {
         if (/^#[0-9A-F]{6}$/.test(clean)) {
             setInputError(false);
             setHsva(hexToHsva(clean));
-            onChange?.(clean);
+            onChange?.(clean, buildApiColorPayload(clean));
         } else {
             setInputError(true);
         }

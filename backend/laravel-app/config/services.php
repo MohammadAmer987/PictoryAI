@@ -13,7 +13,12 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
-
+    'stability' => [
+        'key' => env('STABILITY_API_KEY'),
+    ],
+    'pollinations' => [
+        'key' => env('POLLINATIONS_API_KEY'),
+    ],
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
