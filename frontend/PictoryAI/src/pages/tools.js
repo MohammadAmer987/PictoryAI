@@ -17,7 +17,13 @@ function AiToolsPage() {
       icon: "bi-stars",
       status: "Active"
     },
-
+    {
+      title: "Theme Image Generation",
+      desc: "Create ready-made images based on a selected theme.",
+      path: "/tools/theme-image-generation",
+      icon: "bi-brush-fill",
+      status: "Active"
+    },
     {
       title: "Background Remover",
       desc: "Instantly remove backgrounds from your product photos.",

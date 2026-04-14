@@ -40,4 +40,8 @@ return [
         ],
     ],
 
+    'fal' => [
+        'key' => env('FAL_KEY'),
+    ],
+
 ];

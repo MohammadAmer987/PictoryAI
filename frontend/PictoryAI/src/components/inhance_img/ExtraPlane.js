@@ -35,12 +35,6 @@ function ExtraPlane({ isPro, settings, updateSetting }) {
 
     return (
         <div className="ExtraPlane d-flex flex-column">
-            <TitleAndTextArea
-                title="Describe the image in your own words (optional)"
-                placeholder="Describe your idea... e.g. a perfume placed on the beach in a basket"
-                value={settings.extraPrompt}
-                onChange={(v) => updateSetting("extraPrompt", v)}
-            />
             <RatioGroup
                 selected={settings.imageRatio}
                 onChange={(v) => updateSetting("imageRatio", v)}

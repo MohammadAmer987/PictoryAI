@@ -16,7 +16,6 @@ import'./css/footer.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './css/captionGenerator.css'
 import './css/content-studio.css'
-import AnimatedBackground from './components/AnimatedBackground';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 import ContentStudioPage from "./pages/User/ContentStudioPage";
@@ -27,7 +26,8 @@ import Text from "./components/module_3/Text";
 
 import InhanceImg from './pages/InhanceImgPage';
 import './css/inhance_img/InhanceImgPage.css'
-
+import ThemeImgPage from "./pages/ThemeImgPage";
+import './css/theme_img/ThemeImgPage.css'
 
 function App() {
     const navigate = useNavigate();
@@ -50,7 +50,6 @@ const handleLogout = () => {
             <Routes>
                 <Route path="/" element={
                     <>
-                        <AnimatedBackground />
                         <PictorySimple />
                         <Aboutpart />
                         <Pricingpart />
@@ -70,7 +69,11 @@ const handleLogout = () => {
                 <Route path="/tools" element={<AiToolsPage />} />
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/tools/enhance-image" element={<InhanceImg />}/>
+
                 <Route path ="/tools/generate-image" element={<Text onSubmit={(data) => console.log(data)} />}></Route>
+
+                <Route path="/tools/theme-image-generation" element={<ThemeImgPage />}/>
+
             </Routes>
 
             <Footerpart />
