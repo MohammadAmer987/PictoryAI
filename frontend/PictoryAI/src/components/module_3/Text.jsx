@@ -1,42 +1,138 @@
-import { useState } from "react";
-import "../../module3styles.css";
+import { useEffect, useState } from "react";
+import "../../css/module3styles.css";
 import ColorPicker from "./ColorPicker";
-import Imegetypepicker from "./Imagetypepicker"
+import Imegetypepicker from "./Imagetypepicker";
 
-/**
- * ProjectForm
- *
- * A two-field form component:
- *  - projectName  : short text input for the project title
- *  - content      : multi-line textarea for descriptive text
- *
- * Props:
- *  onSubmit (function) – called with { projectName, content } on form submission
- */
+const IMAGE_TYPE_LABELS = {
+    post: "Post",
+    story: "Story",
+    banner: "Banner",
+    portrait: "Portrait",
+    landscape: "Landscape",
+    cinema: "Cinema",
+};
+
 export default function Text({ onSubmit }) {
     const [projectName, setProjectName] = useState("");
     const [content, setContent] = useState("");
+    const [imageType, setImageType] = useState("post");
+    const [color, setColor] = useState("#043F34");
+    const [apiColorPayload, setApiColorPayload] = useState({
+        hex: "#043F34",
+        colorName: "very dark teal",
+        promptText: "Use very dark teal as the main dominant color in the image design.",
+        paletteText: "Match the visual style closely to a very dark teal palette. Avoid shifting to pink, purple, magenta, or unrelated colors.",
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [generatedImage, setGeneratedImage] = useState(null);
+    const [generationMeta, setGenerationMeta] = useState(null);
+    const [imageLoadError, setImageLoadError] = useState(false);
+    const [error, setError] = useState(null);
+    const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
-    const handleSubmit = () => {
-        if (!projectName.trim()) return;
-        onSubmit?.({ projectName: projectName.trim(), content: content.trim() });
+    useEffect(() => {
+        if (cooldownSeconds <= 0) {
+            return undefined;
+        }
+
+        const timer = window.setTimeout(() => {
+            setCooldownSeconds((current) => Math.max(0, current - 1));
+        }, 1000);
+
+        return () => window.clearTimeout(timer);
+    }, [cooldownSeconds]);
+
+    const handleSubmit = async () => {
+        if (!projectName.trim() || cooldownSeconds > 0) return;
+
+        setIsLoading(true);
+        setError(null);
+        setGeneratedImage(null);
+        setGenerationMeta(null);
+        setImageLoadError(false);
+
+        try {
+            const response = await fetch("http://localhost:8000/api/generate-image", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    projectName: projectName.trim(),
+                    content: content.trim(),
+                    color: apiColorPayload.colorName,
+                    colorText: `${apiColorPayload.promptText} ${apiColorPayload.paletteText}`,
+                    imageType,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed");
+            }
+
+            const imageUrl = data.image || data.image_url;
+
+            if (!imageUrl) {
+                throw new Error("No image returned");
+            }
+
+            setGeneratedImage(imageUrl);
+            setGenerationMeta({
+                color: data.color || color,
+                imageType: data.image_type || imageType,
+                size: data.size || null,
+            });
+
+            onSubmit?.({
+                projectName: projectName.trim(),
+                content: content.trim(),
+                color: data.color || color,
+                imageType: data.image_type || imageType,
+                size: data.size || null,
+                image: imageUrl,
+            });
+        } catch (err) {
+            const message =
+                err?.message === "Failed to fetch"
+                    ? "The app could not reach the backend server. Please make sure Laravel is running on http://localhost:8000 and try again."
+                    : err.message;
+
+            const shouldStartCooldown =
+                message.includes("Queue full for IP") ||
+                message.includes("Connection refused") ||
+                message.includes("temporarily unreachable");
+
+            if (shouldStartCooldown) {
+                setCooldownSeconds(60);
+            }
+
+            setError(
+                shouldStartCooldown
+                    ? `${message} Please wait ${60} seconds before trying again.`
+                    : message
+            );
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const isReady = projectName.trim().length > 0;
-    const [color, setColor] = useState("#043F34");
+    const resultTitle = projectName.trim() || "Generated Result";
+    const currentImageLabel = IMAGE_TYPE_LABELS[imageType] || imageType;
+    const resultImageLabel = IMAGE_TYPE_LABELS[generationMeta?.imageType] || generationMeta?.imageType;
+    const frameAspectRatio = generationMeta?.size?.ratio?.replace(":", " / ") || "1 / 1";
 
     return (
-
-        <div className={"top-m3"}>
+        <div className="top-m3">
             <div className="pf-wrapper">
                 <div className="pf-card">
-
-
-
+                    <div className="pf-header">
+                        <p className="pf-eyebrow">AI Image Generator</p>
+                        <h2 className="pf-title">Create a styled image from your idea</h2>
+                        <p className="pf-subtitle">Text, color, and size work together to shape the result.</p>
+                    </div>
 
                     <div className="pf-fields">
-
-
                         <div className="pf-field">
                             <label className="pf-label" htmlFor="project-name">
                                 <span className="pf-label-index"></span> Project Name
@@ -53,11 +149,9 @@ export default function Text({ onSubmit }) {
                             />
                         </div>
 
-                        {/* Visual separator */}
                         <div className="pf-divider" aria-hidden="true">
                             <span className="pf-divider-dot" />
                         </div>
-
 
                         <div className="pf-field">
                             <label className="pf-label" htmlFor="project-content">
@@ -66,38 +160,120 @@ export default function Text({ onSubmit }) {
                             <textarea
                                 id="project-content"
                                 className="pf-input pf-textarea"
-                                placeholder="Describe your project, goals, or any relevant notes…"
+                                placeholder="Describe your project, goals, or any relevant notes..."
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 spellCheck="true"
                             />
                         </div>
-
                     </div>
 
-                    <ColorPicker selectedColor={color} onChange={setColor} />
+                    <ColorPicker
+                        selectedColor={color}
+                        onChange={(hex, payload) => {
+                            setColor(hex);
+                            if (payload) {
+                                setApiColorPayload(payload);
+                            }
+                        }}
+                    />
+                    <Imegetypepicker value={imageType} onChange={setImageType} />
 
-                    <Imegetypepicker></Imegetypepicker>
+                    <div className="pf-selection-summary">
+                        <div className="pf-selection-chip">
+                            <span className="pf-selection-dot" style={{ backgroundColor: color }}></span>
+                            <span>{color}</span>
+                        </div>
+                        <div className="pf-selection-chip">{currentImageLabel}</div>
+                    </div>
 
                     <div className="pf-footer">
-          <span className="pf-hint">
-            {isReady ? `"${projectName}" is ready` : " "}
-          </span>
+                        <span className="pf-hint">
+                            {cooldownSeconds > 0
+                                ? `Try again in ${cooldownSeconds}s`
+                                : isReady
+                                    ? `"${projectName}" is ready`
+                                    : "Add a project name to begin"}
+                        </span>
                         <button
                             className="pf-submit"
                             onClick={handleSubmit}
-                            disabled={!isReady}
+                            disabled={!isReady || isLoading || cooldownSeconds > 0}
                             aria-label="Submit project form"
                         >
-                            Submit →
+                            {isLoading ? "Generating..." : cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : "Generate image"}
                         </button>
                     </div>
                 </div>
 
+                <div className="pf-result-panel">
+                    <div className="pf-result-header">
+                        <p className="pf-result-eyebrow">Preview</p>
+                        <h3 className="pf-result-title">{resultTitle}</h3>
+                        <p className="pf-result-copy">
+                            The generated image will appear here with the selected color and layout details.
+                        </p>
+                    </div>
 
+                    {isLoading && <div className="pf-loading">Generating image...</div>}
+                    {error && <div className="pf-error">{error}</div>}
 
+                    {generatedImage ? (
+                        <div className="pf-result-card">
+                            <div className="pf-result-toolbar">
+                                <div className="pf-result-chip">
+                                    <span className="pf-selection-dot" style={{ backgroundColor: generationMeta?.color || color }}></span>
+                                    <span>{generationMeta?.color || color}</span>
+                                </div>
+                                <div className="pf-result-chip">{resultImageLabel}</div>
+                                {generationMeta?.size && (
+                                    <div className="pf-result-chip">
+                                        {generationMeta.size.width} x {generationMeta.size.height} ({generationMeta.size.ratio})
+                                    </div>
+                                )}
+                            </div>
 
-
+                            <div className="pf-image-frame">
+                                <div className="pf-image-stage" style={{ aspectRatio: frameAspectRatio }}>
+                                    {!imageLoadError ? (
+                                        <img
+                                            className="pf-generated-image"
+                                            src={generatedImage}
+                                            alt={resultTitle}
+                                            loading="eager"
+                                            referrerPolicy="no-referrer"
+                                            onLoad={() => setImageLoadError(false)}
+                                            onError={() => setImageLoadError(true)}
+                                        />
+                                    ) : (
+                                        <div className="pf-image-fallback">
+                                            <p className="pf-result-empty-title">Image preview unavailable</p>
+                                                <p className="pf-result-empty-copy">
+                                                    The image was generated, but the browser could not render the preview.
+                                                </p>
+                                                <a
+                                                    className="pf-open-image"
+                                                    href={generatedImage}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                >
+                                                Open generated image
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="pf-result-empty">
+                            <div className="pf-result-placeholder"></div>
+                            <p className="pf-result-empty-title">Your generated image will appear here</p>
+                            <p className="pf-result-empty-copy">
+                                Choose a color, select the image size, add your text, and generate.
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

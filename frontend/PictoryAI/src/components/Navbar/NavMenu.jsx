@@ -50,6 +50,27 @@ export default function NavMenu({ openMenu, toggle, handleNavigate }) {
                             </div>
                         </div>
 
+
+
+
+
+                                   {/*rahaf*/}
+                        <div
+                            className="dropdown-item"
+                            onClick={() => handleNavigate('/tools/generate-image')}
+                        >
+                            <span className="dropdown-icon">
+                            <i className="bi bi-image fs-4 bg-primary-green text-white rounded p-2"></i>
+                            </span>
+                            <div>
+                                <div className="dropdown-item-title">Custom Image Generator</div>
+                                <div className="dropdown-item-desc">Create a custom image with your name, text, and colors.</div>
+                            </div>
+                        </div>
+
+                        {/*rahaf*/}
+
+
                         <div
                             className="dropdown-item"
                             onClick={() => handleNavigate('/tools/theme-image-generation')}
@@ -64,6 +85,7 @@ export default function NavMenu({ openMenu, toggle, handleNavigate }) {
                         </div>
 
                         
+
                     </div>
                 </div>
             </div>

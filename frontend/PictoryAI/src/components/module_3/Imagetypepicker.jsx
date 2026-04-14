@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../../module3styles.css";
+import '../../css/module3styles.css'
 
 const IMAGE_TYPES = [
     { id: "post",      label: "Post",      ratio: "1:1",  w: 1,  h: 1,  desc: "Square"     },
@@ -43,10 +43,9 @@ export default function ImageTypePicker({ value, onChange }) {
 
             <div className="itp-grid">
                 {IMAGE_TYPES.map((type, i) => (
-                    <>
-                        {i === 3 && <div key="divider" className="itp-row-divider" />}
+                    <div key={type.id} style={{ display: "contents" }}>
+                        {i === 3 && <div className="itp-row-divider" />}
                         <button
-                            key={type.id}
                             className={`itp-btn${selected === type.id ? " itp-btn--active" : ""}`}
                             onClick={() => handleSelect(type.id)}
                             aria-pressed={selected === type.id}
@@ -55,7 +54,7 @@ export default function ImageTypePicker({ value, onChange }) {
                             <span className="itp-name">{type.label}</span>
                             <span className="itp-ratio">{type.ratio}</span>
                         </button>
-                    </>
+                    </div>
                 ))}
             </div>
 

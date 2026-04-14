@@ -17,7 +17,13 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './css/captionGenerator.css'
 import './css/content-studio.css'
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+
 import ContentStudioPage from "./pages/User/ContentStudioPage";
+
+import Text from "./components/module_3/Text";
+
+
+
 import InhanceImg from './pages/InhanceImgPage';
 import './css/inhance_img/InhanceImgPage.css'
 import ThemeImgPage from "./pages/ThemeImgPage";
@@ -39,14 +45,19 @@ const handleLogout = () => {
         <>
             <Navbar user={user} onNavigate={(route) => navigate(route)} onLogout={handleLogout} />
             <Routes>
+                ...
+            </Routes>
+            <Routes>
                 <Route path="/" element={
                     <>
                         <PictorySimple />
                         <Aboutpart />
                         <Pricingpart />
                         <Featurepart />
+
                     </>
                 } />
+                <Route path="/tools/image-generator" element={<Text onSubmit={(data) => console.log(data)} />} />
 
                 <Route path="/about" element={<Aboutpart />} />
                 <Route path="/pricing" element={<Pricingpart />} />
@@ -58,7 +69,11 @@ const handleLogout = () => {
                 <Route path="/tools" element={<AiToolsPage />} />
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/tools/enhance-image" element={<InhanceImg />}/>
+
+                <Route path ="/tools/generate-image" element={<Text onSubmit={(data) => console.log(data)} />}></Route>
+
                 <Route path="/tools/theme-image-generation" element={<ThemeImgPage />}/>
+
             </Routes>
 
             <Footerpart />
@@ -72,6 +87,7 @@ root.render(
     <React.StrictMode>
         <BrowserRouter>
             <App />
+
         </BrowserRouter>
 
     </React.StrictMode>
