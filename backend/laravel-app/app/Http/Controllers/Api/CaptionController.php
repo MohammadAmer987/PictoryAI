@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Caption;
 
-
+//////
 class CaptionController extends Controller
 {
     public function generate(Request $request)
