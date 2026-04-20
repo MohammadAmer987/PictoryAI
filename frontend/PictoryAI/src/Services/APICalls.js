@@ -88,3 +88,15 @@ export async function del(endpoint, options = {}) {
 
   return handleResponse(response);
 }
+export async function patch(endpoint, body = {}, options = {}) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: "PATCH",
+    headers: {
+      ...getDefaultHeaders(),
+      ...(options.headers || {}),
+    },
+    body: JSON.stringify(body),
+  });
+
+  return handleResponse(response);
+}

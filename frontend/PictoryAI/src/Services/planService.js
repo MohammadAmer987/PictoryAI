@@ -1,4 +1,4 @@
-import { get } from "./apiClient";
+import { get } from "./APICalls";
 
 export async function getPlans() {
   return get("/plans");
