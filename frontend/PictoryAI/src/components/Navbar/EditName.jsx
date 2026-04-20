@@ -1,90 +1,101 @@
-import { useState } from 'react';
-import { Modal, Form, Button, Alert } from 'react-bootstrap';
+import { useEffect, useState } from "react";
+import { Modal, Form, Button, Alert } from "react-bootstrap";
 
 const colors = {
   darkGreen: "#043F34",
   midGreen: "#71967D",
   softGreen: "#AFCAB8",
-  mintGreen: "#B6E5D2"
+  mintGreen: "#B6E5D2",
 };
 
-const EditName = ({ show, onHide, currentName, onNameUpdate }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+const EditName = ({ show, onHide, currentName, onSaveName }) => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
+  const [message, setMessage] = useState({ type: "", text: "" });
 
-  const handleOpen = () => {
-    if (currentName) {
-      const [first, last] = currentName.split(' ');
-      setFirstName(first || '');
-      setLastName(last || '');
-    }
-    setMessage({ type: '', text: '' });
-  };
+  useEffect(() => {
+    if (!show) return;
+
+    const parts = (currentName || "").trim().split(" ").filter(Boolean);
+
+    setFirstName(parts[0] || "");
+    setLastName(parts.slice(1).join(" ") || "");
+    setMessage({ type: "", text: "" });
+  }, [show, currentName]);
 
   const handleClose = () => {
-    setFirstName('');
-    setLastName('');
-    setMessage({ type: '', text: '' });
+    setFirstName("");
+    setLastName("");
+    setMessage({ type: "", text: "" });
     onHide();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!firstName || !lastName) {
-      setMessage({ type: 'danger', text: 'Please enter both first and last name' });
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    if (!fullName) {
+      setMessage({ type: "danger", text: "Please enter a name." });
       return;
     }
 
     setLoading(true);
-    setMessage({ type: '', text: '' });
+    setMessage({ type: "", text: "" });
 
     try {
-      const fullName = `${firstName} ${lastName}`;
+      await onSaveName(fullName);
 
-      
-      setMessage({ type: 'success', text: 'Name updated successfully!' });
+      setMessage({
+        type: "success",
+        text: "Name updated successfully!",
+      });
 
-      if (onNameUpdate) {
-        onNameUpdate(fullName);
-      }
-
-      setTimeout(() => handleClose(), 2000);
+      setTimeout(() => {
+        handleClose();
+      }, 800);
     } catch (error) {
-      setMessage({ type: 'danger', text: error.message });
+      setMessage({
+        type: "danger",
+        text: error.message || "Failed to update name.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered onEnter={handleOpen}>
+    <Modal show={show} onHide={handleClose} centered>
       <Modal.Header
         closeButton
         style={{
           backgroundColor: colors.softGreen,
-          borderBottom: `2px solid ${colors.darkGreen}`
+          borderBottom: `2px solid ${colors.darkGreen}`,
         }}
       >
-        <Modal.Title style={{ color: colors.darkGreen, fontWeight: '600' }}>
+        <Modal.Title style={{ color: colors.darkGreen, fontWeight: "600" }}>
           Edit Name
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body style={{ backgroundColor: '#f8f9fa' }}>
+      <Modal.Body style={{ backgroundColor: "#f8f9fa" }}>
         {message.text && (
-          <Alert variant={message.type} onClose={() => setMessage({ type: '', text: '' })} dismissible>
+          <Alert
+            variant={message.type}
+            onClose={() => setMessage({ type: "", text: "" })}
+            dismissible
+          >
             {message.text}
           </Alert>
         )}
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label style={{ color: colors.darkGreen, fontWeight: '500' }}>
+            <Form.Label style={{ color: colors.darkGreen, fontWeight: "500" }}>
               First Name
             </Form.Label>
+
             <Form.Control
               type="text"
               placeholder="Enter first name"
@@ -96,15 +107,15 @@ const EditName = ({ show, onHide, currentName, onNameUpdate }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label style={{ color: colors.darkGreen, fontWeight: '500' }}>
+            <Form.Label style={{ color: colors.darkGreen, fontWeight: "500" }}>
               Last Name
             </Form.Label>
+
             <Form.Control
               type="text"
               placeholder="Enter last name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              required
               style={{ borderColor: colors.softGreen }}
             />
           </Form.Group>
@@ -117,12 +128,13 @@ const EditName = ({ show, onHide, currentName, onNameUpdate }) => {
             >
               Cancel
             </Button>
+
             <Button
               type="submit"
               disabled={loading}
               style={{
                 backgroundColor: colors.darkGreen,
-                borderColor: colors.darkGreen
+                borderColor: colors.darkGreen,
               }}
               onMouseEnter={(e) => {
                 e.target.style.backgroundColor = colors.midGreen;
@@ -133,7 +145,7 @@ const EditName = ({ show, onHide, currentName, onNameUpdate }) => {
                 e.target.style.borderColor = colors.darkGreen;
               }}
             >
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </Form>

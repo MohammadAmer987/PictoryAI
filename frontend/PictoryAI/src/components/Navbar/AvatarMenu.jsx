@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import Profile from './Profile';
-export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onLogout }) {
+
+export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onLogout,  onUserUpdated
+}) {
 
     const initials = user
         ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
         : ""
         
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const handleLogout = async () => {
+  await onLogout();
+};
+    
     return (
         <div className="nav-right">
 
@@ -24,7 +30,7 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
                         <div className="avatar-header">
                             <div className="avatar-name">{user.name}</div>
                             <div className="avatar-email">
-                                {user.email} · {user.plan} Plan
+                                {user.email} <br /> {user.plan} Plan
                             </div>
                         </div>
 
@@ -36,13 +42,13 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
                             Content History
                         </div>
 
-                        <div className="avatar-item" onClick={() => handleNavigate('/pricing')}>
+                        <div className="avatar-item" onClick={() => handleNavigate('/subscription')}>
                             Manage Subscription
                         </div>
 
                         <div className="dd-divider" />
 
-                        <div className="avatar-item danger" onClick={onLogout}>
+                        <div className="avatar-item danger" onClick={handleLogout}>
                             Sign Out
                         </div>
 
@@ -52,8 +58,9 @@ export default function AvatarMenu({ user, openMenu, toggle, handleNavigate, onL
         onClose={() => setIsProfileOpen(false)}
         userName={user.name}
         userEmail={user.email}
-        userStatus="Away"
-        userTime="3:32 PM local time"
+        storeName={user.store_name}
+          onUserUpdated={onUserUpdated}
+
       />
 
                 </div>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../Services/authService";
 
-function LoginPage() {
+function LoginPage({ onLoginSuccess }) {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -33,7 +33,11 @@ function LoginPage() {
     try {
       setLoading(true);
 
-      await login(formData);
+      const data = await login(formData);
+
+if (onLoginSuccess && data?.data?.user) {
+  onLoginSuccess(data.data.user);
+}
 
       navigate("/tools");
     } catch (err) {

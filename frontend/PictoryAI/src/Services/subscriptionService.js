@@ -1,4 +1,4 @@
-import { get, post } from "./apiClient";
+import { get, post } from "./APICalls";
 
 export async function getCurrentSubscription() {
   return get("/subscriptions/current");
