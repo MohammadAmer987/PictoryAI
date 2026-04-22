@@ -23,7 +23,7 @@ function App() {
         textOnImage: "",
         textPosition: "",
         textColor: "",
-        textSize: 0,
+        textSize: 12,
 
         cameraAngle: "",
         imageRatio: "",

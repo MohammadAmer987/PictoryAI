@@ -1,7 +1,11 @@
 import { useState, useRef } from "react";
 import "../../css/inhance_img/MainAreaStyle.css";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function MainArea({ isPro, isReady, settings }) {
+    const navigate = useNavigate();
+
     const [uploadedImage, setUploadedImage] = useState(null);
     const [selectedFileObj, setSelectedFileObj] = useState(null);
     const [results, setResults] = useState([]);
@@ -53,19 +57,24 @@ function MainArea({ isPro, isReady, settings }) {
             const fieldMapping = {
                 productName: 'product_name',
                 audience: 'target_audience',
-                productDescription: 'description',
-                background: 'background',
+                productDescription: 'product_description',
+
+                background: 'background_type',
                 backgroundColor: 'background_color',
                 backgroundBlur: 'background_blur',
-                lightType: 'lighting',
-                styleType: 'photo_style',
+
+                lightType: 'light_type',
+                styleType: 'style_type',
+
                 textOnImage: 'text_on_image',
                 textPosition: 'text_position',
                 textColor: 'text_color',
                 textSize: 'text_size',
+
                 cameraAngle: 'camera_angle',
-                imageRatio: 'aspect_ratio',
-                extraPrompt: 'scene_details',
+                imageRatio: 'image_ratio',
+
+                extraPrompt: 'extra_prompt',
             };
 
             Object.entries(settings).forEach(([key, value]) => {
@@ -85,7 +94,7 @@ function MainArea({ isPro, isReady, settings }) {
             const data = await response.json();
 
             if (!response.ok || !data.success) {
-                throw new Error(data.message || 'Generation failed');
+                throw new Error(data.error || data.message || 'Generation failed');
             }
 
             setResults(data.edited_urls || []);
@@ -280,7 +289,7 @@ function MainArea({ isPro, isReady, settings }) {
                                     <p className="upsell-title">Want more results?</p>
                                     <p className="upsell-sub">Upgrade to Pro — get 3 images per generation, advanced controls & unlimited runs.</p>
                                 </div>
-                                <button className="upsell-btn">✦ Go Pro</button>
+                                <button className="upsell-btn" onClick={() => navigate("/pricing")}>✦ Go Pro</button>
                             </div>
                         </div>
                     )}
