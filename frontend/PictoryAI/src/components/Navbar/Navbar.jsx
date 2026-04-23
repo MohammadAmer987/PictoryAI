@@ -4,7 +4,8 @@ import Logo from "./Logo"
 import NavMenu from "./NavMenu"
 import AvatarMenu from "./AvatarMenu"
 
-export default function Navbar({ user = null, onNavigate = () => {}, onLogout = () => {} }) {
+export default function Navbar({ user = null, onNavigate = () => {}, onLogout = () => {},  onUserUpdated = () => {}
+ }) {
 
     const [openMenu, setOpenMenu] = useState(null)
     const navRef = useRef(null)
@@ -44,6 +45,8 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
                 toggle={toggle}
                 handleNavigate={handleNavigate}
                 onLogout={onLogout}
+                  onUserUpdated={onUserUpdated}
+
             />
 
         </nav>
