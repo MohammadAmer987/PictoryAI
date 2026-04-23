@@ -98,4 +98,27 @@ class AuthController extends Controller
             ],
         ], 200);
     }
+    public function me(): JsonResponse
+{
+    $user = auth()->user()->load([
+        'role',
+        'profile',
+        'activeSubscription.plan',
+    ]);
+
+    return response()->json([
+        'message' => 'Authenticated user retrieved successfully.',
+        'data' => [
+            'user' => $user,
+        ],
+    ], 200);
+}
+
+public function logout(): JsonResponse
+{
+    auth()->user()->currentAccessToken()->delete();
+    return response()->json([
+        'message' => 'Logged out successfully.',
+    ], 200);
+}
 }
