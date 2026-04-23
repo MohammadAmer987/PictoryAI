@@ -59,4 +59,11 @@ class User extends Authenticatable
 {
     return $this->hasMany(UsageCounter::class);
 }
+
+
+    public function captionGenerations()
+    {
+        return $this->hasMany(CaptionGeneration::class);
+    }
 }
+

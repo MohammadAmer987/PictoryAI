@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class CaptionGeneration extends Model
 {
     protected $fillable = [
+        'user_id',
         'product_name',
         'target_audience',
         'tone',
@@ -20,4 +21,10 @@ class CaptionGeneration extends Model
     {
         return $this->hasMany(Caption::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+

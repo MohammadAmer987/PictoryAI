@@ -11,7 +11,6 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
   const [imageUploaded, setImageUploaded] = useState(false);
   const [preview, setPreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -88,8 +87,8 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
     }
   };
 
-  const isReady = imageUploaded && productName.trim() !== '' && !loading;
-  const showWarning = !isReady && !loading && !isGenerated;
+  const isReady = imageUploaded && productName.trim() !== '' && !isParentLoading;
+  const showWarning = !isReady && !isParentLoading && !isGenerated;
   return (
       <Card className="generator-card shadow-sm rounded-4 bg-white border-0">
         {/* card Header */}
@@ -193,7 +192,7 @@ function GeneratorForm({ onGenerate, isParentLoading }) {
                 className={`w-100 py-3 rounded-3 fw-bold mt-2 shadow border-0 transition-all ${isReady ? 'btn-generate-active' : 'btn-generate-disabled'}`}
                 disabled={!isReady}
             >
-              {loading ? (
+              {isParentLoading ? (
                   <>
                     <Spinner animation="border" size="sm" className="me-2" />
                     Generating...

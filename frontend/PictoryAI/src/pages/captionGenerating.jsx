@@ -30,10 +30,18 @@ function CaptionGenerating() {
         formPayload.append('image', formData.imageFile);
       }
 
+
+      const token = localStorage.getItem('access_token');
+
       const response = await fetch('http://127.0.0.1:8000/api/captions/generate', {
         method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: formPayload,
       });
+//
 
       const data = await response.json();
 
