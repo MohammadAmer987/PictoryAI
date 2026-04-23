@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,20 +19,27 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
-        $userRole = Role::where('name', 'user')->first();
-        $freePlan = Plan::where('name', 'free')->first();
-
-        if (!$userRole) {
+        if (!Schema::hasTable('roles')) {
             return response()->json([
-                'message' => 'Default user role is not configured.'
+                'message' => 'The roles table is missing. Run the database migrations first.'
             ], 500);
         }
 
-        if (!$freePlan) {
+        if (!Schema::hasTable('plans')) {
             return response()->json([
-                'message' => 'Default free plan is not configured.'
+                'message' => 'The plans table is missing. Run the database migrations first.'
             ], 500);
         }
+
+        $userRole = Role::firstOrCreate(['name' => 'user']);
+        $freePlan = Plan::firstOrCreate(
+            ['name' => 'free'],
+            [
+                'price' => 0,
+                'max_generations' => 5,
+                'watermark' => true,
+            ]
+        );
 
         $user = DB::transaction(function () use ($request, $userRole, $freePlan) {
             $user = User::create([
@@ -98,27 +106,4 @@ class AuthController extends Controller
             ],
         ], 200);
     }
-    public function me(): JsonResponse
-{
-    $user = auth()->user()->load([
-        'role',
-        'profile',
-        'activeSubscription.plan',
-    ]);
-
-    return response()->json([
-        'message' => 'Authenticated user retrieved successfully.',
-        'data' => [
-            'user' => $user,
-        ],
-    ], 200);
-}
-
-public function logout(): JsonResponse
-{
-    auth()->user()->currentAccessToken()->delete();
-    return response()->json([
-        'message' => 'Logged out successfully.',
-    ], 200);
-}
 }
