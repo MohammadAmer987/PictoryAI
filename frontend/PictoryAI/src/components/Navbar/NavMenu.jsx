@@ -95,7 +95,7 @@ export default function NavMenu({ openMenu, toggle, handleNavigate }) {
                 Pricing
             </button>
 
-            <button className="nav-item" onClick={() => handleNavigate('/history')}>
+            <button className="nav-item" onClick={() => handleNavigate('/Contact Us')}>
                 Contact Us
                 {/*<span className="nav-badge">PRO</span>*/}
             </button>
