@@ -16,8 +16,9 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/image-edit', [ImageEditController::class, 'edit']);
 Route::post('/generate-image', [ImageGeneratorController::class, 'generate']); // ميزتك هنا
-
-Route::post('/captions/generate', [CaptionController::class, 'generate']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/captions/generate', [CaptionController::class, 'generate']);
+});
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {

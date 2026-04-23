@@ -13,6 +13,8 @@ class CaptionController extends Controller
 {
     public function generate(Request $request)
     {
+
+
         $validated = $request->validate([
             'product_name' => 'required|string|max:255',
             'target_audience' => 'nullable|string|max:255',
@@ -98,10 +100,10 @@ class CaptionController extends Controller
 
         $content = $result['choices'][0]['message']['content'] ?? '';
 
-        preg_match('/1\.\s*Short Caption\s*(.*?)(?=2\.\s*Cute Caption|$)/is', $content, $short);
-        preg_match('/2\.\s*Cute Caption\s*(.*?)(?=3\.\s*Advertising Caption|$)/is', $content, $cute);
-        preg_match('/3\.\s*Advertising Caption\s*(.*?)(?=4\.\s*Long Caption|$)/is', $content, $advertising);
-        preg_match('/4\.\s*Long Caption\s*(.*)$/is', $content, $long);
+        preg_match('/1\.\s*(.*?)(?=2\.|$)/is', $content, $short);
+        preg_match('/2\.\s*(.*?)(?=3\.|$)/is', $content, $cute);
+        preg_match('/3\.\s*(.*?)(?=4\.|$)/is', $content, $advertising);
+        preg_match('/4\.\s*(.*)$/is', $content, $long);
 
         $extractTags = function ($text) {
             preg_match_all('/#([\p{L}\p{N}_]+)/u', $text, $matches);
@@ -149,8 +151,17 @@ class CaptionController extends Controller
         ];
 
         $imagePath = $image->store('caption-images', 'public');
+        $user = $request->user();
 
-        $generation = CaptionGeneration::create([
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
+
+
+        $generation = $request->user()->captionGenerations()->create([
             'product_name' => $validated['product_name'],
             'target_audience' => $validated['target_audience'] ?? null,
             'tone' => $validated['tone'] ?? null,
