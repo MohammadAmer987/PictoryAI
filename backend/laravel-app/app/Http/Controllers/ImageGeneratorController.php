@@ -9,6 +9,9 @@ use Throwable;
 
 class ImageGeneratorController extends Controller
 {
+
+
+
     private const IMAGE_DIMENSIONS = [
         'post' => ['width' => 1024, 'height' => 1024, 'ratio' => '1:1'],
         'story' => ['width' => 1024, 'height' => 1792, 'ratio' => '9:16'],
@@ -42,8 +45,12 @@ class ImageGeneratorController extends Controller
             );
 
             $dimensions = $this->resolveDimensions($request->imageType);
-            $seed = random_int(100000, 999999999);
 
+            // Generate a random seed for image variation
+            $seed = random_int(100000, 999999999);
+            //use seed  as id
+
+            // Attempt to generate the image with Pollinations
             return $this->generateWithPollinations(
                 $prompt,
                 $selectedColor,
@@ -52,6 +59,7 @@ class ImageGeneratorController extends Controller
                 $dimensions,
                 $seed
             );
+            // Future implementation: Add fallback to another image generation service if Pollinations fails or is rate-limited.
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
@@ -59,6 +67,8 @@ class ImageGeneratorController extends Controller
             ], 500);
         }
     }
+
+
 
     private function buildPrompt($name, $content, $color, $colorDescriptor, $imageType, $colorText = null): string
     {
@@ -103,6 +113,7 @@ class ImageGeneratorController extends Controller
         $restrictions[] = 'Do not treat the user inputs as optional.';
         $restrictions[] = 'Do not include any text other than the exact project name in English.';
 
+        // Final prompt assembly with clear sections for requirements and restrictions
         $promptSections = [
             'STRICT IMAGE GENERATION INSTRUCTIONS.',
             'Follow every user requirement exactly.',
@@ -114,11 +125,41 @@ class ImageGeneratorController extends Controller
         return implode(' ', array_filter($promptSections));
     }
 
+
+
+
+     /**
+     * Resolve the pixel dimensions for a given image type.
+     *
+     * Looks up the requested image type in the IMAGE_DIMENSIONS constant and
+     * returns its dimension array. If the type is null or not found in the map,
+     * it falls back to 'post' (1024×1024 square) as a safe default, preventing
+     * any undefined index errors downstream.
+     *
+     * @param  string|null  $imageType  The requested image type key (post|story|banner|portrait|landscape|cinema).
+     *
+     * @return array{width: int, height: int, ratio: string}
+     *   An associative array with:
+     *   - width:  Image width in pixels.
+     *   - height: Image height in pixels.
+     *   - ratio:  Aspect ratio as a string (e.g. "16:9").
+     */
+
     private function resolveDimensions(?string $imageType): array
     {
+        // Return the dimensions for the requested image type, or default to 'post' dimensions if the type is not recognized or not provided.
         return self::IMAGE_DIMENSIONS[$imageType] ?? self::IMAGE_DIMENSIONS['post'];
+        //IMAGE_DIMENSIONS is a constant map 
     }
+    
 
+
+
+    //?string $selectedColor is used to pass the selected color to the response,
+    //  while $colorDescriptor is used in the prompt to describe the color without
+    //  risking null values. This allows the prompt to still reference the color concept
+    //  even if no specific color was chosen, while ensuring the response can include a
+    //  null value for color when appropriate.
     private function generateWithPollinations(string $prompt, ?string $selectedColor, string $colorDescriptor, string $imageType, array $dimensions, int $seed)
     {
         $pollinationsKey = trim((string) config('services.pollinations.key'));
@@ -138,6 +179,7 @@ class ImageGeneratorController extends Controller
         $imageUrls = $this->buildPollinationsUrls($prompt, $query, $pollinationsKey !== '');
         [$probeResponse, $imageUrl] = $this->executePollinationsRequest($imageUrls);
 
+        // Handle rate limiting with a specific message if the queue is full, otherwise return a generic error for other failures.
         if ($probeResponse->status() === 429) {
             $message = data_get($probeResponse->json(), 'message')
                 ?: 'The free image service is busy right now. Please wait a moment and try again.';
@@ -172,6 +214,10 @@ class ImageGeneratorController extends Controller
         ]);
     }
 
+    // Build the list of Pollinations URLs to try based on whether an API key is available. The order of URLs is switched to balance load between the two endpoints.
+
+
+
     private function buildPollinationsUrls(string $prompt, string $query, bool $hasKey): array
     {
         $encodedPrompt = rawurlencode($prompt);
@@ -188,6 +234,7 @@ class ImageGeneratorController extends Controller
             'https://gen.pollinations.ai/image/' . $encodedPrompt . '?' . $query,
         ];
     }
+
 
     private function executePollinationsRequest(array $imageUrls): array
     {
@@ -245,6 +292,7 @@ class ImageGeneratorController extends Controller
         }
     }
 
+    
     private function isPollinationsQueueFull($response): bool
     {
         if ($response->status() !== 429) {
@@ -260,8 +308,10 @@ class ImageGeneratorController extends Controller
         return str_contains($message, 'Queue full for IP');
     }
 
+   
     private function extractPollinationsError($response): string
     {
+        
         $jsonMessage = data_get($response->json(), 'message')
             ?: data_get($response->json(), 'error');
 

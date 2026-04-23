@@ -13,6 +13,7 @@ const IMAGE_TYPE_LABELS = {
 };
 
 export default function Text({ onSubmit }) {
+
     const [projectName, setProjectName] = useState("");
     const [content, setContent] = useState("");
     const [imageType, setImageType] = useState("post");
@@ -28,23 +29,52 @@ export default function Text({ onSubmit }) {
     const [generationMeta, setGenerationMeta] = useState(null);
     const [imageLoadError, setImageLoadError] = useState(false);
     const [error, setError] = useState(null);
+
+    // Cooldown state to (((prevent spamming the API)) when it's
+    //  under heavy load or rate limiting requests.
+    // wait 30 seconds before allowing another submission 
+    // if the API indicates it's overwhelmed.
+
     const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
+// useEffect hook to manage the cooldown timer,
+//  decrementing the cooldownSeconds state every 
+// second until it reaches zero. This provides feedback 
+// to the user on when they can try submitting again after 
+// hitting a rate limit or server overload response from the API.
     useEffect(() => {
         if (cooldownSeconds <= 0) {
             return undefined;
         }
 
+        // wait 1000 seconds before decrementing the cooldown timer,
+         
         const timer = window.setTimeout(() => {
+            
             setCooldownSeconds((current) => Math.max(0, current - 1));
         }, 1000);
+
 
         return () => window.clearTimeout(timer);
     }, [cooldownSeconds]);
 
-    const handleSubmit = async () => {
-        if (!projectName.trim() || cooldownSeconds > 0) return;
+    const handleSubmit = 
 
+    // Async function to handle the form submission,
+    //  sending the project details to the backend API
+    //  and managing the response, including error handling 
+    // and cooldown logic.
+    async () => {
+    
+        if (!projectName.trim() || cooldownSeconds > 0) 
+            return;
+        // Reset state before making the API call
+         //when cooldown is stop,
+         //  reset all states to initial 
+         // values to prepare for a new submission.
+         //  This includes clearing any previous errors,
+         // generated images, and metadata, as well as resetting
+          //  the image load error state.
         setIsLoading(true);
         setError(null);
         setGeneratedImage(null);
@@ -52,6 +82,8 @@ export default function Text({ onSubmit }) {
         setImageLoadError(false);
 
         try {
+            // Make the API call to generate the image based on the 
+            // project details and selected options.
             const response = await fetch("http://localhost:8000/api/generate-image", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -63,12 +95,21 @@ export default function Text({ onSubmit }) {
                     imageType,
                 }),
             });
-
+// response is a server 
+// await the response and parse it as JSON. 
+// If the response is not ok, throw an error 
+// with the message from the server or a default message. 
+// Then, extract the image URL from the response data,
+//  checking for both "image" and "image_url" fields to 
+// maintain compatibility with different backend implementations.
+//  If no image URL is returned, throw an error indicating that the
+//  image generation failed.
             const data = await response.json();
 
             if (!response.ok) {
                 throw new Error(data.error || "Failed");
             }
+
 
             const imageUrl = data.image || data.image_url;
 
@@ -82,7 +123,7 @@ export default function Text({ onSubmit }) {
                 imageType: data.image_type || imageType,
                 size: data.size || null,
             });
-
+            // it is to pass the project
             onSubmit?.({
                 projectName: projectName.trim(),
                 content: content.trim(),
@@ -143,6 +184,9 @@ export default function Text({ onSubmit }) {
                                 type="text"
                                 placeholder="e.g. Apollo Redesign"
                                 value={projectName}
+                                // Update the projectName state as the user types,
+                                //  ensuring that the form is controlled and reflects 
+                                // the current input value.
                                 onChange={(e) => setProjectName(e.target.value)}
                                 autoComplete="off"
                                 spellCheck="false"
@@ -160,7 +204,8 @@ export default function Text({ onSubmit }) {
                             <textarea
                                 id="project-content"
                                 className="pf-input pf-textarea"
-                                placeholder="Describe your project, goals, or any relevant notes..."
+                                placeholder="Describe your project,
+                                 goals, or any relevant notes..."
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 spellCheck="true"
@@ -178,6 +223,8 @@ export default function Text({ onSubmit }) {
                         }}
                     />
                     <Imegetypepicker value={imageType} onChange={setImageType} />
+
+
 
                     <div className="pf-selection-summary">
                         <div className="pf-selection-chip">
