@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 const features = [
     { id: " ", label1: "Product", label2: "Image", sub: "Enhancement", route: "/tools/enhance-image" },
-    { id: " ", label1: "Theme",   label2: "Image", sub: "Generator",   route: "/tools/theme-image-generator" },
+    { id: " ", label1: "Theme",   label2: "Image", sub: "Generator",   route: "/tools/theme-image-generation" },
     { id: " ", label1: "Custom",  label2: "Image", sub: "Generator",   route: "/tools/generate-image" },
     { id: " ", label1: "Custom",      label2: "Caption", sub: "Generator", route: "/tools/caption-generator" },
 ];
