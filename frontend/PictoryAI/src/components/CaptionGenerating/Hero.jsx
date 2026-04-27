@@ -38,7 +38,7 @@ function Hero() {
        <Col lg={4} md={12} className="d-flex justify-content-lg-end justify-content-center align-items-end">
   <div className="d-flex gap-3 gap-sm-3 text-center justify-content-center w-100 align-items-end" style={{ maxWidth: '350px' }}>
     
-    <div className="feature-item flex-grow-1">
+    <div className="feature-item ">
       <div 
         className="shadow-sm rounded-4 mb-2 d-flex align-items-center justify-content-center icon-box-bg mx-auto"
         style={{ 
@@ -55,7 +55,7 @@ function Hero() {
     </div>
 
     {/* Icon Item 2 */}
-    <div className="feature-item flex-grow-1">
+    <div className="feature-item ">
       <div 
         className="shadow-sm rounded-4 mb-2 d-flex align-items-center justify-content-center icon-box-bg mx-auto"
         style={{ 
@@ -72,7 +72,7 @@ function Hero() {
     </div>
 
     {/* Icon Item 3 */}
-    <div className="feature-item flex-grow-1">
+    <div className="feature-item ">
       <div 
         className="shadow-sm rounded-4 mb-2 d-flex align-items-center justify-content-center icon-box-bg mx-auto"
         style={{ 

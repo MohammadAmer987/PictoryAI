@@ -55,4 +55,15 @@ class User extends Authenticatable
             ->where('status', 'active')
             ->latestOfMany();
     }
+    public function usageCounters()
+{
+    return $this->hasMany(UsageCounter::class);
 }
+
+
+    public function captionGenerations()
+    {
+        return $this->hasMany(CaptionGeneration::class);
+    }
+}
+

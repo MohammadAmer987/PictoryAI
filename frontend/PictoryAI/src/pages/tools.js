@@ -24,6 +24,13 @@ function AiToolsPage() {
       icon: "bi-brush-fill",
       status: "Active"
     },
+     {
+      title: "Custom Image Generation",
+      desc: "Create a custom image with your name, text, and colors.",
+      path: "/tools/generate-image",
+      icon: "bi bi-image fs-4 bg-primary-green text-white rounded p-2",
+      status: "Active"
+    },
     {
       title: "Background Remover",
       desc: "Instantly remove backgrounds from your product photos.",
