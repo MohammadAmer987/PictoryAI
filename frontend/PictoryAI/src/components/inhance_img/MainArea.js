@@ -86,8 +86,14 @@ function MainArea({ isPro, isReady, settings }) {
 
             formData.append('num_images', isPro ? 3 : 1);
 
+            const token = localStorage.getItem("access_token");
+
             const response = await fetch('http://localhost:8000/api/image-edit', {
                 method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
                 body: formData,
             });
 
@@ -97,7 +103,7 @@ function MainArea({ isPro, isReady, settings }) {
                 throw new Error(data.error || data.message || 'Generation failed');
             }
 
-            setResults(data.edited_urls || []);
+            setResults(data.data?.edited_urls || []);
             setSelectedResult(0);
         } catch (err) {
             console.error("Full Backend Error:", err);
