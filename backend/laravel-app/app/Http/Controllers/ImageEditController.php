@@ -5,28 +5,35 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\EnhanceImageRequest;
+use App\Models\EnhanceImageResponse;
 class ImageEditController extends Controller
 {
     public function edit(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image'              => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
-            'product_name'       => 'required|string|max:255',
-            'target_audience'    => 'required|string|max:255',
-            'description'        => 'nullable|string|max:1000',
-            'background'         => 'required|string|max:500',        // من الـ frontend
-            'background_color'   => 'nullable|string|max:100',
-            'background_blur'    => 'required|numeric|min:0|max:10',
-            'lighting'           => 'required|string|max:255',
-            'photo_style'        => 'required|string|max:255',
-            'text_on_image'      => 'nullable|string|max:255',
-            'text_position'      => 'nullable|string|max:50',
-            'text_color'         => 'nullable|string|max:100',
-            'text_size'          => 'nullable|numeric|min:12|max:100',
-            'camera_angle'       => 'nullable|string|max:255',
-            'aspect_ratio'       => 'nullable|in:1:1,16:9,3:4,9:16,4:5',
-            'scene_details'      => 'required|string|max:1500',       // extraPrompt
+            'image'                => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
+            'product_name'         => 'required|string|max:255',
+            'target_audience'      => 'required|string|max:255',
+            'product_description'  => 'nullable|string|max:1000',
+
+            'background_type'      => 'required|string|max:500',
+            'background_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'background_blur'      => 'required|integer|min:0|max:10',
+
+            'light_type'           => 'required|string|max:255',
+            'style_type'           => 'required|string|max:255',
+
+            'text_on_image'        => 'nullable|string|max:255',
+            'text_position'        => 'nullable|string|max:50',
+
+            'text_color'       => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'text_size'            => 'nullable|integer|min:12|max:100',
+
+            'camera_angle'         => 'nullable|string|max:255',
+            'image_ratio'          => 'nullable|in:1:1,16:9,3:4,9:16,4:5',
+
+            'extra_prompt'         => 'required|string|max:1500',
         ]);
 
         if ($validator->fails()) {
@@ -46,7 +53,31 @@ class ImageEditController extends Controller
             $imageFile = $request->file('image');
             $path = $imageFile->store('uploads', 'public');
             $uploadedImageUrl = rtrim(config('app.url'), '/') . '/storage/' . $path;
-
+//            $requestModel = EnhanceImageRequest::create([
+//                'user_id' => auth()->id(),
+//                'source_image' => $path,
+//
+//                'product_name' => $request->product_name,
+//                'target_audience' => $request->target_audience,
+//                'product_description' => $request->product_description,
+//
+//                'background_type' => $request->background_type,
+//                'background_color' => $request->background_color,
+//                'background_blur' => $request->background_blur,
+//
+//                'light_type' => $request->light_type,
+//                'style_type' => $request->style_type,
+//
+//                'text_on_image' => $request->text_on_image,
+//                'text_position' => $request->text_position,
+//                'text_color' => $request->text_color,
+//                'text_size' => $request->text_size,
+//
+//                'camera_angle' => $request->camera_angle,
+//                'image_ratio' => $request->image_ratio,
+//
+//                'extra_prompt' => $request->extra_prompt,
+//            ]);
             $imageContent = file_get_contents($imageFile->getRealPath());
             $base64Image  = base64_encode($imageContent);
             $mimeType     = $imageFile->getMimeType() ?? 'image/jpeg';
@@ -56,7 +87,9 @@ class ImageEditController extends Controller
 
             $numImages = (int) $request->input('num_images', 1);
 
-            $numImages = (int) $request->input('num_images', 1);
+            //$user = auth()->user();
+
+            //$numImages = ($user->plan_type === 'pro') ? 3 : 1;
 
             $submitResponse = Http::withHeaders([
                 'Authorization' => 'Key ' . $falKey,
@@ -94,6 +127,14 @@ class ImageEditController extends Controller
                 ? array_column($resultData['images'], 'url')
                 : [];
 
+//            foreach ($editedUrls as $index => $url) {
+//                EnhanceImageResponse::create([
+//                    'request_id' => $requestModel->id,
+//                    'image_path' => $url,
+//                    'result_order' => $index + 1,
+//                ]);
+//            }
+
             if (empty($editedUrls)) {
                 return response()->json([
                     'message'     => 'No edited image returned from fal.ai',
@@ -109,12 +150,14 @@ class ImageEditController extends Controller
                 'prompt_used'  => $prompt,
                 'raw_result'   => $resultData,
             ]);
-        } catch (\Throwable $e) {
+        }  catch (\Throwable $e) {
             return response()->json([
-                'message' => 'Image editing failed.',
-                'error'   => $e->getMessage(),
+            'message' => 'Image editing failed.',
+            'error'   => $e->getMessage(),
+            'line'    => $e->getLine(),
+            'file'    => $e->getFile(),
             ], 500);
-        }
+            }
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -124,19 +167,19 @@ class ImageEditController extends Controller
     {
         $productName = trim((string)$request->input('product_name', 'the product'));
         $audience = trim((string)$request->input('target_audience', ''));
-        $description = trim((string)$request->input('description', ''));
-        $background = trim((string)$request->input('background', ''));
+        $description = trim((string)$request->input('product_description', ''));
+        $background = trim((string)$request->input('background_type', ''));
         $backgroundColor = trim((string)$request->input('background_color', ''));
         $backgroundBlur = $request->input('background_blur');
-        $lighting = trim((string)$request->input('lighting', 'soft studio lighting'));
-        $photoStyle = trim((string)$request->input('photo_style', 'luxury commercial photography'));
+        $lighting = trim((string)$request->input('light_type', 'soft studio lighting'));
+        $photoStyle = trim((string)$request->input('style_type', 'luxury commercial photography'));
         $textOnImage = trim((string)$request->input('text_on_image', ''));
         $textPosition = $request->input('text_position', 'bottom-left');
         $textColor = trim((string)$request->input('text_color', '#ffffff'));
-        $textSize = (int)$request->input('text_size', 48);   // حجم الخط
+        $textSize = (int)$request->input('text_size', 48);
         $cameraAngle = trim((string)$request->input('camera_angle', 'eye level'));
-        $aspectRatio = $request->input('aspect_ratio', '');
-        $extraPrompt = trim((string)$request->input('scene_details', ''));
+        $aspectRatio = $request->input('image_ratio', '');
+        $extraPrompt = trim((string)$request->input('extra_prompt', ''));
 
         $prompt = "Professional luxury e-commerce product photography of {$productName}, ultra realistic, 8K commercial quality.";
 
@@ -164,7 +207,6 @@ class ImageEditController extends Controller
 
         $prompt .= " {$lighting}, {$photoStyle}, shallow depth of field, soft cinematic bokeh, high-end luxury advertisement.";
 
-        // ====================== تحسين قوي لحجم الكتابة ======================
         if ($textOnImage) {
             $textWeight = '';
             if ($textSize >= 70) {
@@ -183,7 +225,6 @@ class ImageEditController extends Controller
             $prompt .= "EXACT color {$textColor}, highly visible, sharp edges, ";
             $prompt .= "excellent readability, soft glow effect, high contrast.";
         }
-        // =====================================================================
 
         if ($backgroundBlur !== null && $backgroundBlur > 0) {
             $prompt .= " Soft cinematic background blur intensity {$backgroundBlur}/10.";

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="web_db@localhost" uuid="f7d8dae3-a4b6-4a55-a08f-6e1e3f2b229c">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/web_db</jdbc-url>
     <data-source source="LOCAL" name="pictory_ai@localhost" uuid="8bee1041-ee95-40a2-ac30-f6b0f1c7800a">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
