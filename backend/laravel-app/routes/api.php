@@ -14,7 +14,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/image-edit', [ImageEditController::class, 'edit']);
+Route::post('/image-edit', [ImageEditController::class, 'edit'])->middleware('auth:sanctum');
 Route::post('/generate-image', [ImageGeneratorController::class, 'generate']); // ميزتك هنا
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/captions/generate', [CaptionController::class, 'generate']);

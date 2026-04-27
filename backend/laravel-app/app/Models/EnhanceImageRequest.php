@@ -31,8 +31,9 @@ class EnhanceImageRequest extends Model
 
         'extra_prompt',
     ];
+
     public function responses()
     {
-        return $this->hasMany(EnhanceImageResponse::class, 'request_id');
+        return $this->hasMany(\App\Models\EnhanceImageResponse::class, 'request_id');
     }
 }
