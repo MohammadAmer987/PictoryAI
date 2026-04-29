@@ -127,8 +127,6 @@ class ImageEditController extends Controller
                 ], 502);
             }
 
-            // نفس فكرة CaptionController:
-            // $request->user()->captionGenerations()->create(...)
             $requestModel = $user->enhanceImageRequests()->create([
                 'source_image'        => $path,
 

@@ -73,6 +73,13 @@ class User extends Authenticatable
     }
 
 
+    public function themedImageRequests()
+    {
+        return $this->hasMany(\App\Models\ThemedImageRequest::class, 'user_id');
+    }
+
+
+
 }
 
 

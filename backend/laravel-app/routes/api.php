@@ -4,8 +4,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CaptionController;
 use App\Http\Controllers\Api\AuthController;
+
 use App\Http\Controllers\ImageGeneratorControllerFixed; // من برانش Rahaf
 use App\Http\Controllers\ImageEditController;      // تأكدي من المسار الصحيح
+
+use App\Http\Controllers\ImageGeneratorController; // من برانش Rahaf
+use App\Http\Controllers\ImageEditController;
+use App\Http\Controllers\ThemedImageController;
+
+
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ProfileController;
@@ -15,6 +22,11 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/image-edit', [ImageEditController::class, 'edit'])->middleware('auth:sanctum');
+
+Route::post('/image-theme', [ThemedImageController::class, 'edit'])->middleware('auth:sanctum');
+
+Route::post('/generate-image', [ImageGeneratorController::class, 'generate']); // ميزتك هنا
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/captions/generate', [CaptionController::class, 'generate']);
 });
