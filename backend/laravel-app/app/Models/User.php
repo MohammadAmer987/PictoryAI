@@ -72,7 +72,6 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\EnhanceImageRequest::class, 'user_id');
     }
 
-
     public function themedImageRequests()
     {
         return $this->hasMany(\App\Models\ThemedImageRequest::class, 'user_id');

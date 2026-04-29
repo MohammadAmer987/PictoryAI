@@ -1,15 +1,10 @@
 import React from "react";
-import "../../css/UnderNavstyles.css";
-
-import Hero from "./Hero";
-
+import HeroAgent from "./HeroAgent";  
 
 export default function PictorySimple() {
     return (
         <div>
-            
-            <Hero />
-            
+            <HeroAgent /> 
         </div>
     );
 }

@@ -8,9 +8,12 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ImageGeneratorControllerFixed; // من برانش Rahaf
 use App\Http\Controllers\ImageEditController;      // تأكدي من المسار الصحيح
 
-use App\Http\Controllers\ImageGeneratorController; // من برانش Rahaf
+
+
 use App\Http\Controllers\ImageEditController;
 use App\Http\Controllers\ThemedImageController;
+
+
 
 
 use App\Http\Controllers\PlanController;
