@@ -4,15 +4,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CaptionController;
 use App\Http\Controllers\Api\AuthController;
-<<<<<<< HEAD
+
 use App\Http\Controllers\ImageGeneratorControllerFixed; // من برانش Rahaf
 use App\Http\Controllers\ImageEditController;      // تأكدي من المسار الصحيح
-=======
-use App\Http\Controllers\ImageGeneratorController; // من برانش Rahaf
+
+
+
 use App\Http\Controllers\ImageEditController;
 use App\Http\Controllers\ThemedImageController;
 
->>>>>>> origin/main
+
+
+
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ProfileController;
