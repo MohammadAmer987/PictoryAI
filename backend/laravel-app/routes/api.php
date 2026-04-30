@@ -7,10 +7,8 @@ use App\Http\Controllers\Api\AuthController;
 
 use App\Http\Controllers\ImageGeneratorControllerFixed; // من برانش Rahaf
 use App\Http\Controllers\ImageEditController;      // تأكدي من المسار الصحيح
+use App\Http\Controllers\HistoryController;
 
-
-
-use App\Http\Controllers\ImageEditController;
 use App\Http\Controllers\ThemedImageController;
 
 
@@ -46,7 +44,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/profile/name', [ProfileController::class, 'updateName']);
     Route::patch('/profile/store-name', [ProfileController::class, 'updateStoreName']);
     Route::patch('/profile/email', [ProfileController::class, 'updateEmail']);
-    Route::patch('/profile/password', [ProfileController::class, 'updatePassword']);
+    Route::patch('/profile/pasphp artisan optimize:clear
+composer dump-autoloadsword', [ProfileController::class, 'updatePassword']);
 });
 Route::get('/plans', [PlanController::class, 'index']);
 Route::get('/plans/{id}', [PlanController::class, 'show']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/history/captions', [HistoryController::class, 'captions']);
+});
