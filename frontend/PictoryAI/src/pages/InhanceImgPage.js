@@ -74,19 +74,19 @@ function App() {
                 ]}
             />
 
-            {/*<div className="row">*/}
-            {/*    <div className="col-12">*/}
-            {/*        <header className="app-header">*/}
-            {/*            <span>✦ ProductShot AI</span>*/}
-            {/*            <button*/}
-            {/*                className={`user-type-toggle ${isPro ? "pro" : "free"}`}*/}
-            {/*                onClick={() => setIsPro(!isPro)}*/}
-            {/*            >*/}
-            {/*                {isPro ? "PRO user" : "Free user"} · Click to switch*/}
-            {/*            </button>*/}
-            {/*        </header>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+            <div className="row">
+                <div className="col-12">
+                    <header className="app-header">
+                        <span>✦ ProductShot AI</span>
+                        <button
+                            className={`user-type-toggle ${isPro ? "pro" : "free"}`}
+                            onClick={() => setIsPro(!isPro)}
+                        >
+                            {isPro ? "PRO user" : "Free user"} · Click to switch
+                        </button>
+                    </header>
+                </div>
+            </div>
 
             <div className="row g-0 main-content-wrapper">
                 <div className="col-lg-3 col-md-4">

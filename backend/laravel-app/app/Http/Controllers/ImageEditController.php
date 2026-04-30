@@ -73,6 +73,18 @@ class ImageEditController extends Controller
             $mimeType     = $imageFile->getMimeType() ?? 'image/jpeg';
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
+            $sizeMapping = [
+                '1:1'   => 'square_hd',
+                '16:9'  => 'landscape_16_9',
+                '9:16'  => 'portrait_16_9',
+                '4:5'   => 'portrait_4_5',
+                '3:4'   => 'portrait_4_5',
+            ];
+
+            $userSize = $request->input('image_ratio', '1:1');
+            $falImageSize = $sizeMapping[$userSize] ?? 'square_hd';
+
+
             $prompt = $this->buildDynamicProfessionalPrompt($request);
 
             $numImages = (int) $request->input('num_images', 1);
@@ -86,6 +98,8 @@ class ImageEditController extends Controller
                 ->post('https://queue.fal.run/fal-ai/flux-pro/kontext', [
                     'image_url'      => $imageDataUri,
                     'prompt'         => $prompt,
+                    'image_size'     => $falImageSize,
+                    'aspect_ratio'   => $userSize,
                     'guidance_scale' => 3.5,
                     'num_images'     => $numImages,
                     'seed'           => null,
