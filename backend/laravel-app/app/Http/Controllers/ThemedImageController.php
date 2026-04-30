@@ -55,6 +55,19 @@ class ThemedImageController extends Controller
             $mimeType     = $imageFile->getMimeType() ?? 'image/jpeg';
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
+
+            $sizeMapping = [
+                '1:1'   => 'square_hd',
+                '16:9'  => 'landscape_16_9',
+                '9:16'  => 'portrait_16_9',
+                '4:5'   => 'portrait_4_5',
+                '3:4'   => 'portrait_4_5',
+            ];
+
+            $userSize = $request->input('image_size', '1:1');
+            $falImageSize = $sizeMapping[$userSize] ?? 'square_hd';
+
+
             $prompt = $this->buildThemeImagePrompt($request);
 
             $submitResponse = Http::withHeaders([
@@ -66,8 +79,11 @@ class ThemedImageController extends Controller
                 ->post('https://queue.fal.run/fal-ai/flux-pro/kontext', [
                     'image_url'      => $imageDataUri,
                     'prompt'         => $prompt,
+                    'image_size'     => $falImageSize,
+                    'aspect_ratio'   => $request->input('image_size'),
                     'guidance_scale' => 3.5,
-                    'seed'           => null,
+                    'num_images'     => 1,
+                    'enable_safety_checker' => true,
                     'output_format'  => 'jpeg',
                 ]);
 
@@ -153,104 +169,88 @@ class ThemedImageController extends Controller
 
         $secondaryText = $this->getSecondaryText($theme);
 
-        $productSubject = "A premium luxury product (hero object)";
+        // تعريف المنتج الأساسي
+        $productSubject = "a premium luxury product sample (hero object)";
 
-        $prompt = "CORE SUBJECT: One single {$productSubject} placed directly on the floor surface. ";
-        $prompt .= "PLACEMENT: No pedestal, no stand. The product sits naturally on the ground with realistic soft contact shadows and subtle reflections. ";
-        $prompt .= "PROPORTIONS: The product is large and central, occupying 55-60% of the vertical frame, with clear empty space in the upper third for text. ";
+        // الأساس: وضع المنتج مباشرة على السطح بدون منصة مع ظلال واقعية
+        $prompt = "CORE SUBJECT: A detailed high-quality marketing photograph of {$productSubject} placed directly on the floor surface. No pedestal, no stand. The product sits naturally with realistic soft contact shadows. ";
 
         switch ($theme) {
+            case "Christmas":
+                $prompt .= "BACKGROUND: A deep, rich red floor and background. SCENE: Dense pine branches adorned with small red ornaments frame the top and bottom of the image. Hanging and falling red and white decorative balls fill the upper space. Professional studio lighting.";
+                break;
+
             case "Ramadan":
             case "Eid al-Fitr":
-                $prompt .= "BACKGROUND: A dark navy blue floor reflecting the glow of lanterns. Hyper-detailed night sky with shimmering stars. Detailed golden lanterns with intricate filigree patterns hanging at various heights. A large, glowing golden crescent moon and stars suspended. Intricate Arabic geometric patterns decorate the lower corners of the wall. Magical glowing particles in the air.";
-                break;
-
-            case "Christmas":
-                $prompt .= "BACKGROUND: A rich, matte red floor. The scene is densely framed by highly detailed, lush pine branches at the top and bottom. Hyper-realistic red and silver ornaments with fine textures scattered on the floor and hanging. Tiny, sharp ice crystals and soft snow particles floating in the air. Warm, festive studio lighting.";
-                break;
-
-            case "Black Friday":
-                $prompt .= "BACKGROUND: A polished black marble floor with sharp reflections. Dark textured charcoal marble wall. Complex explosion of 3D elements: floating matte gold spheres, transparent glass bubbles, gold '$' and '%' symbols, and miniature luxury shopping bags with detailed handles. High-contrast neon-edge lighting.";
+                $prompt .= "BACKGROUND: A dark navy blue floor reflecting the scene. Night sky with shimmering stars. SCENE: Above the product, hanging golden ornate lanterns, a decorative crescent moon, and stars are visible. Golden geometric patterns decorate the bottom corners. Professional photorealistic lighting.";
                 break;
 
             case "Valentine's Day":
-                $prompt .= "BACKGROUND: A soft pink satin-finish floor. Clean pink wall with sharp artistic shadows of botanical leaves. Dozens of red paper hearts of varying sizes hanging on invisible threads. Large hyper-detailed clusters of pink magnolia flowers and roses framing the product on left and right. Soft romantic bokeh.";
+                $prompt .= "BACKGROUND: A soft pink floor and wall with artistic plant-like shadows. SCENE: A forest of hanging red paper hearts from above and scattered heart-shaped petals on the surface around the product. Flanking pink floral bushes frame the scene. Soft, romantic lighting.";
                 break;
 
             case "Eid al-Adha":
-                $prompt .= "BACKGROUND: A light stone-textured floor. Beige wall with a massive, deeply carved 3D mandala pattern. Rustic rope with small detailed wooden sheep carvings and star medallions draped across. High-detail bowls of glossy dates and traditional prayer bead (Subha) with visible textures in the foreground.";
+                $prompt .= "BACKGROUND: A light stone-textured floor. Beige wall with a massive, deeply carved 3D mandala pattern. SCENE: Above the product, a garland of hanging wooden sheep figures is visible. Bowls of dates and prayer beads are placed on the surface in the foreground. Warm, natural light.";
                 break;
 
-            case "Graduation":
-                $prompt .= "BACKGROUND: A dark reflective navy floor. Majestic night blue background with sharp God-rays of light beaming from the top. A detailed graduation mortarboard (cap) with silk tassel and a rolled parchment diploma with gold ribbon are placed on the floor next to the product. Glittering gold particles fill the atmosphere. Inspiring and elegant academic mood.";
+            case "Black Friday":
+                $prompt .= "BACKGROUND: A polished black marble floor with sharp reflections and dark textured charcoal marble wall. SCENE: A complex cascade of floating gold and clear spheres, hanging dollar signs, percentage symbols, and small shopping bags fills the air. Dramatic high-contrast lighting.";
                 break;
 
             case "New Year":
-                $prompt .= "BACKGROUND: A dark polished wood floor. Behind the product is a small vibrant green fir tree with tiny red balls. The entire upper background is filled with massive multi-colored fireworks exploding with sharp light trails. Warm golden bokeh lights (fairy lights) draped in the background. High-energy celebratory mood.";
+                $prompt .= "BACKGROUND: A dark polished wood floor. SCENE: A small decorated green fir tree stands behind the product. The background is filled with dynamic, colorful fireworks exploding with sharp light trails. Festive and celebratory energy.";
+                break;
+
+            case "Graduation":
+                $prompt .= "BACKGROUND: A dark reflective navy floor. SCENE: Majestic night blue background with sharp God-rays of light beaming from the top. A dark blue graduation cap with a gold tassel and a rolled diploma are placed on the floor next to the product. Achievement-focused lighting.";
                 break;
 
             case "Mother's Day":
-                $prompt .= "BACKGROUND: Soft luxurious pastel pink studio setting. On the elegant light pink wall behind the product. ";
-                $prompt .= "Beautiful branches of blooming pink and white magnolia flowers with highly detailed petals and green leaves gracefully framing the left and right sides of the scene. Several delicate fallen magnolia petals scattered naturally on the floor around the product. ";
-                $prompt .= "Soft dreamy cinematic lighting with gentle warm rays, subtle heart-shaped bokeh, elegant and emotional luxury atmosphere, high-end commercial photography style.";
+                $prompt .= "BACKGROUND: A soft luxurious pink floor. SCENE: Soft pink wall. Beautiful blooming magnolia bushes frame the product from the left and right sides. Soft, warm, feminine lighting.";
                 break;
-
 
             case "Back to School":
-                $prompt .= "BACKGROUND: A light yellow floor meeting a deep blue chalkboard wall. The background features hand-drawn educational sketches in white chalk. A massive array of hyper-detailed school supplies including a stack of vintage books, sharp pencils, rulers, a compass, and a small globe artistically arranged on the floor around the product. Bright crisp natural lighting.";
+                $prompt .= "BACKGROUND: A light yellow floor meeting a deep blue chalkboard wall. SCENE: Hand-drawn chalk sketches on the wall. A variety of school supplies (pencil case, rulers, books, compasses) are arranged on the floor around the product. Bright, crisp natural lighting.";
+                break;
+
+            default:
+                $prompt .= "BACKGROUND: A clean, minimal professional studio background with realistic lighting.";
                 break;
         }
 
-        // ✍️ النص الرئيسي + النص الثانوي
+        // ✍️ منطق النصوص: النص المدخل (كبير) ثم النص الثابت (أصغر)
         if (!empty($userText)) {
-            $prompt .= " OVERLAY TEXT: In the upper third of the image, VERY LARGE bold premium elegant luxurious minimalist font with the exact text '{$userText}' in bright elegant white color with subtle gold outline or soft glow. ";
+            $prompt .= " OVERLAY TEXT: In the upper third of the frame, the text '{$userText}' is written in a VERY LARGE, bold, premium elegant font. ";
 
-            $prompt .= "Directly below the main text, SMALLER elegant sophisticated font with the exact text '{$secondaryText}' in soft pastel gold or warm cream color, perfectly centered and well-spaced. ";
+            if (!empty($secondaryText)) {
+                $prompt .= "Directly below it, the fixed text '{$secondaryText}' is written in a SMALLER, sophisticated font. ";
+            }
 
-            $prompt .= "The two texts have clear color contrast between them. Main text is brighter and more prominent, secondary text is softer and more delicate. Both texts are highly readable, with subtle soft glow and drop shadow for excellent clarity, positioned with generous clean space above the product, no overlap.";
+            $prompt .= "Both texts are in a bright, clean white with a subtle glow, perfectly centered with generous space above the product to avoid overlap.";
         }
 
-        $prompt .= " TECHNICAL SPECS: Aspect ratio {$imageSize}. Tack-sharp focus on the product. Hyper-realistic textures, cinematic lighting, ray-tracing reflections on the floor, 8K resolution, commercial luxury product photography style, highly legible text with good color contrast, masterpiece.";
+        $prompt .= " TECHNICAL SPECS: Ultra-realistic, 8K resolution, cinematic lighting, sharp focus, ray-tracing reflections, aspect ratio {$imageSize}.";
 
         return trim(preg_replace('/\s+/', ' ', $prompt));
     }
 
     /**
-     * النص الثانوي حسب الثيم
+     * النصوص الثابتة (Secondary Text) لكل ثيم
      */
     private function getSecondaryText(string $theme): string
     {
         switch ($theme) {
-            case "Ramadan":
-            case "Eid al-Fitr":
-                return "Happy Eid";
-
-            case "Eid al-Adha":
-                return "Happy Eid Al-Adha";
-
-            case "Christmas":
-                return "Happy Christmas";
-
-            case "Valentine's Day":
-                return "Happy Valentine's Day";
-
-            case "Black Friday":
-                return "Big Sale";
-
-            case "Graduation":
-                return "Congratulations";
-
-            case "New Year":
-                return "Happy New Year";
-
-            case "Mother's Day":
-                return "Happy Mother's Day";
-
-            case "Back to School":
-                return "Ready for a Great Year";
-
-            default:
-                return "";
+            case "Ramadan": return "Ramadan Kareem";
+            case "Eid al-Fitr": return "Happy Eid";
+            case "Eid al-Adha": return "Happy Eid Al-Adha";
+            case "Christmas": return "Merry Christmas";
+            case "Valentine's Day": return "With Love";
+            case "Black Friday": return "Exclusive Offer";
+            case "Graduation": return "Class of 2024";
+            case "New Year": return "Happy New Year";
+            case "Mother's Day": return "Happy Mother's Day";
+            case "Back to School": return "Ready to Learn";
+            default: return "";
         }
     }
 
