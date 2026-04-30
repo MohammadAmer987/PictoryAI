@@ -53,7 +53,7 @@ class CaptionController extends Controller
 
         Return in this exact format:
         1. Short Caption
-        2. Cute Caption
+        2. Creative Caption
         3. Advertising Caption
         4. Long Caption
 
@@ -131,7 +131,7 @@ class CaptionController extends Controller
                 'tags' => $shortData['tags'],
             ],
             [
-                'type' => 'Cute Caption',
+                'type' => 'Creative Caption',
                 'icon' => 'bi-heart-fill',
                 'content' => $cuteData['content'],
                 'tags' => $cuteData['tags'],
