@@ -186,7 +186,7 @@
 
 }
 
-.card {
+.aw .card {
   background: #386648;
   border: 0.5px solid var(--green-accent);
   border-radius: 12px;
@@ -202,14 +202,14 @@
 
 
 
-.cardBody {
+.aw .cardBody {
  
   color: #0f352b;
   margin: 0;
   font-weight: 500;
   line-height: 1.8; 
 }
-.cardBody p {
+.aw .cardBody p {
   font-size: 14px !important;
   color: #245d4e !important;
  
