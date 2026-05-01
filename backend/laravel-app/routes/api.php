@@ -25,6 +25,7 @@ Route::post('/generate-image', [ImageGeneratorController::class, 'generate']); /
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/captions/generate', [CaptionController::class, 'generate']);
+    Route::get('/captions/my-plan', [CaptionController::class, 'myPlan']);
 });
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -39,8 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/profile/name', [ProfileController::class, 'updateName']);
     Route::patch('/profile/store-name', [ProfileController::class, 'updateStoreName']);
     Route::patch('/profile/email', [ProfileController::class, 'updateEmail']);
-    Route::patch('/profile/pasphp artisan optimize:clear
-composer dump-autoloadsword', [ProfileController::class, 'updatePassword']);
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword']);
 });
 Route::get('/plans', [PlanController::class, 'index']);
 Route::get('/plans/{id}', [PlanController::class, 'show']);
