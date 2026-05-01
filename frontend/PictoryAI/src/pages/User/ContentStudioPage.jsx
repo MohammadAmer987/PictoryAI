@@ -50,6 +50,10 @@ function ContentStudioPage() {
     fetchCaptionsHistory();
   }, []);
 
+
+
+
+
   const sortItems = (items) => {
     const sorted = [...items];
 

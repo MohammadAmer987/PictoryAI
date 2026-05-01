@@ -1,5 +1,5 @@
 import { Container, Row, Col } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState,useEffect  } from 'react';
 import Hero from '../components/CaptionGenerating/Hero';
 import GeneratorForm from '../components/CaptionGenerating/GeneratorForm';
 import PreviewSection from '../components/CaptionGenerating/PreviewSection';
@@ -9,9 +9,34 @@ function CaptionGenerating() {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [lastFormData, setLastFormData] = useState(null);
+  const [isLimitReached, setIsLimitReached] = useState(false);
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
 
+
+  useEffect(() => {
+    const fetchUserPlan = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+
+        const res = await fetch('http://127.0.0.1:8000/api/captions/my-plan', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
+
+        const data = await res.json();
+
+        setIsPremiumUser(data?.data?.is_premium === true);
+      } catch (err) {
+        console.error('Failed to fetch user plan', err);
+      }
+    };
+
+    fetchUserPlan();
+  }, []);
   const handleGenerate = async (formData) => {
-    if (!formData) return;
+    if (!formData || isLimitReached) return;
 
     try {
       setLoading(true);
@@ -30,20 +55,39 @@ function CaptionGenerating() {
         formPayload.append('image', formData.imageFile);
       }
 
-
       const token = localStorage.getItem('access_token');
 
-      const response = await fetch('http://127.0.0.1:8000/api/captions/generate', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: formPayload,
-      });
-//
+      const response = await fetch(
+          'http://127.0.0.1:8000/api/captions/generate',
+          {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: formPayload,
+          }
+      );
 
       const data = await response.json();
+
+      if (response.status === 403 && data.upgrade_required) {
+        setIsLimitReached(true);
+
+        setResults([
+          {
+            type: 'Limit Reached',
+            icon: 'bi-lock-fill',
+            content:
+                data.message ||
+                'You have reached your caption generation limit. Please subscribe to continue.',
+            tags: ['Subscribe'],
+            upgradeRequired: true,
+          },
+        ]);
+
+        return;
+      }
 
       if (!response.ok || !data.success) {
         setResults([
@@ -54,9 +98,11 @@ function CaptionGenerating() {
             tags: ['Try Again'],
           },
         ]);
+
         return;
       }
 
+      setIsLimitReached(false);
       setResults(data?.data?.captions || []);
     } catch (error) {
       console.error('Caption generation error:', error);
@@ -88,6 +134,7 @@ function CaptionGenerating() {
                 <GeneratorForm
                     onGenerate={handleGenerate}
                     isParentLoading={loading}
+                    isLimitReached={isLimitReached}
                 />
               </div>
             </Col>
@@ -103,7 +150,7 @@ function CaptionGenerating() {
             </Col>
           </Row>
 
-          <ProTips />
+          <ProTips show={!isPremiumUser} />
         </Container>
       </div>
   );
