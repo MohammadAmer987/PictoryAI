@@ -17,10 +17,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        
+
         $this->call([
             RoleSeeder::class,
             PlanSeeder::class,
+        ]);
+
+        $this->call([
+            EnhanceImageSeeder::class,
+            ThemedImageSeeder::class,
         ]);
     }
 }

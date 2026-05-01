@@ -16,67 +16,81 @@ function ContentStudioPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchCaptionsHistory = async () => {
+    const fetchHistory = async () => {
       try {
         setLoading(true);
 
         const token = localStorage.getItem('access_token');
 
-        const response = await fetch(
-            'http://127.0.0.1:8000/api/history/captions',
-            {
-              headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            }
-        );
+        const headers = {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        };
 
-        const result = await response.json();
+        const [captionsResponse, imagesResponse] = await Promise.all([
+          fetch('http://127.0.0.1:8000/api/history/captions', { headers }),
+          fetch('http://127.0.0.1:8000/api/history/images', { headers }),
+        ]);
 
-        if (result.success) {
-          setCaptions(result.data);
-        } else {
-          setCaptions([]);
-        }
+        const captionsResult = await captionsResponse.json();
+        const imagesResult = await imagesResponse.json();
+
+        setCaptions(captionsResult.success ? captionsResult.data : []);
+        setImages(imagesResult.success ? imagesResult.data : []);
       } catch (error) {
-        console.error('Failed to fetch captions history:', error);
+        console.error('Failed to fetch history:', error);
         setCaptions([]);
+        setImages([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCaptionsHistory();
+    fetchHistory();
   }, []);
 
-
-
-
+  const getItemDate = (item) => item.date || item.created_at;
 
   const sortItems = (items) => {
     const sorted = [...items];
 
     switch (sortValue) {
       case 'oldest':
-        return sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
+        return sorted.sort(
+            (a, b) => new Date(getItemDate(a)) - new Date(getItemDate(b))
+        );
 
       case 'az':
-        return sorted.sort((a, b) => a.title.localeCompare(b.title));
+        return sorted.sort((a, b) =>
+            (a.title || '').localeCompare(b.title || '')
+        );
 
       case 'za':
-        return sorted.sort((a, b) => b.title.localeCompare(a.title));
+        return sorted.sort((a, b) =>
+            (b.title || '').localeCompare(a.title || '')
+        );
 
       case 'newest':
       default:
-        return sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return sorted.sort(
+            (a, b) => new Date(getItemDate(b)) - new Date(getItemDate(a))
+        );
     }
   };
 
   const filteredImages = sortItems(
-      images.filter((item) =>
-          item.title?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      images.filter((item) => {
+        const term = searchTerm.toLowerCase();
+
+        return (
+            item.title?.toLowerCase().includes(term) ||
+            item.type?.toLowerCase().includes(term) ||
+            item.details?.theme?.toLowerCase().includes(term) ||
+            item.details?.project_name?.toLowerCase().includes(term) ||
+            item.details?.content?.toLowerCase().includes(term) ||
+            item.details?.style_type?.toLowerCase().includes(term)
+        );
+      })
   );
 
   const filteredCaptions = sortItems(
@@ -113,7 +127,7 @@ function ContentStudioPage() {
         {loading ? (
             <div className="text-center py-5">
               <div className="spinner-border" role="status"></div>
-              <p className="mt-3 text-secondary">Loading captions...</p>
+              <p className="mt-3 text-secondary">Loading history...</p>
             </div>
         ) : (
             <ContentStudioTabs

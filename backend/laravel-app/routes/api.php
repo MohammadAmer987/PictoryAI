@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CaptionController;
 use App\Http\Controllers\Api\AuthController;
 
-use App\Http\Controllers\ImageGeneratorControllerFixed; // من برانش Rahaf
-use App\Http\Controllers\ImageEditController;      // تأكدي من المسار الصحيح
+use App\Http\Controllers\ImageGeneratorControllerFixed;
+use App\Http\Controllers\ImageEditController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ThemedImageController;
 use App\Http\Controllers\PlanController;
@@ -44,6 +44,11 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::get('/plans', [PlanController::class, 'index']);
 Route::get('/plans/{id}', [PlanController::class, 'show']);
+
+
+Route::get('/history/images', [HistoryController::class, 'images'])
+    ->middleware('auth:sanctum');
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/history/captions', [HistoryController::class, 'captions']);
