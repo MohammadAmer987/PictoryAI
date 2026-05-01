@@ -23,9 +23,5 @@ class DatabaseSeeder extends Seeder
             PlanSeeder::class,
         ]);
 
-        $this->call([
-            EnhanceImageSeeder::class,
-            ThemedImageSeeder::class,
-        ]);
     }
 }
