@@ -15,6 +15,9 @@
   display: flex;
   flex-direction: column;
 }
+.footer-section {
+  margin-top: 0 !important;
+}
 
 .footer-logo-row {
   display: flex;

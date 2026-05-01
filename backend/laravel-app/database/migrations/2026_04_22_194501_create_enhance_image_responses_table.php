@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('image_generation_responses', function (Blueprint $table) {
             $table->id();
-            
+
             $table->foreignId('request_id')
                   ->constrained('image_generation_requests')
                   ->cascadeOnDelete();

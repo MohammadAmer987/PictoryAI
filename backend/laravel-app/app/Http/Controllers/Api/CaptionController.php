@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\CaptionGeneration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use App\Models\Caption;
+use App\Services\UsageLimitService;
+use Illuminate\Validation\ValidationException;
 
 //////
 class CaptionController extends Controller
@@ -23,6 +24,27 @@ class CaptionController extends Controller
             'description' => 'nullable|string|max:200',
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
+
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
+
+        try {
+            app(UsageLimitService::class)->assertCanGenerate($user, 'caption');
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have reached your caption generation limit. Please subscribe to continue.',
+                'upgrade_required' => true,
+                'errors' => $e->errors(),
+            ], 403);
+        }
 
         $image = $request->file('image');
 
@@ -159,14 +181,6 @@ class CaptionController extends Controller
         ];
 
         $imagePath = $image->store('caption-images', 'public');
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthenticated.',
-            ], 401);
-        }
 
 
         $generation = $request->user()->captionGenerations()->create([
@@ -182,6 +196,7 @@ class CaptionController extends Controller
         foreach ($captions as $caption) {
             $generation->captions()->create($caption);
         }
+        app(UsageLimitService::class)->increment($user, 'caption');
 
         return response()->json([
             'success' => true,
@@ -193,5 +208,22 @@ class CaptionController extends Controller
                 'image_url' => asset('storage/' . $imagePath),
             ],
         ]);
+
     }
+    public function myPlan(Request $request)
+    {
+        $subscription = $request->user()
+            ->activeSubscription()
+            ->with('plan')
+            ->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'plan' => isset($subscription->plan->name) ? $subscription->plan->name : 'free',
+                'is_premium' => strtolower(isset($subscription->plan->name) ? $subscription->plan->name : 'free') === 'pro',
+            ],
+        ]);
+    }
+
 }

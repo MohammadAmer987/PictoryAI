@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\CaptionGeneration;
 use Illuminate\Http\Request;
+use App\Models\Caption;
 
 class HistoryController extends Controller
 {
@@ -48,4 +49,8 @@ class HistoryController extends Controller
             })->values(),
         ]);
     }
+
+
+
+
 }
