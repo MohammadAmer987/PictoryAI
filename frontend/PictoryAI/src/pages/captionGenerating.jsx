@@ -53,10 +53,21 @@ function CaptionGenerating() {
 
       if (formData.imageFile) {
         formPayload.append('image', formData.imageFile);
+      }else if (!formData.imageFile) {
+        setResults([
+          {
+            type: 'Error',
+            content: 'Please upload an image',
+          },
+        ]);
+        return;
       }
 
       const token = localStorage.getItem('access_token');
 
+      for (let pair of formPayload.entries()) {
+        console.log(pair[0], pair[1]);
+      }
       const response = await fetch(
           'http://127.0.0.1:8000/api/captions/generate',
           {
@@ -89,16 +100,22 @@ function CaptionGenerating() {
         return;
       }
 
+
+      console.log('STATUS:', response.status);
+      console.log('FULL RESPONSE:', data);
+
       if (!response.ok || !data.success) {
         setResults([
           {
             type: 'Error',
             icon: 'bi-exclamation-triangle-fill',
-            content: data.message || 'Failed to generate captions.',
+            content:
+                data.message ||
+                (data.errors ? JSON.stringify(data.errors, null, 2) : '') ||
+                'Failed to generate captions.',
             tags: ['Try Again'],
           },
         ]);
-
         return;
       }
 

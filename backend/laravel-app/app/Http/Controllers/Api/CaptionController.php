@@ -89,7 +89,7 @@ class CaptionController extends Controller
             ->timeout(120)
             ->connectTimeout(30)
             ->post('https://router.huggingface.co/v1/chat/completions', [
-                'model' => 'Qwen/Qwen3-VL-8B-Instruct',
+                'model' => 'Qwen/Qwen3-VL-8B-Instruct:cheapest',
                 'messages' => [
                     [
                         'role' => 'user',

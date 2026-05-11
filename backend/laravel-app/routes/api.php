@@ -45,6 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/plans', [PlanController::class, 'index']);
 Route::get('/plans/{id}', [PlanController::class, 'show']);
 
+
+Route::get('/history/images', [HistoryController::class, 'images'])
+    ->middleware('auth:sanctum');
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/history/captions', [HistoryController::class, 'captions']);
 });
