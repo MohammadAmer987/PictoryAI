@@ -8,6 +8,8 @@ function ContentStudioTabs({
                              onTabChange,
                              images = [],
                              captions = [],
+                             onDeleteImageGroup,
+                             onDeleteCaptionGroup,
                            }) {
   const [displayTab, setDisplayTab] = useState(activeTab);
   const [isVisible, setIsVisible] = useState(true);
@@ -55,9 +57,15 @@ function ContentStudioTabs({
             }`}
         >
           {displayTab === 'images' ? (
-              <ImagesGrid images={images} />
+              <ImagesGrid
+                  images={images}
+                  onDeleteGroup={onDeleteImageGroup}
+              />
           ) : (
-              <CaptionsList captions={captions} />
+              <CaptionsList
+                  captions={captions}
+                  onDeleteGroup={onDeleteCaptionGroup}
+              />
           )}
         </div>
       </Container>

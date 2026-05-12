@@ -52,6 +52,71 @@ function ContentStudioPage() {
     fetchHistory();
   }, []);
 
+  const handleDeleteCaptionGroup = async (groupId) => {
+    const confirmed = window.confirm('Delete this caption group from history?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('access_token');
+
+      const response = await fetch(`http://127.0.0.1:8000/api/history/captions/${groupId}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to delete caption group.');
+      }
+
+      setCaptions((current) => current.filter((group) => group.id !== groupId));
+    } catch (error) {
+      console.error('Failed to delete caption group:', error);
+      window.alert('Could not delete this caption group. Please try again.');
+    }
+  };
+
+  const handleDeleteImageGroup = async (item) => {
+    const confirmed = window.confirm('Delete this image group from history?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('access_token');
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/history/images/${item.type}/${item.request_id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to delete image group.');
+      }
+
+      setImages((current) => current.filter((image) => image.id !== item.id));
+    } catch (error) {
+      console.error('Failed to delete image group:', error);
+      window.alert('Could not delete this image group. Please try again.');
+    }
+  };
+
   const getItemDate = (item) => item.date || item.created_at;
 
   const sortItems = (items) => {
@@ -154,33 +219,10 @@ function ContentStudioPage() {
                 onTabChange={setActiveTab}
                 images={filteredImages}
                 captions={filteredCaptions}
+                onDeleteImageGroup={handleDeleteImageGroup}
+                onDeleteCaptionGroup={handleDeleteCaptionGroup}
             />
         )}
-
-        <div className="studio-upgrade-banner mt-4 mb-4 pt-7">
-          <div className="studio-upgrade-content">
-            <div className="studio-upgrade-icon">
-              <i className="bi bi-stars"></i>
-            </div>
-
-            <div className="studio-upgrade-text">
-              <span className="studio-upgrade-badge">Upgrade to Pro</span>
-              <h5 className="mb-2">Unlock up to 100 saved creations</h5>
-              <p className="mb-0">
-                Upgrade your plan to save more images and captions, remove limits,
-                and enjoy a smoother content workflow.
-              </p>
-            </div>
-
-            <button
-                className="studio-upgrade-btn"
-                onClick={() => navigate('/pricing')}
-            >
-              Subscribe Now
-              <i className="bi bi-arrow-right-short ms-1"></i>
-            </button>
-          </div>
-        </div>
       </div>
   );
 }
