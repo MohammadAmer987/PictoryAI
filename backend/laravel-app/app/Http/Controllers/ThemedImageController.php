@@ -135,7 +135,6 @@ class ThemedImageController extends Controller
             foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([
                     'image_path'   => $url,
-                    'result_order' => $index + 1,
                 ]);
             }
 
