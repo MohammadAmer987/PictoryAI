@@ -21,6 +21,20 @@ Route::post('/image-edit', [ImageEditController::class, 'edit'])->middleware('au
 
 Route::post('/image-theme', [ThemedImageController::class, 'edit'])->middleware('auth:sanctum');
 
+Route::middleware('auth:sanctum')->get('/user/subscription', function (Request $request) {
+    $user = $request->user();
+
+    $subscription = \App\Models\Subscription::where('user_id', $user->id)
+        ->latest('start_date')
+        ->first();
+
+    $isPro = $subscription && $subscription->plan_id === 2;
+
+    return response()->json([
+        'isPro' => $isPro,
+    ]);
+});
+
 Route::post('/generate-image', [ImageGeneratorController::class, 'generate']); // ميزتك هنا
 
 Route::middleware('auth:sanctum')->group(function () {

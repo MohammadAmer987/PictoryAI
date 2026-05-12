@@ -10,6 +10,8 @@ class ImageEditController extends Controller
 {
     public function edit(Request $request)
     {
+        set_time_limit(0);
+
         $validator = Validator::make($request->all(), [
             'image'                => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
             'product_name'         => 'required|string|max:255',
