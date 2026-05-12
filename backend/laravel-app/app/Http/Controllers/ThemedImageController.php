@@ -10,6 +10,8 @@ class ThemedImageController extends Controller
 {
     public function edit(Request $request)
     {
+        set_time_limit(0);
+
         $validator = Validator::make($request->all(), [
             'image'                => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
             'theme'                => 'required|string|max:255',
@@ -55,6 +57,19 @@ class ThemedImageController extends Controller
             $mimeType     = $imageFile->getMimeType() ?? 'image/jpeg';
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
+
+            $sizeMapping = [
+                '1:1'   => 'square_hd',
+                '16:9'  => 'landscape_16_9',
+                '9:16'  => 'portrait_16_9',
+                '4:5'   => 'portrait_4_5',
+                '3:4'   => 'portrait_4_5',
+            ];
+
+            $userSize = $request->input('image_size', '1:1');
+            $falImageSize = $sizeMapping[$userSize] ?? 'square_hd';
+
+
             $prompt = $this->buildThemeImagePrompt($request);
 
             $submitResponse = Http::withHeaders([
@@ -66,8 +81,11 @@ class ThemedImageController extends Controller
                 ->post('https://queue.fal.run/fal-ai/flux-pro/kontext', [
                     'image_url'      => $imageDataUri,
                     'prompt'         => $prompt,
+                    'image_size'     => $falImageSize,
+                    'aspect_ratio'   => $request->input('image_size'),
                     'guidance_scale' => 3.5,
-                    'seed'           => null,
+                    'num_images'     => 1,
+                    'enable_safety_checker' => true,
                     'output_format'  => 'jpeg',
                 ]);
 
@@ -117,7 +135,6 @@ class ThemedImageController extends Controller
             foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([
                     'image_path'   => $url,
-                    'result_order' => $index + 1,
                 ]);
             }
 
@@ -152,106 +169,137 @@ class ThemedImageController extends Controller
         $imageSize = trim((string)$request->input('image_size', '1:1'));
 
         $secondaryText = $this->getSecondaryText($theme);
+        $themeConfig = $this->getThemeConfig($theme);
 
-        $productSubject = "A premium luxury product (hero object)";
+        // Product: preserve identity but allow quality enhancement
+        $prompt = "PRODUCT: The reference product may be a low-quality or non-professional photo. ";
+        $prompt .= "Re-render it with clean crisp edges, professional studio-quality finish, accurate label clarity, and natural material textures. ";
+        $prompt .= "PRESERVE EXACTLY: the product shape, label design, brand colors, and overall form. Do NOT change the product identity. ";
 
-        $prompt = "CORE SUBJECT: One single {$productSubject} placed directly on the floor surface. ";
-        $prompt .= "PLACEMENT: No pedestal, no stand. The product sits naturally on the ground with realistic soft contact shadows and subtle reflections. ";
-        $prompt .= "PROPORTIONS: The product is large and central, occupying 55-60% of the vertical frame, with clear empty space in the upper third for text. ";
+        // Replace background with themed scene
+        $prompt .= "BACKGROUND: Completely replace the entire background and environment with a dramatic luxury marketing scene. ";
+        $prompt .= "SCENE ELEMENTS: Naturally place these themed decorative elements around the product: {$themeConfig['elements']}. ";
+        $prompt .= "SURFACE: Place the product on {$themeConfig['surface']}. Natural contact shadow underneath. No pedestal. ";
+        $prompt .= "ATMOSPHERE: {$themeConfig['atmosphere']}. ";
+        $prompt .= "LIGHTING: {$themeConfig['lighting']}. ";
 
-        switch ($theme) {
-            case "Ramadan":
-            case "Eid al-Fitr":
-                $prompt .= "BACKGROUND: A dark navy blue floor reflecting the glow of lanterns. Hyper-detailed night sky with shimmering stars. Detailed golden lanterns with intricate filigree patterns hanging at various heights. A large, glowing golden crescent moon and stars suspended. Intricate Arabic geometric patterns decorate the lower corners of the wall. Magical glowing particles in the air.";
-                break;
-
-            case "Christmas":
-                $prompt .= "BACKGROUND: A rich, matte red floor. The scene is densely framed by highly detailed, lush pine branches at the top and bottom. Hyper-realistic red and silver ornaments with fine textures scattered on the floor and hanging. Tiny, sharp ice crystals and soft snow particles floating in the air. Warm, festive studio lighting.";
-                break;
-
-            case "Black Friday":
-                $prompt .= "BACKGROUND: A polished black marble floor with sharp reflections. Dark textured charcoal marble wall. Complex explosion of 3D elements: floating matte gold spheres, transparent glass bubbles, gold '$' and '%' symbols, and miniature luxury shopping bags with detailed handles. High-contrast neon-edge lighting.";
-                break;
-
-            case "Valentine's Day":
-                $prompt .= "BACKGROUND: A soft pink satin-finish floor. Clean pink wall with sharp artistic shadows of botanical leaves. Dozens of red paper hearts of varying sizes hanging on invisible threads. Large hyper-detailed clusters of pink magnolia flowers and roses framing the product on left and right. Soft romantic bokeh.";
-                break;
-
-            case "Eid al-Adha":
-                $prompt .= "BACKGROUND: A light stone-textured floor. Beige wall with a massive, deeply carved 3D mandala pattern. Rustic rope with small detailed wooden sheep carvings and star medallions draped across. High-detail bowls of glossy dates and traditional prayer bead (Subha) with visible textures in the foreground.";
-                break;
-
-            case "Graduation":
-                $prompt .= "BACKGROUND: A dark reflective navy floor. Majestic night blue background with sharp God-rays of light beaming from the top. A detailed graduation mortarboard (cap) with silk tassel and a rolled parchment diploma with gold ribbon are placed on the floor next to the product. Glittering gold particles fill the atmosphere. Inspiring and elegant academic mood.";
-                break;
-
-            case "New Year":
-                $prompt .= "BACKGROUND: A dark polished wood floor. Behind the product is a small vibrant green fir tree with tiny red balls. The entire upper background is filled with massive multi-colored fireworks exploding with sharp light trails. Warm golden bokeh lights (fairy lights) draped in the background. High-energy celebratory mood.";
-                break;
-
-            case "Mother's Day":
-                $prompt .= "BACKGROUND: Soft luxurious pastel pink studio setting. On the elegant light pink wall behind the product. ";
-                $prompt .= "Beautiful branches of blooming pink and white magnolia flowers with highly detailed petals and green leaves gracefully framing the left and right sides of the scene. Several delicate fallen magnolia petals scattered naturally on the floor around the product. ";
-                $prompt .= "Soft dreamy cinematic lighting with gentle warm rays, subtle heart-shaped bokeh, elegant and emotional luxury atmosphere, high-end commercial photography style.";
-                break;
-
-
-            case "Back to School":
-                $prompt .= "BACKGROUND: A light yellow floor meeting a deep blue chalkboard wall. The background features hand-drawn educational sketches in white chalk. A massive array of hyper-detailed school supplies including a stack of vintage books, sharp pencils, rulers, a compass, and a small globe artistically arranged on the floor around the product. Bright crisp natural lighting.";
-                break;
-        }
-
-        // ✍️ النص الرئيسي + النص الثانوي
+        // Optional text overlay
         if (!empty($userText)) {
-            $prompt .= " OVERLAY TEXT: In the upper third of the image, VERY LARGE bold premium elegant luxurious minimalist font with the exact text '{$userText}' in bright elegant white color with subtle gold outline or soft glow. ";
-
-            $prompt .= "Directly below the main text, SMALLER elegant sophisticated font with the exact text '{$secondaryText}' in soft pastel gold or warm cream color, perfectly centered and well-spaced. ";
-
-            $prompt .= "The two texts have clear color contrast between them. Main text is brighter and more prominent, secondary text is softer and more delicate. Both texts are highly readable, with subtle soft glow and drop shadow for excellent clarity, positioned with generous clean space above the product, no overlap.";
+            $prompt .= "TEXT: Show '{$userText}' in large bold luxury serif font at the top. ";
+            if (!empty($secondaryText)) {
+                $prompt .= "Below it show '{$secondaryText}' in smaller elegant font. ";
+            }
+            $prompt .= "White text with subtle glow. Centered. Never touching the product. ";
         }
 
-        $prompt .= " TECHNICAL SPECS: Aspect ratio {$imageSize}. Tack-sharp focus on the product. Hyper-realistic textures, cinematic lighting, ray-tracing reflections on the floor, 8K resolution, commercial luxury product photography style, highly legible text with good color contrast, masterpiece.";
+        // Style
+        $prompt .= "STYLE: Luxury high-end commercial advertisement. ";
+        $prompt .= "Cinematic color grading with RICH DEEP COLORS. ";
+        $prompt .= "STRONG contrast between bright highlights and deep dark shadows. ";
+        $prompt .= "Vivid saturated colors. Dramatic mood lighting. Bokeh background elements. ";
+        $prompt .= "Shot on Hasselblad medium format camera. ";
+        $prompt .= "QUALITY: 8K ultra sharp, ray-traced reflections, aspect ratio {$imageSize}.";
 
         return trim(preg_replace('/\s+/', ' ', $prompt));
     }
+    private function getThemeConfig(string $theme): array
+    {
+        $configs = [
+            "Christmas" => [
+                "elements" => "Christmas tree, wrapped gift boxes, golden baubles and ornaments, pine cones, candy canes, string lights, falling snowflakes, red ribbons, holly leaves with red berries",
+                "surface"  => "snow-dusted wooden surface with pine needle sprigs scattered around",
+                "atmosphere" => "cozy festive winter night atmosphere, light snow particles in the air",
+                "lighting" => "warm golden candlelight mixed with twinkling string light bokeh",
+            ],
 
-    /**
-     * النص الثانوي حسب الثيم
-     */
+            "Ramadan" => [
+                "elements" => "ornate crescent moon and star, decorative lanterns (fanoos), geometric Islamic pattern tiles, prayer beads (misbaha), dates and dried figs in a decorative bowl, hanging fabric with geometric embroidery, mosque silhouette in background",
+                "surface"  => "richly decorated Arabic mosaic tiles with geometric patterns",
+                "atmosphere" => "peaceful evening atmosphere, soft crescent moon glow in background",
+                "lighting" => "warm amber glow from multiple ornate lanterns, soft candlelight accents",
+            ],
+
+            "Eid al-Fitr" => [
+                "elements" => "ornate fanoos lanterns, crescent moon, scattered rose petals, gift boxes wrapped in luxurious fabric, decorative sweets and ma'amoul cookies on a platter, string lights, silk ribbons, traditional embroidered fabric",
+                "surface"  => "polished marble surface with scattered rose petals and gold coins",
+                "atmosphere" => "joyful celebratory evening, golden hour glow, festive and elegant",
+                "lighting" => "rich golden celebratory light, lantern bokeh in background, warm and glowing",
+            ],
+
+            "Eid al-Adha" => [
+                "elements" => "crescent moon and stars, ornate geometric patterns, lush green and gold decorative elements, incense burner (mabkhara), traditional Arabic coffee set (dallah), scattered rose water petals, ornate Islamic geometric tiles",
+                "surface"  => "carved stone surface with Arabic geometric engravings",
+                "atmosphere" => "majestic sacred atmosphere, warm desert sunset tones in background",
+                "lighting" => "deep golden warm light, dramatic directional shadows, rich jewel tones",
+            ],
+
+            "Valentine's Day" => [
+                "elements" => "scattered red and pink rose petals, long stem red roses, floating heart shapes, small gift box with satin ribbon, candles, dried eucalyptus sprigs, pearl accents",
+                "surface"  => "dark velvet surface scattered with rose petals and pearl drops",
+                "atmosphere" => "intimate romantic atmosphere, soft dreamy bokeh, elegant and passionate",
+                "lighting" => "soft warm candlelight, gentle pink and red tones, gentle flare effects",
+            ],
+
+            "Black Friday" => [
+                "elements" => "scattered shopping bags with logos, floating price tags and discount ribbons, stack of cash and gold coins, lightning bolt graphic elements, bold geometric shapes, sparkling confetti particles",
+                "surface"  => "sleek high-gloss black lacquered surface with reflection",
+                "atmosphere" => "high-energy bold commercial atmosphere, powerful and exciting",
+                "lighting" => "dramatic studio lighting, strong edge highlights, bright direct beam on product",
+            ],
+
+            "New Year" => [
+                "elements" => "exploding fireworks bursts, gold and silver confetti rain, champagne flutes, glitter dust, countdown clock, celebratory ribbon streamers, glowing sparklers, floating balloons",
+                "surface"  => "reflective black glass surface catching firework reflections and confetti",
+                "atmosphere" => "euphoric midnight celebration atmosphere, sparkle and energy everywhere",
+                "lighting" => "brilliant multicolor firework light bursts, silver and gold glitter light rays",
+            ],
+
+            "Graduation" => [
+                "elements" => "graduation cap (mortarboard) with tassel, rolled diploma with gold ribbon, scattered confetti, academic laurel wreaths, golden star elements, open book, floating graduation caps in background",
+                "surface"  => "polished wooden surface with scattered confetti and gold star shapes",
+                "atmosphere" => "triumphant celebratory atmosphere, achievement and pride, uplifting",
+                "lighting" => "bright optimistic daylight feel, golden sunrays, warm celebration tones",
+            ],
+
+            "Mother's Day" => [
+                "elements" => "fresh blooming flowers (peonies, tulips, roses), wrapped gift with satin bow, heart shaped elements, scattered flower petals, elegant ribbon, butterfly accents, soft lace fabric in background",
+                "surface"  => "light pastel surface with scattered fresh flower petals and soft leaves",
+                "atmosphere" => "tender warm and loving atmosphere, soft spring morning feel, gentle and elegant",
+                "lighting" => "soft diffused spring light, gentle warm tones, beautiful flower bokeh",
+            ],
+
+            "Back to School" => [
+                "elements" => "stack of textbooks, pencils and colored markers, ruler and compass, apple, open notebook with pages, backpack, small globe, paper plane",
+                "surface"  => "wooden school desk surface with scattered pencil shavings and paper scraps",
+                "atmosphere" => "fresh energetic new beginning atmosphere, youthful and optimistic",
+                "lighting" => "bright clear morning daylight, clean crisp shadows, vibrant and sharp",
+            ],
+        ];
+
+        return $configs[$theme] ?? [
+            "elements"   => "elegant abstract luxury decorative elements, gold geometric shapes, scattered light particles",
+            "surface"    => "polished dark surface with subtle reflection",
+            "atmosphere" => "premium luxury commercial atmosphere",
+            "lighting"   => "dramatic studio lighting with sharp highlights",
+        ];
+    }
+
     private function getSecondaryText(string $theme): string
     {
-        switch ($theme) {
-            case "Ramadan":
-            case "Eid al-Fitr":
-                return "Happy Eid";
+        $texts = [
+            "Ramadan"       => "Ramadan Kareem",
+            "Eid al-Fitr"   => "Happy Eid",
+            "Eid al-Adha"   => "Happy Eid Al-Adha",
+            "Christmas"     => "Merry Christmas",
+            "Valentine's Day" => "With Love",
+            "Black Friday"  => "Exclusive Offer",
+            "Graduation"    => "Class of 2026",
+            "New Year"      => "Happy New Year",
+            "Mother's Day"  => "Happy Mother's Day",
+            "Back to School" => "Ready to Learn",
+        ];
 
-            case "Eid al-Adha":
-                return "Happy Eid Al-Adha";
-
-            case "Christmas":
-                return "Happy Christmas";
-
-            case "Valentine's Day":
-                return "Happy Valentine's Day";
-
-            case "Black Friday":
-                return "Big Sale";
-
-            case "Graduation":
-                return "Congratulations";
-
-            case "New Year":
-                return "Happy New Year";
-
-            case "Mother's Day":
-                return "Happy Mother's Day";
-
-            case "Back to School":
-                return "Ready for a Great Year";
-
-            default:
-                return "";
-        }
+        return $texts[$theme] ?? "";
     }
 
     private function pollFalResult(string $statusUrl, string $responseUrl, string $falKey): array

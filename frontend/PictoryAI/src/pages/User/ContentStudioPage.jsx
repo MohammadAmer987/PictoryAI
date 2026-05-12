@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import ContentStudioHeader from '../../components/history/ContentStudioHeader';
 import ContentStudioTabs from '../../components/history/ContentStudioTabs';
 
@@ -9,173 +10,152 @@ function ContentStudioPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortValue, setSortValue] = useState('newest');
   const [activeTab, setActiveTab] = useState('images');
+  const [imageFilter, setImageFilter] = useState('all');
+  const [captionToneFilter, setCaptionToneFilter] = useState('all');
+  const [captionLanguageFilter, setCaptionLanguageFilter] = useState('all');
 
-  const images = [
-    {
-      id: 1,
-      title: 'Luxury Perfume',
-      date: '2026-03-26',
-      image:
-          'https://public.readdy.ai/ai/img_res/82e5f16e5fd8563db999f5172681577c.jpg',
-    },
-    {
-      id: 2,
-      title: 'Skincare Cream',
-      date: '2026-03-25',
-      image:
-          'https://public.readdy.ai/ai/img_res/df5453ce4620748905eda45e661c36cc.jpg',
-    },
-    {
-      id: 3,
-      title: 'Designer Handbag',
-      date: '2026-03-24',
-      image:
-          'https://public.readdy.ai/ai/img_res/47e074084f622cb7976a9191d2236ff7.jpg',
-    },
-  ];
+  const [images, setImages] = useState([]);
+  const [captions, setCaptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const captions = [
-    {
-      id: 1,
-      title: 'Luxury Perfume — Ramadan Edition',
-      tone: 'Luxury',
-      language: 'English',
-      date: '2026-04-05',
-      items: [
-        {
-          type: 'Short',
-          text: 'Elevate your senses with every drop. ✨',
-        },
-        {
-          type: 'Promotional',
-          text: 'Discover a refined fragrance crafted to leave a lasting impression with every moment.',
-        },
-        {
-          type: 'Friendly',
-          text: 'Looking for a scent that feels elegant and unforgettable? This one is made for you 💫',
-        },
-        {
-          type: 'Luxury',
-          text: 'A fragrance designed for timeless elegance, depth, and pure sophistication.',
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: 'Organic Face Serum',
-      tone: 'Professional',
-      language: 'English',
-      date: '2026-04-04',
-      items: [
-        {
-          type: 'Short',
-          text: 'Healthy glow starts here.',
-        },
-        {
-          type: 'Promotional',
-          text: 'Give your skin the care it deserves with a serum designed to nourish, hydrate, and restore radiance.',
-        },
-        {
-          type: 'Friendly',
-          text: 'Your skincare routine just found its new favorite step 🌿',
-        },
-        {
-          type: 'Luxury',
-          text: 'A premium serum crafted to enhance radiance with a refined, lightweight formula.',
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: 'كريم العناية الصيفي',
-      tone: 'Friendly',
-      language: 'Arabic',
-      date: '2026-04-03',
-      items: [
-        {
-          type: 'Short',
-          text: 'بشرتك تستحق الأفضل هذا الصيف! 🌿',
-        },
-        {
-          type: 'Promotional',
-          text: 'تركيبة خفيفة ومنعشة تمنح بشرتك ترطيبًا ونعومة تدوم طوال اليوم.',
-        },
-        {
-          type: 'Friendly',
-          text: 'خلي بشرتك مرتاحة ومنتعشة بكل طلعة ☀️',
-        },
-        {
-          type: 'Luxury',
-          text: 'عناية فاخرة تمنح بشرتك إشراقة ناعمة ولمسة راقية في كل استخدام.',
-        },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+
+        const token = localStorage.getItem('access_token');
+
+        const headers = {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        };
+
+        const [captionsResponse, imagesResponse] = await Promise.all([
+          fetch('http://127.0.0.1:8000/api/history/captions', { headers }),
+          fetch('http://127.0.0.1:8000/api/history/images', { headers }),
+        ]);
+
+        const captionsResult = await captionsResponse.json();
+        const imagesResult = await imagesResponse.json();
+
+        setCaptions(captionsResult.success ? captionsResult.data : []);
+        setImages(imagesResult.success ? imagesResult.data : []);
+      } catch (error) {
+        console.error('Failed to fetch history:', error);
+        setCaptions([]);
+        setImages([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
+
+  const getItemDate = (item) => item.date || item.created_at;
 
   const sortItems = (items) => {
     const sorted = [...items];
 
     switch (sortValue) {
       case 'oldest':
-        return sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
+        return sorted.sort(
+            (a, b) => new Date(getItemDate(a)) - new Date(getItemDate(b))
+        );
 
       case 'az':
-        return sorted.sort((a, b) => a.title.localeCompare(b.title));
+        return sorted.sort((a, b) =>
+            (a.title || '').localeCompare(b.title || '')
+        );
 
       case 'za':
-        return sorted.sort((a, b) => b.title.localeCompare(a.title));
+        return sorted.sort((a, b) =>
+            (b.title || '').localeCompare(a.title || '')
+        );
 
       case 'newest':
       default:
-        return sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return sorted.sort(
+            (a, b) => new Date(getItemDate(b)) - new Date(getItemDate(a))
+        );
     }
   };
 
   const filteredImages = sortItems(
-      images.filter((item) =>
-          item.title.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      images.filter((item) => {
+        const term = searchTerm.toLowerCase();
+        const matchesType = imageFilter === 'all' || item.type === imageFilter;
+
+        const matchesSearch = (
+            item.title?.toLowerCase().includes(term) ||
+            item.type?.toLowerCase().includes(term) ||
+            item.details?.theme?.toLowerCase().includes(term) ||
+            item.details?.project_name?.toLowerCase().includes(term) ||
+            item.details?.content?.toLowerCase().includes(term) ||
+            item.details?.style_type?.toLowerCase().includes(term)
+        );
+
+        return matchesType && matchesSearch;
+      })
   );
 
   const filteredCaptions = sortItems(
       captions.filter((item) => {
         const term = searchTerm.toLowerCase();
+        const matchesTone =
+            captionToneFilter === 'all' ||
+            item.tone?.toLowerCase() === captionToneFilter;
+        const matchesLanguage =
+            captionLanguageFilter === 'all' ||
+            item.language?.toLowerCase() === captionLanguageFilter;
 
         const matchesMainFields =
-            item.title.toLowerCase().includes(term) ||
-            item.tone.toLowerCase().includes(term) ||
-            item.language.toLowerCase().includes(term);
+            item.title?.toLowerCase().includes(term) ||
+            item.tone?.toLowerCase().includes(term) ||
+            item.language?.toLowerCase().includes(term);
 
-        const matchesCaptionText = item.items.some((caption) =>
-            caption.text.toLowerCase().includes(term)
-        );
+        const matchesCaptionItems = item.items?.some((caption) => {
+          return (
+              caption.type?.toLowerCase().includes(term) ||
+              caption.text?.toLowerCase().includes(term)
+          );
+        });
 
-        return matchesMainFields || matchesCaptionText;
+        return matchesTone && matchesLanguage && (matchesMainFields || matchesCaptionItems);
       })
   );
 
   return (
       <div className="pb-3">
         <ContentStudioHeader
+            activeTab={activeTab}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             sortValue={sortValue}
             onSortChange={setSortValue}
+            imageFilter={imageFilter}
+            onImageFilterChange={setImageFilter}
+            captionToneFilter={captionToneFilter}
+            onCaptionToneFilterChange={setCaptionToneFilter}
+            captionLanguageFilter={captionLanguageFilter}
+            onCaptionLanguageFilterChange={setCaptionLanguageFilter}
             totalImages={images.length}
             totalCaptions={captions.length}
         />
 
-
-
-        <ContentStudioTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            images={filteredImages}
-            captions={filteredCaptions}
-        />
-
-
-
+        {loading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border" role="status"></div>
+              <p className="mt-3 text-secondary">Loading history...</p>
+            </div>
+        ) : (
+            <ContentStudioTabs
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                images={filteredImages}
+                captions={filteredCaptions}
+            />
+        )}
 
         <div className="studio-upgrade-banner mt-4 mb-4 pt-7">
           <div className="studio-upgrade-content">

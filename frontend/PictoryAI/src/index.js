@@ -25,6 +25,7 @@ import './css/inhance_img/InhanceImgPage.css'
 import ThemeImgPage from "./pages/ThemeImgPage";
 import './css/theme_img/ThemeImgPage.css'
 import SubscriptionPage from "./components/SubscriptionPage";
+
 function App() {
     const navigate = useNavigate();
 async function handleLogout() {
@@ -53,9 +54,7 @@ React.useEffect(() => {
         <>
             <Navbar user={user} onNavigate={(route) => navigate(route)}   onLogout={handleLogout} onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}
  />
-            <Routes>
-                ...
-            </Routes>
+
             <Routes>
                 <Route path="/" element={
                     <>

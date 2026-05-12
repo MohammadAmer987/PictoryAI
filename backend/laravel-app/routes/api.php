@@ -5,17 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CaptionController;
 use App\Http\Controllers\Api\AuthController;
 
-use App\Http\Controllers\ImageGeneratorControllerFixed; // من برانش Rahaf
-use App\Http\Controllers\ImageEditController;      // تأكدي من المسار الصحيح
-
-
-
+use App\Http\Controllers\ImageGeneratorControllerFixed;
 use App\Http\Controllers\ImageEditController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ThemedImageController;
-
-
-
-
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ProfileController;
@@ -28,10 +21,25 @@ Route::post('/image-edit', [ImageEditController::class, 'edit'])->middleware('au
 
 Route::post('/image-theme', [ThemedImageController::class, 'edit'])->middleware('auth:sanctum');
 
+Route::middleware('auth:sanctum')->get('/user/subscription', function (Request $request) {
+    $user = $request->user();
+
+    $subscription = \App\Models\Subscription::where('user_id', $user->id)
+        ->latest('start_date')
+        ->first();
+
+    $isPro = $subscription && $subscription->plan_id === 2;
+
+    return response()->json([
+        'isPro' => $isPro,
+    ]);
+});
+
 Route::post('/generate-image', [ImageGeneratorController::class, 'generate']); // ميزتك هنا
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/captions/generate', [CaptionController::class, 'generate']);
+    Route::get('/captions/my-plan', [CaptionController::class, 'myPlan']);
 });
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -50,3 +58,14 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::get('/plans', [PlanController::class, 'index']);
 Route::get('/plans/{id}', [PlanController::class, 'show']);
+
+
+Route::get('/history/images', [HistoryController::class, 'images'])
+    ->middleware('auth:sanctum');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/history/captions', [HistoryController::class, 'captions']);
+});
+
+
