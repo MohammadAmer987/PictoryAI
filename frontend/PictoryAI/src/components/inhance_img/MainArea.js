@@ -119,7 +119,7 @@ function MainArea({ isPro, isReady, settings }) {
     };
 
     return (
-        <div className="main-area">
+        <div className="main-area mb-5">
 
             {/* Top row */}
             <div className="top-row">
