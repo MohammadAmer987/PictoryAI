@@ -7,9 +7,26 @@ use App\Models\CaptionGeneration;
 use Illuminate\Http\Request;
 use App\Models\Caption;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class HistoryController extends Controller
 {
+    private function sanitizeImagePaths(array $paths): array
+    {
+        return array_values(array_filter($paths, function ($path) {
+            return is_string($path) && trim($path) !== '';
+        }));
+    }
+
+    private function resolveOriginalImageUrl(?string $sourceImage): ?string
+    {
+        if (!$sourceImage || !Storage::disk('public')->exists($sourceImage)) {
+            return null;
+        }
+
+        return asset('storage/' . $sourceImage);
+    }
+
     public function captions(Request $request)
     {
         $user = $request->user();
@@ -59,11 +76,11 @@ class HistoryController extends Controller
             ->where('user_id', $userId)
             ->get()
             ->map(function ($req) {
-                $responses = DB::table('enhance_image_responses')
+                $responses = $this->sanitizeImagePaths(DB::table('enhance_image_responses')
                     ->where('request_id', $req->id)
                     ->orderBy('result_order')
                     ->pluck('image_path')
-                    ->toArray();
+                    ->toArray());
 
                 if (empty($responses)) {
                     return null;
@@ -74,7 +91,7 @@ class HistoryController extends Controller
                     'request_id' => $req->id,
                     'type' => 'enhance',
                     'title' => 'Enhanced Image',
-                    'original_image' => asset('storage/' . $req->source_image),
+                    'original_image' => $this->resolveOriginalImageUrl($req->source_image),
                     'images' => $responses,
                     'details' => [
                         'product_name' => $req->product_name,
@@ -94,10 +111,11 @@ class HistoryController extends Controller
             ->where('user_id', $userId)
             ->get()
             ->map(function ($req) {
-                $responses = DB::table('themed_image_responses')
+                $responses = $this->sanitizeImagePaths(DB::table('themed_image_responses')
                     ->where('request_id', $req->id)
+                    ->orderBy('id')
                     ->pluck('image_path')
-                    ->toArray();
+                    ->toArray());
 
                 if (empty($responses)) {
                     return null;
@@ -108,7 +126,7 @@ class HistoryController extends Controller
                     'request_id' => $req->id,
                     'type' => 'theme',
                     'title' => 'Themed Image',
-                    'original_image' => asset('storage/' . $req->source_image),
+                    'original_image' => $this->resolveOriginalImageUrl($req->source_image),
                     'images' => $responses,
                     'details' => [
                         'theme' => $req->theme,
@@ -125,11 +143,11 @@ class HistoryController extends Controller
             ->where('user_id', $userId)
             ->get()
             ->map(function ($req) {
-                $responses = DB::table('image_generation_responses')
+                $responses = $this->sanitizeImagePaths(DB::table('image_generation_responses')
                     ->where('request_id', $req->id)
                     ->orderBy('result_order')
                     ->pluck('image_path')
-                    ->toArray();
+                    ->toArray());
 
                 if (empty($responses)) {
                     return null;

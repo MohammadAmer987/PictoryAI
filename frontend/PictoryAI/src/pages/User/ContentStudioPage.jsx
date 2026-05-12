@@ -9,7 +9,10 @@ function ContentStudioPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortValue, setSortValue] = useState('newest');
-  const [activeTab, setActiveTab] = useState('captions');
+  const [activeTab, setActiveTab] = useState('images');
+  const [imageFilter, setImageFilter] = useState('all');
+  const [captionToneFilter, setCaptionToneFilter] = useState('all');
+  const [captionLanguageFilter, setCaptionLanguageFilter] = useState('all');
 
   const [images, setImages] = useState([]);
   const [captions, setCaptions] = useState([]);
@@ -81,8 +84,9 @@ function ContentStudioPage() {
   const filteredImages = sortItems(
       images.filter((item) => {
         const term = searchTerm.toLowerCase();
+        const matchesType = imageFilter === 'all' || item.type === imageFilter;
 
-        return (
+        const matchesSearch = (
             item.title?.toLowerCase().includes(term) ||
             item.type?.toLowerCase().includes(term) ||
             item.details?.theme?.toLowerCase().includes(term) ||
@@ -90,12 +94,20 @@ function ContentStudioPage() {
             item.details?.content?.toLowerCase().includes(term) ||
             item.details?.style_type?.toLowerCase().includes(term)
         );
+
+        return matchesType && matchesSearch;
       })
   );
 
   const filteredCaptions = sortItems(
       captions.filter((item) => {
         const term = searchTerm.toLowerCase();
+        const matchesTone =
+            captionToneFilter === 'all' ||
+            item.tone?.toLowerCase() === captionToneFilter;
+        const matchesLanguage =
+            captionLanguageFilter === 'all' ||
+            item.language?.toLowerCase() === captionLanguageFilter;
 
         const matchesMainFields =
             item.title?.toLowerCase().includes(term) ||
@@ -109,17 +121,24 @@ function ContentStudioPage() {
           );
         });
 
-        return matchesMainFields || matchesCaptionItems;
+        return matchesTone && matchesLanguage && (matchesMainFields || matchesCaptionItems);
       })
   );
 
   return (
       <div className="pb-3">
         <ContentStudioHeader
+            activeTab={activeTab}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             sortValue={sortValue}
             onSortChange={setSortValue}
+            imageFilter={imageFilter}
+            onImageFilterChange={setImageFilter}
+            captionToneFilter={captionToneFilter}
+            onCaptionToneFilterChange={setCaptionToneFilter}
+            captionLanguageFilter={captionLanguageFilter}
+            onCaptionLanguageFilterChange={setCaptionLanguageFilter}
             totalImages={images.length}
             totalCaptions={captions.length}
         />
