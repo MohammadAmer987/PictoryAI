@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\CaptionGeneration;
 use Illuminate\Http\Request;
 use App\Models\Caption;
+
+class HistoryController extends Controller
+{
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -67,6 +71,7 @@ class HistoryController extends Controller
             })->values(),
         ]);
     }
+
 
     public function images(Request $request)
     {
@@ -184,5 +189,6 @@ class HistoryController extends Controller
             'data' => $images,
         ]);
     }
+
 
 }
