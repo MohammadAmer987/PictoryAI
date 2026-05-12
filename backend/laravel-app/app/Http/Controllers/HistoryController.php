@@ -11,6 +11,27 @@ use Illuminate\Support\Facades\Storage;
 
 class HistoryController extends Controller
 {
+    private function deleteStoredImage(?string $path): void
+    {
+        if (!$path || !is_string($path)) {
+            return;
+        }
+
+        $normalizedPath = trim($path);
+
+        if ($normalizedPath === '') {
+            return;
+        }
+
+        if (str_starts_with($normalizedPath, 'http://') || str_starts_with($normalizedPath, 'https://')) {
+            return;
+        }
+
+        if (Storage::disk('public')->exists($normalizedPath)) {
+            Storage::disk('public')->delete($normalizedPath);
+        }
+    }
+
     private function sanitizeImagePaths(array $paths): array
     {
         return array_values(array_filter($paths, function ($path) {
@@ -65,6 +86,39 @@ class HistoryController extends Controller
                     })->values(),
                 ];
             })->values(),
+        ]);
+    }
+
+    public function deleteCaptionGroup(Request $request, int $generationId)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated',
+            ], 401);
+        }
+
+        $generation = CaptionGeneration::where('user_id', $user->id)
+            ->where('id', $generationId)
+            ->first();
+
+        if (!$generation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Caption group not found.',
+            ], 404);
+        }
+
+        DB::transaction(function () use ($generation) {
+            Caption::where('caption_generation_id', $generation->id)->delete();
+            $generation->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Caption group deleted successfully.',
         ]);
     }
 
@@ -182,6 +236,92 @@ class HistoryController extends Controller
         return response()->json([
             'success' => true,
             'data' => $images,
+        ]);
+    }
+
+    public function deleteImageGroup(Request $request, string $type, int $requestId)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated',
+            ], 401);
+        }
+
+        $config = [
+            'enhance' => [
+                'request_table' => 'enhance_image_requests',
+                'response_table' => 'enhance_image_responses',
+                'request_key' => 'id',
+                'response_key' => 'request_id',
+                'request_image_column' => 'source_image',
+            ],
+            'theme' => [
+                'request_table' => 'themed_image_requests',
+                'response_table' => 'themed_image_responses',
+                'request_key' => 'id',
+                'response_key' => 'request_id',
+                'request_image_column' => 'source_image',
+            ],
+            'generate' => [
+                'request_table' => 'image_generation_requests',
+                'response_table' => 'image_generation_responses',
+                'request_key' => 'id',
+                'response_key' => 'request_id',
+                'request_image_column' => null,
+            ],
+        ];
+
+        if (!isset($config[$type])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid image history type.',
+            ], 422);
+        }
+
+        $selectedConfig = $config[$type];
+
+        $requestRecord = DB::table($selectedConfig['request_table'])
+            ->where($selectedConfig['request_key'], $requestId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$requestRecord) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Image history record not found.',
+            ], 404);
+        }
+
+        $responseImages = DB::table($selectedConfig['response_table'])
+            ->where($selectedConfig['response_key'], $requestId)
+            ->pluck('image_path')
+            ->toArray();
+
+        DB::transaction(function () use ($selectedConfig, $requestId, $requestRecord, $responseImages) {
+            foreach ($responseImages as $imagePath) {
+                $this->deleteStoredImage($imagePath);
+            }
+
+            $requestImageColumn = $selectedConfig['request_image_column'];
+            if ($requestImageColumn && isset($requestRecord->{$requestImageColumn})) {
+                $this->deleteStoredImage($requestRecord->{$requestImageColumn});
+            }
+
+            DB::table($selectedConfig['response_table'])
+                ->where($selectedConfig['response_key'], $requestId)
+                ->delete();
+
+            DB::table($selectedConfig['request_table'])
+                ->where($selectedConfig['request_key'], $requestId)
+                ->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Image history deleted successfully.',
         ]);
     }
 

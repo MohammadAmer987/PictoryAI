@@ -25,6 +25,7 @@ import './css/inhance_img/InhanceImgPage.css'
 import ThemeImgPage from "./pages/ThemeImgPage";
 import './css/theme_img/ThemeImgPage.css'
 import SubscriptionPage from "./components/SubscriptionPage";
+import ChatBotWidget from "./components/ChatBotWidget";
 
 function App() {
     const navigate = useNavigate();
@@ -87,6 +88,7 @@ React.useEffect(() => {
 
             </Routes>
 
+            <ChatBotWidget />
             <Footerpart />
         </>
     );

@@ -66,6 +66,6 @@ Route::get('/history/images', [HistoryController::class, 'images'])
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/history/captions', [HistoryController::class, 'captions']);
+    Route::delete('/history/captions/{generationId}', [HistoryController::class, 'deleteCaptionGroup']);
+    Route::delete('/history/images/{type}/{requestId}', [HistoryController::class, 'deleteImageGroup']);
 });
-
-

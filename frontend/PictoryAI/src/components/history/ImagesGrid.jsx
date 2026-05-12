@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Row, Col, Card } from "react-bootstrap";
 
-function ImagesGrid({ images = [] }) {
+function ImagesGrid({ images = [], onDeleteGroup }) {
     const [expandedItems, setExpandedItems] = useState({});
 
     const formatDate = (date) => {
@@ -186,6 +186,15 @@ function ImagesGrid({ images = [] }) {
                                         onClick={() => downloadImage(mainImage, title)}
                                     >
                                         <i className="bi bi-download"></i>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="studio-icon-btn"
+                                        title="Delete image group"
+                                        onClick={() => onDeleteGroup?.(item)}
+                                    >
+                                        <i className="bi bi-trash"></i>
                                     </button>
                                 </div>
                             </div>
