@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +19,6 @@ class ImageEditController extends Controller
             'product_description'  => 'nullable|string|max:1000',
 
             'background_type'      => 'required|string|max:500',
-            'background_color'     => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'background_blur'      => 'required|integer|min:0|max:10',
 
             'light_type'           => 'required|string|max:255',
@@ -27,7 +26,6 @@ class ImageEditController extends Controller
 
             'text_on_image'        => 'nullable|string|max:255',
             'text_position'        => 'nullable|string|max:50',
-            'text_color'           => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'text_size'            => 'nullable|integer|min:12|max:100',
 
             'camera_angle'         => 'nullable|string|max:255',
@@ -54,6 +52,30 @@ class ImageEditController extends Controller
             ], 401);
         }
 
+        $subscription = $user->subscriptions()
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+
+        $planId = $subscription?->plan_id ?? 1;
+
+        if ($planId == 1) { // free plan
+            $usageCounter = $user->usageCounters()
+                ->where('type', 'enhance_image')
+                ->where('year', now()->year)
+                ->where('month', now()->month)
+                ->first();
+
+            $used = $usageCounter?->used ?? 0;
+
+            if ($used >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have reached the maximum limit of 3 generations for the free plan.',
+                ], 403);
+            }
+        }
+
         $falKey = config('services.fal.key');
 
         if (!$falKey) {
@@ -76,11 +98,11 @@ class ImageEditController extends Controller
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
             $sizeMapping = [
-                '1:1'   => 'square_hd',
-                '16:9'  => 'landscape_16_9',
-                '9:16'  => 'portrait_16_9',
-                '4:5'   => 'portrait_4_5',
-                '3:4'   => 'portrait_4_5',
+                '1:1'  => 'square_hd',
+                '16:9' => 'landscape_16_9',
+                '9:16' => 'portrait_16_9',
+                '4:5'  => 'portrait_4_3',
+                '3:4'  => 'portrait_4_3',
             ];
 
             $userSize = $request->input('image_ratio', '1:1');
@@ -151,7 +173,6 @@ class ImageEditController extends Controller
                 'product_description' => $request->product_description,
 
                 'background_type'     => $request->background_type,
-                'background_color'    => $request->background_color ?? '#ffffff',
                 'background_blur'     => $request->background_blur,
 
                 'light_type'          => $request->light_type,
@@ -159,7 +180,6 @@ class ImageEditController extends Controller
 
                 'text_on_image'       => $request->text_on_image,
                 'text_position'       => $request->text_position,
-                'text_color'          => $request->text_color,
                 'text_size'           => $request->text_size,
 
                 'camera_angle'        => $request->camera_angle,
@@ -167,6 +187,18 @@ class ImageEditController extends Controller
 
                 'extra_prompt'        => $request->extra_prompt,
             ]);
+
+
+            if ($planId == 1) {
+                $user->usageCounters()->updateOrCreate(
+                    [
+                        'type'  => 'enhance_image',
+                        'year'  => now()->year,
+                        'month' => now()->month,
+                    ],
+                    ['used' => DB::raw('used + 1')]
+                );
+            }
 
             foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([
@@ -204,13 +236,11 @@ class ImageEditController extends Controller
         $audience = trim((string)$request->input('target_audience', ''));
         $description = trim((string)$request->input('product_description', ''));
         $background = trim((string)$request->input('background_type', ''));
-        $backgroundColor = trim((string)$request->input('background_color', ''));
         $backgroundBlur = $request->input('background_blur');
         $lighting = trim((string)$request->input('light_type', 'soft studio lighting'));
         $photoStyle = trim((string)$request->input('style_type', 'luxury commercial photography'));
         $textOnImage = trim((string)$request->input('text_on_image', ''));
         $textPosition = $request->input('text_position', 'bottom-left');
-        $textColor = trim((string)$request->input('text_color', '#ffffff'));
         $textSize = (int)$request->input('text_size', 48);
         $cameraAngle = trim((string)$request->input('camera_angle', 'eye level'));
         $aspectRatio = $request->input('image_ratio', '');
@@ -229,10 +259,6 @@ class ImageEditController extends Controller
         }
 
         $bgDesc = $background;
-
-        if ($backgroundColor) {
-            $bgDesc .= " with {$backgroundColor} tone";
-        }
 
         if ($bgDesc) {
             $prompt .= " Background is " . trim($bgDesc) . ".";
@@ -258,7 +284,6 @@ class ImageEditController extends Controller
             $prompt .= " Add the EXACT text: '{$textOnImage}' ";
             $prompt .= "in the {$textPosition} of the image. ";
             $prompt .= "Make this text {$textWeight}, modern luxury font, ";
-            $prompt .= "EXACT color {$textColor}, highly visible, sharp edges, ";
             $prompt .= "excellent readability, soft glow effect, high contrast.";
         }
 
