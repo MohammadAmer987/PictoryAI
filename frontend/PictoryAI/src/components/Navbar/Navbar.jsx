@@ -7,14 +7,10 @@ import NavMenu from "./NavMenu"
 import AvatarMenu from "./AvatarMenu"
 import LoginRequiredPopup from "../LoginRequiredPopUp"
 
-export default function Navbar({
-    user = null,
-    onNavigate = () => {},
-    onLogout = () => {},
-    onUserUpdated = () => {}
-}) {
-
-    const navigate = useNavigate()
+export default function Navbar({ user = null, onNavigate = () => {}, onLogout = () => {},  onUserUpdated = () => {},
+                                   notifications = [],
+                                   unreadCount = 0,
+                                   onClearNotifications = () => {},}) {
 
     const [openMenu, setOpenMenu] = useState(null)
     const [showPopup, setShowPopup] = useState(false)
@@ -67,14 +63,18 @@ export default function Navbar({
                     setShowPopup={setShowPopup}
                 />
 
-                <AvatarMenu
-                    user={user}
-                    openMenu={openMenu}
-                    toggle={toggle}
-                    handleNavigate={handleNavigate}
-                    onLogout={onLogout}
-                    onUserUpdated={onUserUpdated}
-                />
+            <AvatarMenu
+                user={user}
+                openMenu={openMenu}
+                toggle={toggle}
+                handleNavigate={handleNavigate}
+                onLogout={onLogout}
+                onUserUpdated={onUserUpdated}
+                notifications={notifications}
+                unreadCount={unreadCount}
+                onClearNotifications={onClearNotifications}
+
+            />
 
             </nav>
 

@@ -26,10 +26,13 @@ import ThemeImgPage from "./pages/ThemeImgPage";
 import './css/theme_img/ThemeImgPage.css'
 import SubscriptionPage from "./components/SubscriptionPage";
 import ChatBotWidget from "./components/ChatBotWidget";
+import { useNotifications } from './pages/useNotifications';
 import PaymentPage from "./pages/paymentPage"
 
 function App() {
     const navigate = useNavigate();
+
+
 async function handleLogout() {
   await logout();
   setUser(null);
@@ -52,9 +55,13 @@ React.useEffect(() => {
 }, []);
 
   const [user, setUser] = React.useState(null);
+    const { notifications, unreadCount, addNotification, clearNotifications } =
+        useNotifications(user?.plan || "free");
     return (
         <>
-            <Navbar user={user} onNavigate={(route) => navigate(route)}   onLogout={handleLogout} onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}
+            <Navbar user={user} onNavigate={(route) => navigate(route)}   onLogout={handleLogout} onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}  notifications={notifications}
+                    unreadCount={unreadCount}
+                    onClearNotifications={clearNotifications}
  />
 
             <Routes>
@@ -67,7 +74,7 @@ React.useEffect(() => {
 
                     </>
                 } />
-                <Route path="/tools/image-generator" element={<Text onSubmit={(data) => console.log(data)} />} />
+                <Route path="/tools/image-generator" element={<Text onSubmit={(data) => console.log(data)} />}  addNotification={addNotification}/>
 
                 <Route path="/about" element={<Aboutpart />} />
                 <Route path="/pricing" element={<Pricingpart />} />
@@ -78,12 +85,12 @@ React.useEffect(() => {
                 <Route path="/signup" element={<SignupPage/>} />
                 <Route path="/tools" element={<AiToolsPage />} />  
                 <Route path="/history" element={<ContentStudioPage />} />
-                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
-                <Route path="/tools/enhance-image" element={<InhanceImg />}/>
+                <Route path="/tools/caption-generator" element={<CaptionGenerating addNotification={addNotification}/>} />
+                <Route path="/tools/enhance-image" element={<InhanceImg addNotification={addNotification}/>}/>
 
                 <Route path ="/tools/generate-image" element={<Text onSubmit={(data) => console.log(data)} />}></Route>
 
-                <Route path="/tools/theme-image-generation" element={<ThemeImgPage />}/>
+                <Route path="/tools/theme-image-generation" element={<ThemeImgPage addNotification={addNotification} />}/>
                 <Route path="/subscription" element={<SubscriptionPage />} />
                 <Route path="/payment" element={<PaymentPage  />} />
 
