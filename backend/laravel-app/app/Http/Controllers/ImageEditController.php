@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use App\Services\UsageLimitService;
+use Illuminate\Validation\ValidationException;
 
 class ImageEditController extends Controller
 {
     public function edit(Request $request)
     {
-        set_time_limit(0);
+        set_time_limit(300);
 
         $validator = Validator::make($request->all(), [
             'image'                => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
@@ -54,6 +56,17 @@ class ImageEditController extends Controller
             ], 401);
         }
 
+        try {
+            app(UsageLimitService::class)->assertCanGenerate($user, 'image');
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have reached your image generation limit. Please subscribe to continue.',
+                'upgrade_required' => true,
+                'errors' => $e->errors(),
+            ], 403);
+        }
+
         $falKey = config('services.fal.key');
 
         if (!$falKey) {
@@ -76,16 +89,15 @@ class ImageEditController extends Controller
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
             $sizeMapping = [
-                '1:1'   => 'square_hd',
-                '16:9'  => 'landscape_16_9',
-                '9:16'  => 'portrait_16_9',
-                '4:5'   => 'portrait_4_5',
-                '3:4'   => 'portrait_4_5',
+                '1:1'  => 'square_hd',
+                '16:9' => 'landscape_16_9',
+                '9:16' => 'portrait_16_9',
+                '4:5'  => 'portrait_4_5',
+                '3:4'  => 'portrait_4_5',
             ];
 
             $userSize = $request->input('image_ratio', '1:1');
             $falImageSize = $sizeMapping[$userSize] ?? 'square_hd';
-
 
             $prompt = $this->buildDynamicProfessionalPrompt($request);
 
@@ -175,9 +187,11 @@ class ImageEditController extends Controller
                 ]);
             }
 
+            app(UsageLimitService::class)->increment($user, 'image');
+
             return response()->json([
-                'success'      => true,
-                'message'      => 'Image edited and saved successfully.',
+                'success' => true,
+                'message' => 'Image edited and saved successfully.',
                 'data' => [
                     'request_id'   => $requestModel->id,
                     'original_url' => $uploadedImageUrl,
@@ -200,21 +214,21 @@ class ImageEditController extends Controller
 
     private function buildDynamicProfessionalPrompt(Request $request): string
     {
-        $productName = trim((string)$request->input('product_name', 'the product'));
-        $audience = trim((string)$request->input('target_audience', ''));
-        $description = trim((string)$request->input('product_description', ''));
-        $background = trim((string)$request->input('background_type', ''));
-        $backgroundColor = trim((string)$request->input('background_color', ''));
+        $productName = trim((string) $request->input('product_name', 'the product'));
+        $audience = trim((string) $request->input('target_audience', ''));
+        $description = trim((string) $request->input('product_description', ''));
+        $background = trim((string) $request->input('background_type', ''));
+        $backgroundColor = trim((string) $request->input('background_color', ''));
         $backgroundBlur = $request->input('background_blur');
-        $lighting = trim((string)$request->input('light_type', 'soft studio lighting'));
-        $photoStyle = trim((string)$request->input('style_type', 'luxury commercial photography'));
-        $textOnImage = trim((string)$request->input('text_on_image', ''));
+        $lighting = trim((string) $request->input('light_type', 'soft studio lighting'));
+        $photoStyle = trim((string) $request->input('style_type', 'luxury commercial photography'));
+        $textOnImage = trim((string) $request->input('text_on_image', ''));
         $textPosition = $request->input('text_position', 'bottom-left');
-        $textColor = trim((string)$request->input('text_color', '#ffffff'));
-        $textSize = (int)$request->input('text_size', 48);
-        $cameraAngle = trim((string)$request->input('camera_angle', 'eye level'));
+        $textColor = trim((string) $request->input('text_color', '#ffffff'));
+        $textSize = (int) $request->input('text_size', 48);
+        $cameraAngle = trim((string) $request->input('camera_angle', 'eye level'));
         $aspectRatio = $request->input('image_ratio', '');
-        $extraPrompt = trim((string)$request->input('extra_prompt', ''));
+        $extraPrompt = trim((string) $request->input('extra_prompt', ''));
 
         $prompt = "Professional luxury e-commerce product photography of {$productName}, ultra realistic, 8K commercial quality.";
 
@@ -222,7 +236,8 @@ class ImageEditController extends Controller
             $prompt .= " {$description}.";
         }
 
-        $prompt .= " Keep the exact {$productName} with perfect details, exact colors, exact logos, exact textures — do not change or deform the product at all. Product standing perfectly straight and upright.";
+        $prompt .= " Keep the exact {$productName} with perfect details, exact colors, exact logos, exact textures. ";
+        $prompt .= "Do not change or deform the product at all. Product standing perfectly straight and upright.";
 
         if ($extraPrompt) {
             $prompt .= " {$extraPrompt}.";
@@ -292,6 +307,10 @@ class ImageEditController extends Controller
                 ->timeout(60)
                 ->get($statusUrl);
 
+            if (!$statusResponse->successful()) {
+                throw new \Exception('Failed to check fal status.');
+            }
+
             $statusData = $statusResponse->json();
             $status = $statusData['status'] ?? null;
 
@@ -303,10 +322,14 @@ class ImageEditController extends Controller
                     ->timeout(180)
                     ->get($responseUrl);
 
+                if (!$resultResponse->successful()) {
+                    throw new \Exception('Failed to fetch fal result.');
+                }
+
                 return $resultResponse->json();
             }
 
-            if (in_array($status, ['FAILED', 'ERROR', 'CANCELLED'])) {
+            if (in_array($status, ['FAILED', 'ERROR', 'CANCELLED'], true)) {
                 throw new \Exception('fal failed with status ' . $status);
             }
 
