@@ -1,4 +1,4 @@
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import logo from '../../images/logo4.png';
 
@@ -18,18 +18,6 @@ function Footer() {
                             </p>
                         </div>
 
-                        <div className="newsletter-box d-flex justify-content-center justify-content-lg-start">
-                            <div className="position-relative newsletter-wrapper">
-                                <Form.Control
-                                    type="email"
-                                    placeholder="Your email"
-                                    className="custom-footer-input rounded-3 py-2 ps-3 pe-5 text-white small w-100"
-                                />
-                                <Button className="btn-footer-subscribe position-absolute top-0 end-0 h-100 rounded-3 px-3 border-0">
-                                    <i className="bi bi-envelope"></i>
-                                </Button>
-                            </div>
-                        </div>
                     </Col>
 
                     <Col xs={6} md={4} lg={2} className="text-center text-md-start">
@@ -71,24 +59,7 @@ function Footer() {
                         </p>
                     </Col>
 
-                    <Col xs={12} md={4} className="order-1 order-md-2">
-                        <div className="social-icons d-flex justify-content-center gap-2 flex-wrap">
-                            <a href="https://linkedin.com" className="social-link" target="_blank" rel="noreferrer">
-                                <i className="bi bi-linkedin"></i>
-                            </a>
-                            <a href="https://twitter.com" className="social-link" target="_blank" rel="noreferrer">
-                                <i className="bi bi-twitter-x"></i>
-                            </a>
-                            <a href="https://instagram.com" className="social-link" target="_blank" rel="noreferrer">
-                                <i className="bi bi-instagram"></i>
-                            </a>
-                            <a href="https://facebook.com" className="social-link" target="_blank" rel="noreferrer">
-                                <i className="bi bi-facebook"></i>
-                            </a>
-                        </div>
-                    </Col>
-
-                    <Col xs={12} md={4} className="order-2 order-md-3">
+                    <Col xs={12} md={8} className="order-2 order-md-3">
                         <div className="legal-links d-flex justify-content-center justify-content-md-end gap-3 gap-sm-4 flex-wrap">
                             <Link to="/about" className="footer-link footer-muted">Contact</Link>
                             <Link to="/subscription" className="footer-link footer-muted">Plans</Link>
