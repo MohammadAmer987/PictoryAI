@@ -6,7 +6,6 @@ import Hero from "../components/ReusableHero";
 
 function App() {
     const [isPro, setIsPro] = useState(false);
-    const [loadingPlan, setLoadingPlan] = useState(true);
 
     useEffect(() => {
         const fetchSubscription = async () => {
@@ -21,8 +20,6 @@ function App() {
                 setIsPro(data.isPro);
             } catch (error) {
                 setIsPro(false);
-            } finally {
-                setLoadingPlan(false);
             }
         };
 
@@ -35,7 +32,6 @@ function App() {
         audience: "",
         productDescription: "",
         background: "",
-        backgroundColor: "",
         backgroundBlur: 0,
         lightType: "",
         styleType: "",
@@ -61,11 +57,6 @@ function App() {
             settings.extraPrompt !== "" &&
             (isPro ? settings.imageRatio !== "" : true)
         );
-    }
-
-    // ── Loading state ────────────────────────────────────
-    if (loadingPlan) {
-        return <div className="text-center mt-5">Loading...</div>;
     }
 
     return (
