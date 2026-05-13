@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Caption;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use OpenApi\Attributes as OA;
 
 class HistoryController extends Controller
 {
@@ -48,6 +49,18 @@ class HistoryController extends Controller
         return asset('storage/' . $sourceImage);
     }
 
+    #[OA\Get(
+        path: '/api/history/captions',
+        operationId: 'getCaptionHistory',
+        summary: 'Get caption generation history',
+        description: 'Returns all caption generation history entries for the authenticated user.',
+        tags: ['History'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Caption history retrieved successfully.'),
+            new OA\Response(response: 401, description: 'Unauthenticated.')
+        ]
+    )]
     public function captions(Request $request)
     {
         $user = $request->user();
@@ -89,6 +102,28 @@ class HistoryController extends Controller
         ]);
     }
 
+    #[OA\Delete(
+        path: '/api/history/captions/{generationId}',
+        operationId: 'deleteCaptionHistoryGroup',
+        summary: 'Delete a caption history group',
+        description: 'Deletes one caption generation group and its related captions for the authenticated user.',
+        tags: ['History'],
+        security: [['sanctumBearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'generationId',
+                description: 'Caption generation group ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 15)
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Caption group deleted successfully.'),
+            new OA\Response(response: 401, description: 'Unauthenticated.'),
+            new OA\Response(response: 404, description: 'Caption group not found.')
+        ]
+    )]
     public function deleteCaptionGroup(Request $request, int $generationId)
     {
         $user = $request->user();
@@ -122,6 +157,18 @@ class HistoryController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: '/api/history/images',
+        operationId: 'getImageHistory',
+        summary: 'Get image generation history',
+        description: 'Returns image generation, enhancement, and themed image history for the authenticated user.',
+        tags: ['History'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Image history retrieved successfully.'),
+            new OA\Response(response: 401, description: 'Unauthenticated.')
+        ]
+    )]
     public function images(Request $request)
     {
         $userId = $request->user()->id;
@@ -239,6 +286,36 @@ class HistoryController extends Controller
         ]);
     }
 
+    #[OA\Delete(
+        path: '/api/history/images/{type}/{requestId}',
+        operationId: 'deleteImageHistoryGroup',
+        summary: 'Delete an image history group',
+        description: 'Deletes an image history group by type and request ID for the authenticated user.',
+        tags: ['History'],
+        security: [['sanctumBearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'type',
+                description: 'History type: enhance, theme, or generate',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', example: 'enhance')
+            ),
+            new OA\Parameter(
+                name: 'requestId',
+                description: 'Image history request ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 9)
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Image history deleted successfully.'),
+            new OA\Response(response: 401, description: 'Unauthenticated.'),
+            new OA\Response(response: 404, description: 'Image history record not found.'),
+            new OA\Response(response: 422, description: 'Invalid image history type.')
+        ]
+    )]
     public function deleteImageGroup(Request $request, string $type, int $requestId)
     {
         $user = $request->user();

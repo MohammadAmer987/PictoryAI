@@ -1,0 +1,268 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Pictory AI API",
+        "description": "API documentation for the Pictory AI backend.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local development server"
+        }
+    ],
+    "paths": {
+        "/api/captions/generate": {
+            "post": {
+                "tags": [
+                    "Tools - Captions"
+                ],
+                "summary": "Generate AI captions from a product image",
+                "description": "Generates four marketing captions for a product image using the caption generation tool.",
+                "operationId": "generateCaptions",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "product_name",
+                                    "image"
+                                ],
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string",
+                                        "example": "Luxury Perfume",
+                                        "maxLength": 255
+                                    },
+                                    "target_audience": {
+                                        "type": "string",
+                                        "example": "Women aged 20-35",
+                                        "maxLength": 255
+                                    },
+                                    "tone": {
+                                        "type": "string",
+                                        "example": "Elegant",
+                                        "maxLength": 255
+                                    },
+                                    "language": {
+                                        "type": "string",
+                                        "example": "English",
+                                        "maxLength": 50
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "A premium floral fragrance for daily wear",
+                                        "maxLength": 200
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Captions generated successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    },
+                    "403": {
+                        "description": "Caption generation limit reached."
+                    },
+                    "422": {
+                        "description": "Validation failed."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/captions/my-plan": {
+            "get": {
+                "tags": [
+                    "Tools - Captions"
+                ],
+                "summary": "Get current user caption plan",
+                "description": "Returns the current subscription plan details relevant to the caption generation tool.",
+                "operationId": "getCaptionGeneratingPlan",
+                "responses": {
+                    "200": {
+                        "description": "Current plan retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/history/captions": {
+            "get": {
+                "tags": [
+                    "History"
+                ],
+                "summary": "Get caption generation history",
+                "description": "Returns all caption generation history entries for the authenticated user.",
+                "operationId": "getCaptionHistory",
+                "responses": {
+                    "200": {
+                        "description": "Caption history retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/history/captions/{generationId}": {
+            "delete": {
+                "tags": [
+                    "History"
+                ],
+                "summary": "Delete a caption history group",
+                "description": "Deletes one caption generation group and its related captions for the authenticated user.",
+                "operationId": "deleteCaptionHistoryGroup",
+                "parameters": [
+                    {
+                        "name": "generationId",
+                        "in": "path",
+                        "description": "Caption generation group ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Caption group deleted successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    },
+                    "404": {
+                        "description": "Caption group not found."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/history/images": {
+            "get": {
+                "tags": [
+                    "History"
+                ],
+                "summary": "Get image generation history",
+                "description": "Returns image generation, enhancement, and themed image history for the authenticated user.",
+                "operationId": "getImageHistory",
+                "responses": {
+                    "200": {
+                        "description": "Image history retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/history/images/{type}/{requestId}": {
+            "delete": {
+                "tags": [
+                    "History"
+                ],
+                "summary": "Delete an image history group",
+                "description": "Deletes an image history group by type and request ID for the authenticated user.",
+                "operationId": "deleteImageHistoryGroup",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "History type: enhance, theme, or generate",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "enhance"
+                        }
+                    },
+                    {
+                        "name": "requestId",
+                        "in": "path",
+                        "description": "Image history request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 9
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image history deleted successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    },
+                    "404": {
+                        "description": "Image history record not found."
+                    },
+                    "422": {
+                        "description": "Invalid image history type."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctumBearerAuth": {
+                "type": "http",
+                "description": "Use a Sanctum bearer token in the Authorization header.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Tools - Captions",
+            "description": "Operations related to AI caption generation."
+        },
+        {
+            "name": "History",
+            "description": "Operations related to user generation history."
+        }
+    ]
+}

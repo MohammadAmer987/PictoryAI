@@ -1,10 +1,11 @@
-﻿<?php
-declare(strict_types=1);
+<?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+
 
 class ImageGeneratorController extends Controller
 {
