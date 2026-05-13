@@ -38,15 +38,28 @@ class ThemedImageController extends Controller
             ], 401);
         }
 
-        try {
-            app(UsageLimitService::class)->assertCanGenerate($user, 'image');
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You have reached your image generation limit. Please subscribe to continue.',
-                'upgrade_required' => true,
-                'errors' => $e->errors(),
-            ], 403);
+        $subscription = $user->subscriptions()
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+
+        $planId = $subscription?->plan_id ?? 1;
+
+        if ($planId == 1) {
+            $usageCounter = $user->usageCounters()
+                ->where('type', 'themed_image')
+                ->where('year', now()->year)
+                ->where('month', now()->month)
+                ->first();
+
+            $used = $usageCounter?->used ?? 0;
+
+            if ($used >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have reached the maximum limit of 3 generations for the free plan.',
+                ], 403);
+            }
         }
 
         $falKey = config('services.fal.key');
@@ -74,8 +87,8 @@ class ThemedImageController extends Controller
                 '1:1'  => 'square_hd',
                 '16:9' => 'landscape_16_9',
                 '9:16' => 'portrait_16_9',
-                '4:5'  => 'portrait_4_5',
-                '3:4'  => 'portrait_4_5',
+                '4:5'  => 'portrait_4_3',
+                '3:4'  => 'portrait_4_3',
             ];
 
             $userSize = $request->input('image_size', '1:1');
@@ -142,7 +155,18 @@ class ThemedImageController extends Controller
                 'optional_text' => $request->optional_text,
             ]);
 
-            foreach ($editedUrls as $url) {
+            if ($planId == 1) {
+                $user->usageCounters()->updateOrCreate(
+                    [
+                        'type'  => 'themed_image',
+                        'year'  => now()->year,
+                        'month' => now()->month,
+                    ],
+                    ['used' => DB::raw('used + 1')]
+                );
+            }
+
+            foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([
                     'image_path' => $url,
                 ]);

@@ -1,7 +1,7 @@
 <?php
-
+declare(strict_types=1);
 namespace App\Http\Controllers;
-
+use OpenApi\Attributes as OA;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
@@ -18,7 +18,128 @@ class ImageGeneratorController extends Controller
         'landscape' => ['width' => 1536, 'height' => 1024, 'ratio' => '3:2'],
         'cinema'    => ['width' => 1792, 'height' => 768,  'ratio' => '21:9'],
     ];
-
+ #[OA\Post(
+        path: '/api/image-generator/generate',
+        summary: 'Generate an AI image based on project details',
+        description: 'Generates a professional AI image using Pollinations API based on project name, content, color, and image type. Returns base64 image data along with metadata.',
+        tags: ['Tools - Image Generation'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['projectName'],
+                properties: [
+                    new OA\Property(
+                        property: 'projectName',
+                        type: 'string',
+                        maxLength: 255,
+                        description: 'The name of the project to display in the image',
+                        example: 'My Brand'
+                    ),
+                    new OA\Property(
+                        property: 'content',
+                        type: 'string',
+                        maxLength: 1000,
+                        nullable: true,
+                        description: 'Additional content description for image generation',
+                        example: 'A modern coffee shop with warm lighting'
+                    ),
+                    new OA\Property(
+                        property: 'color',
+                        type: 'string',
+                        maxLength: 100,
+                        nullable: true,
+                        description: 'Brand color to dominate the image palette (hex or color name)',
+                        example: '#3B82F6'
+                    ),
+                    new OA\Property(
+                        property: 'colorText',
+                        type: 'string',
+                        maxLength: 255,
+                        nullable: true,
+                        description: 'Additional color instructions in natural language',
+                        example: 'Use deep navy blue tones'
+                    ),
+                    new OA\Property(
+                        property: 'imageType',
+                        type: 'string',
+                        nullable: true,
+                        enum: ['post', 'story', 'banner', 'portrait', 'landscape', 'cinema'],
+                        description: "Image format/layout type:\n- `post` → 1024×1024 (1:1)\n- `story` → 1024×1792 (9:16)\n- `banner` → 1792×1024 (16:9)\n- `portrait` → 1024×1280 (4:5)\n- `landscape` → 1536×1024 (3:2)\n- `cinema` → 1792×768 (21:9)",
+                        example: 'post'
+                    ),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Image generated successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'image',
+                            type: 'string',
+                            description: 'Base64 encoded image with data URI prefix',
+                            example: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...'
+                        ),
+                        new OA\Property(
+                            property: 'image_url',
+                            type: 'string',
+                            description: 'Original Pollinations image URL',
+                            example: 'https://image.pollinations.ai/prompt/...'
+                        ),
+                        new OA\Property(property: 'color', type: 'string', nullable: true, example: '#3B82F6'),
+                        new OA\Property(property: 'image_type', type: 'string', example: 'post'),
+                        new OA\Property(
+                            property: 'size',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'width', type: 'integer', example: 1024),
+                                new OA\Property(property: 'height', type: 'integer', example: 1024),
+                                new OA\Property(property: 'ratio', type: 'string', example: '1:1'),
+                            ]
+                        ),
+                        new OA\Property(property: 'prompt', type: 'string', description: 'The full prompt sent to the AI', example: 'STRICT IMAGE GENERATION INSTRUCTIONS...'),
+                        new OA\Property(property: 'seed', type: 'integer', description: 'Random seed used for generation', example: 482910573),
+                        new OA\Property(property: 'provider', type: 'string', example: 'pollinations'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'The project name field is required.'),
+                        new OA\Property(property: 'errors', type: 'object'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 429,
+                description: 'Image service is busy (queue full)',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'error', type: 'string', example: 'The free image service is busy right now. Please wait a moment and try again.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server or generation error',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'error', type: 'string', example: 'Image request failed on the server.'),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function generate(Request $request)
     {
         try {
