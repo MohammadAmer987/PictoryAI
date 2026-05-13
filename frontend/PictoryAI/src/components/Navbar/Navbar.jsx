@@ -14,6 +14,7 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
 
     const [openMenu, setOpenMenu] = useState(null)
     const [showPopup, setShowPopup] = useState(false)
+    const navigate = useNavigate()
 
     const navRef = useRef(null)
 
