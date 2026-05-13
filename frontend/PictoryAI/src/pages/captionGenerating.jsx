@@ -5,7 +5,7 @@ import GeneratorForm from '../components/CaptionGenerating/GeneratorForm';
 import PreviewSection from '../components/CaptionGenerating/PreviewSection';
 import ProTips from '../components/CaptionGenerating/ProTips';
 
-function CaptionGenerating() {
+function CaptionGenerating({ addNotification = () => {} }) {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [lastFormData, setLastFormData] = useState(null);
@@ -121,6 +121,7 @@ function CaptionGenerating() {
 
       setIsLimitReached(false);
       setResults(data?.data?.captions || []);
+      addNotification({ type: "caption" });
     } catch (error) {
       console.error('Caption generation error:', error);
 

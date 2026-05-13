@@ -12,7 +12,7 @@ const IMAGE_TYPE_LABELS = {
     cinema: "Cinema",
 };
 
-export default function Text({ onSubmit }) {
+export default function Text({ onSubmit , addNotification = () => {} }) {
 
     const [projectName, setProjectName] = useState("");
     const [content, setContent] = useState("");
@@ -144,6 +144,8 @@ export default function Text({ onSubmit }) {
                 size: data.size || null,
                 image: imageUrl,
             });
+            addNotification({ type: "genarate" });
+
         } catch (err) {
             const message =
                 err?.message === "Failed to fetch"

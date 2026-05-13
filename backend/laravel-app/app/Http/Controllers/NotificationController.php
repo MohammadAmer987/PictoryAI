@@ -23,9 +23,10 @@ class NotificationController extends Controller
             ->keyBy('type');
 
         $limits = [
-            'caption'       => 5,
+            'caption'       => 3,
             'enhance_image' => 3,
             'themed_image'  => 3,
+            'generate_image'  => 3,
         ];
 
         $notifications = [];
@@ -55,6 +56,7 @@ class NotificationController extends Controller
             'caption'       => 'Caption Generator',
             'enhance_image' => 'Enhance Image',
             'themed_image'  => 'Theme Image',
+            'generate_image'  => 'Generate Image',
         ][$type] ?? $type;
     }
 }
