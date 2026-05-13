@@ -13,7 +13,8 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'price',
-        'max_generations',
+        'max_generations_image',
+        'max_generations_caption',
         'watermark',
     ];
 
