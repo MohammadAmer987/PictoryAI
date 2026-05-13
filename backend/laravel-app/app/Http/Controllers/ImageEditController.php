@@ -26,7 +26,6 @@ class ImageEditController extends Controller
 
             'text_on_image'        => 'nullable|string|max:255',
             'text_position'        => 'nullable|string|max:50',
-            'text_color'           => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'text_size'            => 'nullable|integer|min:12|max:100',
 
             'camera_angle'         => 'nullable|string|max:255',
@@ -181,7 +180,6 @@ class ImageEditController extends Controller
 
                 'text_on_image'       => $request->text_on_image,
                 'text_position'       => $request->text_position,
-                'text_color'          => $request->text_color,
                 'text_size'           => $request->text_size,
 
                 'camera_angle'        => $request->camera_angle,
@@ -243,7 +241,6 @@ class ImageEditController extends Controller
         $photoStyle = trim((string)$request->input('style_type', 'luxury commercial photography'));
         $textOnImage = trim((string)$request->input('text_on_image', ''));
         $textPosition = $request->input('text_position', 'bottom-left');
-        $textColor = trim((string)$request->input('text_color', '#ffffff'));
         $textSize = (int)$request->input('text_size', 48);
         $cameraAngle = trim((string)$request->input('camera_angle', 'eye level'));
         $aspectRatio = $request->input('image_ratio', '');
@@ -287,7 +284,6 @@ class ImageEditController extends Controller
             $prompt .= " Add the EXACT text: '{$textOnImage}' ";
             $prompt .= "in the {$textPosition} of the image. ";
             $prompt .= "Make this text {$textWeight}, modern luxury font, ";
-            $prompt .= "EXACT color {$textColor}, highly visible, sharp edges, ";
             $prompt .= "excellent readability, soft glow effect, high contrast.";
         }
 

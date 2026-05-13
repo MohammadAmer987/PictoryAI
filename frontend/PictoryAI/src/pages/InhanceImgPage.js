@@ -4,7 +4,7 @@ import MainArea from '../components/inhance_img/MainArea';
 import { useState, useEffect } from "react";
 import Hero from "../components/ReusableHero";
 
-function App() {
+function App({ addNotification = () => {} }) {
     const [isPro, setIsPro] = useState(false);
 
     useEffect(() => {
@@ -37,7 +37,6 @@ function App() {
         styleType: "",
         textOnImage: "",
         textPosition: "",
-        textColor: "",
         textSize: 12,
         cameraAngle: "",
         imageRatio: "",
@@ -76,16 +75,6 @@ function App() {
                 ]}
             />
 
-            {/*<div className="row">*/}
-            {/*    <div className="col-12">*/}
-            {/*        <header className="app-header">*/}
-            {/*            <span>✦ ProductShot AI</span>*/}
-            {/*            <span className={`user-type-badge ${isPro ? "pro" : "free"}`}>*/}
-            {/*                {isPro ? "⭐ PRO User" : "Free User"}*/}
-            {/*            </span>*/}
-            {/*        </header>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
 
             <div className="row g-0 main-content-wrapper">
                 <div className="col-lg-3 col-md-4">
@@ -96,6 +85,7 @@ function App() {
                         isPro={isPro}
                         isReady={isSettingsComplete()}
                         settings={settings}
+                        addNotification={addNotification}
                     />
                 </div>
             </div>
