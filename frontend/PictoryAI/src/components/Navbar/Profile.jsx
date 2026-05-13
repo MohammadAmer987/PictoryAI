@@ -13,7 +13,7 @@ export default function Profile({
   isOpen,
   onClose,
   userName = "Mohammad Nooh",
-  userEmail = "n321632408@stuxtrials.edu",
+  userEmail = "n321632408@stu.edu",
   storeName = "My Store",
   onUserUpdated,
   avatarUrl,
