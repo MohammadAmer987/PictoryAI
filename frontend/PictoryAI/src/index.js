@@ -26,6 +26,7 @@ import ThemeImgPage from "./pages/ThemeImgPage";
 import './css/theme_img/ThemeImgPage.css'
 import SubscriptionPage from "./components/SubscriptionPage";
 import ChatBotWidget from "./components/ChatBotWidget";
+import PaymentPage from "./pages/paymentPage"
 
 function App() {
     const navigate = useNavigate();
@@ -77,7 +78,6 @@ React.useEffect(() => {
                 <Route path="/signup" element={<SignupPage/>} />
                 <Route path="/tools" element={<AiToolsPage />} />  
                 <Route path="/history" element={<ContentStudioPage />} />
-                <Route path="/tools" element={<AiToolsPage />} />
                 <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
                 <Route path="/tools/enhance-image" element={<InhanceImg />}/>
 
@@ -85,6 +85,7 @@ React.useEffect(() => {
 
                 <Route path="/tools/theme-image-generation" element={<ThemeImgPage />}/>
                 <Route path="/subscription" element={<SubscriptionPage />} />
+                <Route path="/payment" element={<PaymentPage  />} />
 
             </Routes>
 
