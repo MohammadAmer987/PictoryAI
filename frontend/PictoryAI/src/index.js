@@ -58,7 +58,7 @@ React.useEffect(() => {
 
   const [user, setUser] = React.useState(null);
     const { notifications, unreadCount, addNotification, clearNotifications } =
-        useNotifications(user?.plan || "free");
+        useNotifications(user?.plan || "free", user?.id);
     return (
         <>
             {!isAdminRoute && (

@@ -7,9 +7,227 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use App\Services\UsageLimitService;
 use Illuminate\Validation\ValidationException;
-
+use OpenApi\Attributes as OA;
 class ImageEditController extends Controller
 {
+
+    #[OA\Post(
+        path: '/api/image/edit',
+        summary: 'Edit a product image using AI',
+        description: 'Uploads a product image and applies AI-powered editing including background replacement, lighting, style, text overlay, and camera angle adjustments. Free plan users are limited to 3 generations per month.',
+        tags: ['Tools - Image Enhancement'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['image', 'product_name', 'target_audience', 'background_type', 'background_blur', 'light_type', 'style_type', 'extra_prompt'],
+                    properties: [
+                        new OA\Property(
+                            property: 'image',
+                            type: 'string',
+                            format: 'binary',
+                            description: 'Product image file. Accepted formats: jpg, jpeg, png, webp. Max size: 20MB.'
+                        ),
+                        new OA\Property(
+                            property: 'product_name',
+                            type: 'string',
+                            maxLength: 255,
+                            description: 'Name of the product.',
+                            example: 'Luxury Perfume Bottle'
+                        ),
+                        new OA\Property(
+                            property: 'target_audience',
+                            type: 'string',
+                            maxLength: 255,
+                            description: 'The intended audience for the product.',
+                            example: 'Young women aged 18-35'
+                        ),
+                        new OA\Property(
+                            property: 'product_description',
+                            type: 'string',
+                            maxLength: 1000,
+                            nullable: true,
+                            description: 'Optional short description of the product.',
+                            example: 'A premium oud-based perfume with a gold cap.'
+                        ),
+                        new OA\Property(
+                            property: 'background_type',
+                            type: 'string',
+                            maxLength: 500,
+                            description: 'Description of the desired background.',
+                            example: 'Soft white marble surface with rose petals'
+                        ),
+                        new OA\Property(
+                            property: 'background_blur',
+                            type: 'integer',
+                            minimum: 0,
+                            maximum: 10,
+                            description: 'Background blur intensity from 0 (no blur) to 10 (maximum blur).',
+                            example: 5
+                        ),
+                        new OA\Property(
+                            property: 'light_type',
+                            type: 'string',
+                            maxLength: 255,
+                            description: 'Lighting style to apply.',
+                            example: 'Soft studio lighting'
+                        ),
+                        new OA\Property(
+                            property: 'style_type',
+                            type: 'string',
+                            maxLength: 255,
+                            description: 'Photography or visual style.',
+                            example: 'Luxury commercial photography'
+                        ),
+                        new OA\Property(
+                            property: 'text_on_image',
+                            type: 'string',
+                            maxLength: 255,
+                            nullable: true,
+                            description: 'Optional text to overlay on the image.',
+                            example: 'Limited Edition'
+                        ),
+                        new OA\Property(
+                            property: 'text_position',
+                            type: 'string',
+                            maxLength: 50,
+                            nullable: true,
+                            description: 'Position of the text overlay on the image.',
+                            example: 'bottom-left'
+                        ),
+                        new OA\Property(
+                            property: 'text_size',
+                            type: 'integer',
+                            minimum: 12,
+                            maximum: 100,
+                            nullable: true,
+                            description: 'Font size of the overlay text in pixels.',
+                            example: 48
+                        ),
+                        new OA\Property(
+                            property: 'camera_angle',
+                            type: 'string',
+                            maxLength: 255,
+                            nullable: true,
+                            description: 'Camera angle for the shot.',
+                            example: 'eye level'
+                        ),
+                        new OA\Property(
+                            property: 'image_ratio',
+                            type: 'string',
+                            nullable: true,
+                            enum: ['1:1', '16:9', '3:4', '9:16', '4:5'],
+                            description: 'Desired output image aspect ratio.',
+                            example: '1:1'
+                        ),
+                        new OA\Property(
+                            property: 'extra_prompt',
+                            type: 'string',
+                            maxLength: 1500,
+                            description: 'Additional instructions or creative directions for the AI.',
+                            example: 'Add a subtle golden shimmer to the background.'
+                        ),
+                        new OA\Property(
+                            property: 'num_images',
+                            type: 'integer',
+                            minimum: 1,
+                            maximum: 3,
+                            nullable: true,
+                            description: 'Number of image variations to generate (1–3). Defaults to 1.',
+                            example: 2
+                        ),
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Image edited successfully.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Image edited and saved successfully.'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'request_id', type: 'integer', example: 42),
+                                new OA\Property(property: 'original_url', type: 'string', format: 'uri', example: 'https://example.com/storage/uploads/image.jpg'),
+                                new OA\Property(
+                                    property: 'edited_urls',
+                                    type: 'array',
+                                    items: new OA\Items(type: 'string', format: 'uri'),
+                                    example: ['https://cdn.fal.ai/result1.jpg', 'https://cdn.fal.ai/result2.jpg']
+                                ),
+                                new OA\Property(property: 'prompt_used', type: 'string', example: 'Professional luxury e-commerce product photography of Luxury Perfume Bottle...'),
+                                new OA\Property(property: 'raw_result', type: 'object', description: 'Raw response from fal.ai'),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthenticated.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Unauthenticated.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Free plan monthly limit reached (max 3 generations).',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'You have reached the maximum limit of 3 generations for the free plan.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation failed.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Validation failed.'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['image' => ['The image field is required.']]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error or FAL_KEY missing.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Image editing failed.'),
+                        new OA\Property(property: 'error', type: 'string', example: 'Connection timed out.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 502,
+                description: 'fal.ai returned an error or timed out.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to submit request to fal.ai'),
+                        new OA\Property(property: 'fal_error', type: 'object', description: 'Error payload from fal.ai'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function edit(Request $request)
     {
         set_time_limit(300);
@@ -208,7 +426,7 @@ class ImageEditController extends Controller
                 ]);
             }
 
-            app(UsageLimitService::class)->increment($user, 'image');
+
 
             return response()->json([
                 'success' => true,
