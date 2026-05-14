@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 namespace App\Http\Controllers;
 use OpenApi\Attributes as OA;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+
 use App\Services\UsageLimitService;
 use Illuminate\Validation\ValidationException;
 

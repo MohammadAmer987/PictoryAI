@@ -9,7 +9,7 @@ export default function UsersTable({ users, searchQuery = '' }) {
       user.storeName,
       user.businessType,
       user.plan,
-      user.status,
+
     ]
       .join(' ')
       .toLowerCase()
@@ -26,7 +26,7 @@ export default function UsersTable({ users, searchQuery = '' }) {
             <th>Store</th>
             <th>Business Type</th>
             <th>Plan</th>
-            <th>Status</th>
+
             <th>Joined</th>
           </tr>
         </thead>
@@ -47,11 +47,7 @@ export default function UsersTable({ users, searchQuery = '' }) {
                   {user.plan}
                 </span>
               </td>
-              <td>
-                <span className={`statusBadge ${user.status.toLowerCase()}`}>
-                  {user.status}
-                </span>
-              </td>
+
               <td>{user.joinedAt}</td>
             </tr>
           ))}

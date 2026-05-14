@@ -45,10 +45,7 @@ export default function Topbar({ activePage, onSearch }) {
           />
         </div>
 
-        <button className="iconBtn">
-          <Icon name="bell" size={16} />
-          <span className="notifDot" />
-        </button>
+
       </div>
     </header>
   );

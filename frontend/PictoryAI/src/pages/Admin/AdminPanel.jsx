@@ -24,7 +24,9 @@ export default function AdminPanel({ onLogout }) {
         onToggle={() => setSidebarOpen((prev) => !prev)}
       />
 
-      <div className="adminContent">
+
+      <div className="adminContent" >
+
         <Topbar
           activePage={activePage}
           onSearch={setSearchQuery}

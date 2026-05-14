@@ -11,6 +11,9 @@
 .adminPanel.sidebarOpened .adminContent {
   margin-left: 300px;
   width: calc(100% - 300px);
+
+  margin-top: -5%;
+
 }
 
 .adminPanel.sidebarClosed .adminContent {

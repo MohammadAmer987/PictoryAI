@@ -147,12 +147,7 @@ export default function NavMenu({
                 Pricing
             </button>
 
-            <button
-                className="nav-item"
-                onClick={() => handleNavigate('/Contact Us')}
-            >
-                Contact Us
-            </button>
+
 
             {/* Protected History Button */}
             <button

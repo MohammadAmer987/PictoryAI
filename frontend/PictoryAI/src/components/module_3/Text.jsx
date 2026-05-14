@@ -113,8 +113,8 @@ export default function Text({ onSubmit , addNotification = () => {} }) {
             }
 
             if (!response.ok) {
-                const errorMessage =
-                    data?.error || response.statusText || "Server returned an invalid response.";
+                const errorMessage = data?.error || data?.message || response.statusText || "Server returned an invalid response.";
+
                 throw new Error(errorMessage);
             }
 
@@ -147,10 +147,15 @@ export default function Text({ onSubmit , addNotification = () => {} }) {
             addNotification({ type: "genarate" });
 
         } catch (err) {
-            const message =
-                err?.message === "Failed to fetch"
-                    ? "The app could not reach the backend server. Please make sure Laravel is running on http://localhost:8000 and try again."
-                    : err.message;
+            let message = err?.message;
+
+if (message === "Failed to fetch") {
+    message = "The app could not reach the backend server. Please make sure Laravel is running on http://localhost:8000 and try again.";
+} else if (message === "free_limit_reached") {
+    message = "You have reached the limit of 3 free image generations. Upgrade to Pro to continue.";
+} else if (message === "subscription_expired") {
+    message = "Your Pro subscription has expired. Please renew to continue generating images.";
+}
 
             const shouldStartCooldown =
                 message.includes("Queue full for IP") ||
