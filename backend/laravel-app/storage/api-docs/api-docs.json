@@ -1,0 +1,535 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Pictory AI API",
+        "description": "API documentation for the Pictory AI backend.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local development server"
+        }
+    ],
+    "paths": {
+        "/api/captions/generate": {
+            "post": {
+                "tags": [
+                    "Tools - Captions"
+                ],
+                "summary": "Generate AI captions from a product image",
+                "description": "Generates four marketing captions for a product image using the caption generation tool.",
+                "operationId": "generateCaptions",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "product_name",
+                                    "image"
+                                ],
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string",
+                                        "example": "Luxury Perfume",
+                                        "maxLength": 255
+                                    },
+                                    "target_audience": {
+                                        "type": "string",
+                                        "example": "Women aged 20-35",
+                                        "maxLength": 255
+                                    },
+                                    "tone": {
+                                        "type": "string",
+                                        "example": "Elegant",
+                                        "maxLength": 255
+                                    },
+                                    "language": {
+                                        "type": "string",
+                                        "example": "English",
+                                        "maxLength": 50
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "A premium floral fragrance for daily wear",
+                                        "maxLength": 200
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Captions generated successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    },
+                    "403": {
+                        "description": "Caption generation limit reached."
+                    },
+                    "422": {
+                        "description": "Validation failed."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/captions/my-plan": {
+            "get": {
+                "tags": [
+                    "Tools - Captions"
+                ],
+                "summary": "Get current user caption plan",
+                "description": "Returns the current subscription plan details relevant to the caption generation tool.",
+                "operationId": "getCaptionGeneratingPlan",
+                "responses": {
+                    "200": {
+                        "description": "Current plan retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthenticated."
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/image-generator/generate": {
+            "post": {
+                "tags": [
+                    "Tools - Image Generation"
+                ],
+                "summary": "Generate an AI image based on project details",
+                "description": "Generates a professional AI image using Pollinations API based on project name, content, color, and image type. Returns base64 image data along with metadata.",
+                "operationId": "d042d78611f21d2433653c97d3f79737",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "projectName"
+                                ],
+                                "properties": {
+                                    "projectName": {
+                                        "description": "The name of the project to display in the image",
+                                        "type": "string",
+                                        "example": "My Brand",
+                                        "maxLength": 255
+                                    },
+                                    "content": {
+                                        "description": "Additional content description for image generation",
+                                        "type": "string",
+                                        "example": "A modern coffee shop with warm lighting",
+                                        "nullable": true,
+                                        "maxLength": 1000
+                                    },
+                                    "color": {
+                                        "description": "Brand color to dominate the image palette (hex or color name)",
+                                        "type": "string",
+                                        "example": "#3B82F6",
+                                        "nullable": true,
+                                        "maxLength": 100
+                                    },
+                                    "colorText": {
+                                        "description": "Additional color instructions in natural language",
+                                        "type": "string",
+                                        "example": "Use deep navy blue tones",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "imageType": {
+                                        "description": "Image format/layout type:\n- `post` → 1024×1024 (1:1)\n- `story` → 1024×1792 (9:16)\n- `banner` → 1792×1024 (16:9)\n- `portrait` → 1024×1280 (4:5)\n- `landscape` → 1536×1024 (3:2)\n- `cinema` → 1792×768 (21:9)",
+                                        "type": "string",
+                                        "example": "post",
+                                        "nullable": true,
+                                        "enum": [
+                                            "post",
+                                            "story",
+                                            "banner",
+                                            "portrait",
+                                            "landscape",
+                                            "cinema"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "image": {
+                                            "description": "Base64 encoded image with data URI prefix",
+                                            "type": "string",
+                                            "example": "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+                                        },
+                                        "image_url": {
+                                            "description": "Original Pollinations image URL",
+                                            "type": "string",
+                                            "example": "https://image.pollinations.ai/prompt/..."
+                                        },
+                                        "color": {
+                                            "type": "string",
+                                            "example": "#3B82F6",
+                                            "nullable": true
+                                        },
+                                        "image_type": {
+                                            "type": "string",
+                                            "example": "post"
+                                        },
+                                        "size": {
+                                            "properties": {
+                                                "width": {
+                                                    "type": "integer",
+                                                    "example": 1024
+                                                },
+                                                "height": {
+                                                    "type": "integer",
+                                                    "example": 1024
+                                                },
+                                                "ratio": {
+                                                    "type": "string",
+                                                    "example": "1:1"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "prompt": {
+                                            "description": "The full prompt sent to the AI",
+                                            "type": "string",
+                                            "example": "STRICT IMAGE GENERATION INSTRUCTIONS..."
+                                        },
+                                        "seed": {
+                                            "description": "Random seed used for generation",
+                                            "type": "integer",
+                                            "example": 482910573
+                                        },
+                                        "provider": {
+                                            "type": "string",
+                                            "example": "pollinations"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The project name field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Image service is busy (queue full)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The free image service is busy right now. Please wait a moment and try again."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server or generation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Image request failed on the server."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/image-generator/generate-fixed": {
+            "post": {
+                "tags": [
+                    "Tools - Image Generation"
+                ],
+                "summary": "Generate an AI image based on project details",
+                "description": "Generates a professional AI image using Pollinations API based on project name, content, color, and image type. Returns base64 image data along with metadata.",
+                "operationId": "08b46b34ccf9340a46d2a743328acbc0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "projectName"
+                                ],
+                                "properties": {
+                                    "projectName": {
+                                        "description": "The name of the project to display in the image",
+                                        "type": "string",
+                                        "example": "My Brand",
+                                        "maxLength": 255
+                                    },
+                                    "content": {
+                                        "description": "Additional content description for image generation",
+                                        "type": "string",
+                                        "example": "A modern coffee shop with warm lighting",
+                                        "nullable": true,
+                                        "maxLength": 1000
+                                    },
+                                    "color": {
+                                        "description": "Brand color to dominate the image palette (hex or color name)",
+                                        "type": "string",
+                                        "example": "#3B82F6",
+                                        "nullable": true,
+                                        "maxLength": 100
+                                    },
+                                    "colorText": {
+                                        "description": "Additional color instructions in natural language",
+                                        "type": "string",
+                                        "example": "Use deep navy blue tones",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "imageType": {
+                                        "description": "Image format/layout type:\n- `post` → 1024×1024 (1:1)\n- `story` → 1024×1792 (9:16)\n- `banner` → 1792×1024 (16:9)\n- `portrait` → 1024×1280 (4:5)\n- `landscape` → 1536×1024 (3:2)\n- `cinema` → 1792×768 (21:9)",
+                                        "type": "string",
+                                        "example": "post",
+                                        "nullable": true,
+                                        "enum": [
+                                            "post",
+                                            "story",
+                                            "banner",
+                                            "portrait",
+                                            "landscape",
+                                            "cinema"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "image": {
+                                            "description": "Base64 encoded image with data URI prefix",
+                                            "type": "string",
+                                            "example": "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+                                        },
+                                        "image_url": {
+                                            "description": "Original Pollinations image URL",
+                                            "type": "string",
+                                            "example": "https://image.pollinations.ai/prompt/..."
+                                        },
+                                        "color": {
+                                            "type": "string",
+                                            "example": "#3B82F6",
+                                            "nullable": true
+                                        },
+                                        "image_type": {
+                                            "type": "string",
+                                            "example": "post"
+                                        },
+                                        "size": {
+                                            "properties": {
+                                                "width": {
+                                                    "type": "integer",
+                                                    "example": 1024
+                                                },
+                                                "height": {
+                                                    "type": "integer",
+                                                    "example": 1024
+                                                },
+                                                "ratio": {
+                                                    "type": "string",
+                                                    "example": "1:1"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "prompt": {
+                                            "description": "The full prompt sent to the AI",
+                                            "type": "string",
+                                            "example": "STRICT IMAGE GENERATION INSTRUCTIONS..."
+                                        },
+                                        "seed": {
+                                            "description": "Random seed used for generation",
+                                            "type": "integer",
+                                            "example": 482910573
+                                        },
+                                        "provider": {
+                                            "type": "string",
+                                            "example": "pollinations"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The project name field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Image service is busy (queue full)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The free image service is busy right now. Please wait a moment and try again."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server or generation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Image request failed on the server."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctumBearerAuth": {
+                "type": "http",
+                "description": "Use a Sanctum bearer token in the Authorization header.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Tools - Captions",
+            "description": "Operations related to AI caption generation."
+        },
+        {
+            "name": "Tools - Image Generation",
+            "description": "Operations related to AI image generation."
+        }
+    ]
+}

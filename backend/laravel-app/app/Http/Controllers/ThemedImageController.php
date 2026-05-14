@@ -5,19 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
+use App\Services\UsageLimitService;
+use Illuminate\Validation\ValidationException;
 
 class ThemedImageController extends Controller
 {
     public function edit(Request $request)
     {
-        set_time_limit(0);
+        set_time_limit(300);
 
         $validator = Validator::make($request->all(), [
-            'image'                => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
-            'theme'                => 'required|string|max:255',
-            'image_size'           =>'required|in:1:1,16:9,3:4,9:16,4:5',
-            'optional_text'        => 'nullable|string|max:255',
+            'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
+            'theme'         => 'required|string|max:255',
+            'image_size'    => 'required|in:1:1,16:9,3:4,9:16,4:5',
+            'optional_text' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -82,7 +83,6 @@ class ThemedImageController extends Controller
             $mimeType     = $imageFile->getMimeType() ?? 'image/jpeg';
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
-
             $sizeMapping = [
                 '1:1'  => 'square_hd',
                 '16:9' => 'landscape_16_9',
@@ -93,7 +93,6 @@ class ThemedImageController extends Controller
 
             $userSize = $request->input('image_size', '1:1');
             $falImageSize = $sizeMapping[$userSize] ?? 'square_hd';
-
 
             $prompt = $this->buildThemeImagePrompt($request);
 
@@ -150,11 +149,10 @@ class ThemedImageController extends Controller
             }
 
             $requestModel = $user->themedImageRequests()->create([
-                'source_image'        => $path,
-
-                'theme'               => $request->theme,
-                'image_size'          => $request->image_size,
-                'optional_text'       => $request->optional_text,
+                'source_image'  => $path,
+                'theme'         => $request->theme,
+                'image_size'    => $request->image_size,
+                'optional_text' => $request->optional_text,
             ]);
 
             if ($planId == 1) {
@@ -170,13 +168,15 @@ class ThemedImageController extends Controller
 
             foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([
-                    'image_path'   => $url,
+                    'image_path' => $url,
                 ]);
             }
 
+            app(UsageLimitService::class)->increment($user, 'image');
+
             return response()->json([
-                'success'      => true,
-                'message'      => 'Image edited and saved successfully.',
+                'success' => true,
+                'message' => 'Image edited and saved successfully.',
                 'data' => [
                     'request_id'   => $requestModel->id,
                     'original_url' => $uploadedImageUrl,
@@ -197,38 +197,35 @@ class ThemedImageController extends Controller
         }
     }
 
-
     private function buildThemeImagePrompt(Request $request): string
     {
-        $theme = trim((string)$request->input('theme', 'seasonal theme'));
-        $userText = trim((string)$request->input('optional_text', ''));
-        $imageSize = trim((string)$request->input('image_size', '1:1'));
+        $theme = trim((string) $request->input('theme', 'seasonal theme'));
+        $userText = trim((string) $request->input('optional_text', ''));
+        $imageSize = trim((string) $request->input('image_size', '1:1'));
 
         $secondaryText = $this->getSecondaryText($theme);
         $themeConfig = $this->getThemeConfig($theme);
 
-        // Product: preserve identity but allow quality enhancement
         $prompt = "PRODUCT: The reference product may be a low-quality or non-professional photo. ";
         $prompt .= "Re-render it with clean crisp edges, professional studio-quality finish, accurate label clarity, and natural material textures. ";
         $prompt .= "PRESERVE EXACTLY: the product shape, label design, brand colors, and overall form. Do NOT change the product identity. ";
 
-        // Replace background with themed scene
         $prompt .= "BACKGROUND: Completely replace the entire background and environment with a dramatic luxury marketing scene. ";
         $prompt .= "SCENE ELEMENTS: Naturally place these themed decorative elements around the product: {$themeConfig['elements']}. ";
         $prompt .= "SURFACE: Place the product on {$themeConfig['surface']}. Natural contact shadow underneath. No pedestal. ";
         $prompt .= "ATMOSPHERE: {$themeConfig['atmosphere']}. ";
         $prompt .= "LIGHTING: {$themeConfig['lighting']}. ";
 
-        // Optional text overlay
         if (!empty($userText)) {
             $prompt .= "TEXT: Show '{$userText}' in large bold luxury serif font at the top. ";
+
             if (!empty($secondaryText)) {
                 $prompt .= "Below it show '{$secondaryText}' in smaller elegant font. ";
             }
+
             $prompt .= "White text with subtle glow. Centered. Never touching the product. ";
         }
 
-        // Style
         $prompt .= "STYLE: Luxury high-end commercial advertisement. ";
         $prompt .= "Cinematic color grading with RICH DEEP COLORS. ";
         $prompt .= "STRONG contrast between bright highlights and deep dark shadows. ";
@@ -238,6 +235,7 @@ class ThemedImageController extends Controller
 
         return trim(preg_replace('/\s+/', ' ', $prompt));
     }
+
     private function getThemeConfig(string $theme): array
     {
         $configs = [
@@ -323,16 +321,16 @@ class ThemedImageController extends Controller
     private function getSecondaryText(string $theme): string
     {
         $texts = [
-            "Ramadan"       => "Ramadan Kareem",
-            "Eid al-Fitr"   => "Happy Eid",
-            "Eid al-Adha"   => "Happy Eid Al-Adha",
-            "Christmas"     => "Merry Christmas",
+            "Ramadan"         => "Ramadan Kareem",
+            "Eid al-Fitr"     => "Happy Eid",
+            "Eid al-Adha"     => "Happy Eid Al-Adha",
+            "Christmas"       => "Merry Christmas",
             "Valentine's Day" => "With Love",
-            "Black Friday"  => "Exclusive Offer",
-            "Graduation"    => "Class of 2026",
-            "New Year"      => "Happy New Year",
-            "Mother's Day"  => "Happy Mother's Day",
-            "Back to School" => "Ready to Learn",
+            "Black Friday"    => "Exclusive Offer",
+            "Graduation"      => "Class of 2026",
+            "New Year"        => "Happy New Year",
+            "Mother's Day"    => "Happy Mother's Day",
+            "Back to School"  => "Ready to Learn",
         ];
 
         return $texts[$theme] ?? "";
@@ -351,6 +349,10 @@ class ThemedImageController extends Controller
                 ->timeout(60)
                 ->get($statusUrl);
 
+            if (!$statusResponse->successful()) {
+                throw new \Exception('Failed to check fal status.');
+            }
+
             $statusData = $statusResponse->json();
             $status = $statusData['status'] ?? null;
 
@@ -362,10 +364,14 @@ class ThemedImageController extends Controller
                     ->timeout(180)
                     ->get($responseUrl);
 
+                if (!$resultResponse->successful()) {
+                    throw new \Exception('Failed to fetch fal result.');
+                }
+
                 return $resultResponse->json();
             }
 
-            if (in_array($status, ['FAILED', 'ERROR', 'CANCELLED'])) {
+            if (in_array($status, ['FAILED', 'ERROR', 'CANCELLED'], true)) {
                 throw new \Exception('fal failed with status ' . $status);
             }
 

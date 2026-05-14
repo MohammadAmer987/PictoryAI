@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('name')->unique(); // free, pro
             $table->decimal('price', 10, 2)->default(0);
 
-            $table->unsignedInteger('max_generations')->nullable();
+            $table->unsignedInteger('max_generations_image')->nullable();
+            $table->unsignedInteger('max_generations_caption')->nullable();
             $table->boolean('watermark')->default(true);
 
             $table->timestamps();

@@ -1,8 +1,11 @@
 import '../../css/Mainpagestyles.css'
 import { useState, useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom"
+
 import Logo from "./Logo"
 import NavMenu from "./NavMenu"
 import AvatarMenu from "./AvatarMenu"
+import LoginRequiredPopup from "../LoginRequiredPopUp"
 
 export default function Navbar({ user = null, onNavigate = () => {}, onLogout = () => {},  onUserUpdated = () => {},
                                    notifications = [],
@@ -10,7 +13,13 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
                                    onClearNotifications = () => {},}) {
 
     const [openMenu, setOpenMenu] = useState(null)
+    const [showPopup, setShowPopup] = useState(false)
+    const navigate = useNavigate()
+
     const navRef = useRef(null)
+
+    // Check if user is logged in
+    const isLoggedIn = !!user
 
     useEffect(() => {
         function handleClick(e) {
@@ -18,12 +27,18 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
                 setOpenMenu(null)
             }
         }
+
         document.addEventListener("mousedown", handleClick)
-        return () => document.removeEventListener("mousedown", handleClick)
+
+        return () =>
+            document.removeEventListener("mousedown", handleClick)
+
     }, [])
 
     function toggle(menu) {
-        setOpenMenu((prev) => (prev === menu ? null : menu))
+        setOpenMenu((prev) =>
+            prev === menu ? null : menu
+        )
     }
 
     function handleNavigate(route) {
@@ -32,14 +47,22 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
     }
 
     return (
-        <nav className="navbar-react" ref={navRef} aria-label="Main navigation">
-        
-            <Logo />
-            <NavMenu
-                openMenu={openMenu}
-                toggle={toggle}
-                handleNavigate={handleNavigate}
-            />
+        <>
+            <nav
+                className="navbar-react"
+                ref={navRef}
+                aria-label="Main navigation"
+            >
+
+                <Logo />
+
+                <NavMenu
+                    openMenu={openMenu}
+                    toggle={toggle}
+                    handleNavigate={handleNavigate}
+                    isLoggedIn={isLoggedIn}
+                    setShowPopup={setShowPopup}
+                />
 
             <AvatarMenu
                 user={user}
@@ -54,6 +77,17 @@ export default function Navbar({ user = null, onNavigate = () => {}, onLogout = 
 
             />
 
-        </nav>
+            </nav>
+
+            {/* Login Popup */}
+            <LoginRequiredPopup
+                isOpen={showPopup}
+                onClose={() => setShowPopup(false)}
+                onLogin={() => {
+                    setShowPopup(false)
+                    navigate("/login")
+                }}
+            />
+        </>
     )
 }
