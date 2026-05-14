@@ -11,50 +11,81 @@ class ImageEditController extends Controller
     public function edit(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image'              => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
-            'product_name'       => 'required|string|max:255',
-            'target_audience'    => 'required|string|max:255',
-            'description'        => 'nullable|string|max:1000',
-            'background'         => 'required|string|max:500',        // من الـ frontend
-            'background_color'   => 'nullable|string|max:100',
-            'background_blur'    => 'required|numeric|min:0|max:10',
-            'lighting'           => 'required|string|max:255',
-            'photo_style'        => 'required|string|max:255',
-            'text_on_image'      => 'nullable|string|max:255',
-            'text_position'      => 'nullable|string|max:50',
-            'text_color'         => 'nullable|string|max:100',
-            'text_size'          => 'nullable|numeric|min:12|max:100',
-            'camera_angle'       => 'nullable|string|max:255',
-            'aspect_ratio'       => 'nullable|in:1:1,16:9,3:4,9:16,4:5',
-            'scene_details'      => 'required|string|max:1500',       // extraPrompt
+            'image'                => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
+            'product_name'         => 'required|string|max:255',
+            'target_audience'      => 'required|string|max:255',
+            'product_description'  => 'nullable|string|max:1000',
+
+            'background_type'      => 'required|string|max:500',
+            'background_color'     => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'background_blur'      => 'required|integer|min:0|max:10',
+
+            'light_type'           => 'required|string|max:255',
+            'style_type'           => 'required|string|max:255',
+
+            'text_on_image'        => 'nullable|string|max:255',
+            'text_position'        => 'nullable|string|max:50',
+            'text_color'           => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'text_size'            => 'nullable|integer|min:12|max:100',
+
+            'camera_angle'         => 'nullable|string|max:255',
+            'image_ratio'          => 'nullable|in:1:1,16:9,3:4,9:16,4:5',
+
+            'extra_prompt'         => 'required|string|max:1500',
+            'num_images'           => 'nullable|integer|min:1|max:3',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Validation failed.', 'errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated.',
+            ], 401);
         }
 
         $falKey = config('services.fal.key');
 
         if (!$falKey) {
             return response()->json([
+                'success' => false,
                 'message' => 'FAL_KEY is missing.',
-                'debug_info' => 'Check config/services.php and run php artisan config:clear'
+                'debug_info' => 'Check config/services.php and run php artisan config:clear',
             ], 500);
         }
 
         try {
             $imageFile = $request->file('image');
+
             $path = $imageFile->store('uploads', 'public');
-            $uploadedImageUrl = rtrim(config('app.url'), '/') . '/storage/' . $path;
+            $uploadedImageUrl = asset('storage/' . $path);
 
             $imageContent = file_get_contents($imageFile->getRealPath());
             $base64Image  = base64_encode($imageContent);
             $mimeType     = $imageFile->getMimeType() ?? 'image/jpeg';
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
-            $prompt = $this->buildDynamicProfessionalPrompt($request);
+            $sizeMapping = [
+                '1:1'   => 'square_hd',
+                '16:9'  => 'landscape_16_9',
+                '9:16'  => 'portrait_16_9',
+                '4:5'   => 'portrait_4_5',
+                '3:4'   => 'portrait_4_5',
+            ];
 
-            $numImages = (int) $request->input('num_images', 1);
+            $userSize = $request->input('image_ratio', '1:1');
+            $falImageSize = $sizeMapping[$userSize] ?? 'square_hd';
+
+
+            $prompt = $this->buildDynamicProfessionalPrompt($request);
 
             $numImages = (int) $request->input('num_images', 1);
 
@@ -65,27 +96,34 @@ class ImageEditController extends Controller
                 ->withoutVerifying()
                 ->timeout(300)
                 ->post('https://queue.fal.run/fal-ai/flux-pro/kontext', [
-                    'image_url'       => $imageDataUri,
-                    'prompt'          => $prompt,
-                    'guidance_scale'  => 3.5,
-                    'num_images'      => $numImages,      // ← دعم Pro/Free
-                    'seed'            => null,
-                    'output_format'   => 'jpeg',
+                    'image_url'      => $imageDataUri,
+                    'prompt'         => $prompt,
+                    'image_size'     => $falImageSize,
+                    'aspect_ratio'   => $userSize,
+                    'guidance_scale' => 3.5,
+                    'num_images'     => $numImages,
+                    'seed'           => null,
+                    'output_format'  => 'jpeg',
                 ]);
 
             if (!$submitResponse->successful()) {
                 return response()->json([
+                    'success'   => false,
                     'message'   => 'Failed to submit request to fal.ai',
                     'fal_error' => $submitResponse->json() ?: $submitResponse->body(),
                 ], 502);
             }
 
             $submitData = $submitResponse->json();
+
             $statusUrl   = $submitData['status_url'] ?? null;
             $responseUrl = $submitData['response_url'] ?? null;
 
             if (!$statusUrl || !$responseUrl) {
-                return response()->json(['message' => 'Missing status_url or response_url'], 502);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Missing status_url or response_url',
+                ], 502);
             }
 
             $resultData = $this->pollFalResult($statusUrl, $responseUrl, $falKey);
@@ -96,47 +134,85 @@ class ImageEditController extends Controller
 
             if (empty($editedUrls)) {
                 return response()->json([
+                    'success'     => false,
                     'message'     => 'No edited image returned from fal.ai',
                     'fal_result'  => $resultData,
                     'prompt_used' => $prompt,
                 ], 502);
             }
 
+            $requestModel = $user->enhanceImageRequests()->create([
+                'source_image'        => $path,
+
+                'product_name'        => $request->product_name,
+                'target_audience'     => $request->target_audience,
+                'product_description' => $request->product_description,
+
+                'background_type'     => $request->background_type,
+                'background_color'    => $request->background_color ?? '#ffffff',
+                'background_blur'     => $request->background_blur,
+
+                'light_type'          => $request->light_type,
+                'style_type'          => $request->style_type,
+
+                'text_on_image'       => $request->text_on_image,
+                'text_position'       => $request->text_position,
+                'text_color'          => $request->text_color,
+                'text_size'           => $request->text_size,
+
+                'camera_angle'        => $request->camera_angle,
+                'image_ratio'         => $request->image_ratio,
+
+                'extra_prompt'        => $request->extra_prompt,
+            ]);
+
+            foreach ($editedUrls as $index => $url) {
+                $requestModel->responses()->create([
+                    'image_path'   => $url,
+                    'result_order' => $index + 1,
+                ]);
+            }
+
             return response()->json([
                 'success'      => true,
-                'original_url' => $uploadedImageUrl,
-                'edited_urls'  => $editedUrls,           // array (1 أو 3)
-                'prompt_used'  => $prompt,
-                'raw_result'   => $resultData,
+                'message'      => 'Image edited and saved successfully.',
+                'data' => [
+                    'request_id'   => $requestModel->id,
+                    'original_url' => $uploadedImageUrl,
+                    'edited_urls'  => $editedUrls,
+                    'prompt_used'  => $prompt,
+                    'raw_result'   => $resultData,
+                ],
             ]);
+
         } catch (\Throwable $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'Image editing failed.',
                 'error'   => $e->getMessage(),
+                'line'    => $e->getLine(),
+                'file'    => $e->getFile(),
             ], 500);
         }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // PROMPT ديناميكي 100% حسب كل الإعدادات اللي بدخلها المستخدم
-    // ─────────────────────────────────────────────────────────────
     private function buildDynamicProfessionalPrompt(Request $request): string
     {
         $productName = trim((string)$request->input('product_name', 'the product'));
         $audience = trim((string)$request->input('target_audience', ''));
-        $description = trim((string)$request->input('description', ''));
-        $background = trim((string)$request->input('background', ''));
+        $description = trim((string)$request->input('product_description', ''));
+        $background = trim((string)$request->input('background_type', ''));
         $backgroundColor = trim((string)$request->input('background_color', ''));
         $backgroundBlur = $request->input('background_blur');
-        $lighting = trim((string)$request->input('lighting', 'soft studio lighting'));
-        $photoStyle = trim((string)$request->input('photo_style', 'luxury commercial photography'));
+        $lighting = trim((string)$request->input('light_type', 'soft studio lighting'));
+        $photoStyle = trim((string)$request->input('style_type', 'luxury commercial photography'));
         $textOnImage = trim((string)$request->input('text_on_image', ''));
         $textPosition = $request->input('text_position', 'bottom-left');
         $textColor = trim((string)$request->input('text_color', '#ffffff'));
-        $textSize = (int)$request->input('text_size', 48);   // حجم الخط
+        $textSize = (int)$request->input('text_size', 48);
         $cameraAngle = trim((string)$request->input('camera_angle', 'eye level'));
-        $aspectRatio = $request->input('aspect_ratio', '');
-        $extraPrompt = trim((string)$request->input('scene_details', ''));
+        $aspectRatio = $request->input('image_ratio', '');
+        $extraPrompt = trim((string)$request->input('extra_prompt', ''));
 
         $prompt = "Professional luxury e-commerce product photography of {$productName}, ultra realistic, 8K commercial quality.";
 
@@ -151,9 +227,11 @@ class ImageEditController extends Controller
         }
 
         $bgDesc = $background;
+
         if ($backgroundColor) {
             $bgDesc .= " with {$backgroundColor} tone";
         }
+
         if ($bgDesc) {
             $prompt .= " Background is " . trim($bgDesc) . ".";
         }
@@ -164,9 +242,7 @@ class ImageEditController extends Controller
 
         $prompt .= " {$lighting}, {$photoStyle}, shallow depth of field, soft cinematic bokeh, high-end luxury advertisement.";
 
-        // ====================== تحسين قوي لحجم الكتابة ======================
         if ($textOnImage) {
-            $textWeight = '';
             if ($textSize >= 70) {
                 $textWeight = "very large, prominent, bold";
             } elseif ($textSize >= 50) {
@@ -183,7 +259,6 @@ class ImageEditController extends Controller
             $prompt .= "EXACT color {$textColor}, highly visible, sharp edges, ";
             $prompt .= "excellent readability, soft glow effect, high contrast.";
         }
-        // =====================================================================
 
         if ($backgroundBlur !== null && $backgroundBlur > 0) {
             $prompt .= " Soft cinematic background blur intensity {$backgroundBlur}/10.";
@@ -208,8 +283,10 @@ class ImageEditController extends Controller
         $sleepSeconds = 2;
 
         for ($i = 0; $i < $maxAttempts; $i++) {
-            $statusResponse = Http::withHeaders(['Authorization' => 'Key ' . $falKey])
-                ->withoutVerifying()           // ← مهم جدًا
+            $statusResponse = Http::withHeaders([
+                'Authorization' => 'Key ' . $falKey,
+            ])
+                ->withoutVerifying()
                 ->timeout(60)
                 ->get($statusUrl);
 
@@ -217,10 +294,13 @@ class ImageEditController extends Controller
             $status = $statusData['status'] ?? null;
 
             if ($status === 'COMPLETED') {
-                $resultResponse = Http::withHeaders(['Authorization' => 'Key ' . $falKey])
-                    ->withoutVerifying()       // ← مهم جدًا
+                $resultResponse = Http::withHeaders([
+                    'Authorization' => 'Key ' . $falKey,
+                ])
+                    ->withoutVerifying()
                     ->timeout(180)
                     ->get($responseUrl);
+
                 return $resultResponse->json();
             }
 

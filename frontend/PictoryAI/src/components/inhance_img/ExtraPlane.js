@@ -7,6 +7,8 @@ import Angle45 from "../../assets/inhance_img/angles/Angle45.jpg";
 import FlatLay from "../../assets/inhance_img/angles/Flat Lay.jpg";
 import Side from "../../assets/inhance_img/angles/Side.jpg";
 import Top from "../../assets/inhance_img/angles/Top.jpg";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const angles = [
     { name: 'Front',      image: Front },
@@ -17,6 +19,7 @@ const angles = [
 ];
 
 function ExtraPlane({ isPro, settings, updateSetting }) {
+    const navigate = useNavigate();
     if (!isPro) {
         return (
             <div className="extra-locked">
@@ -28,7 +31,7 @@ function ExtraPlane({ isPro, settings, updateSetting }) {
                 </div>
                 <h3>Pro Feature</h3>
                 <p>Extra settings — including custom image count and advanced controls — are available exclusively for Pro users.</p>
-                <button className="upgrade-btn">✦ Upgrade to Pro</button>
+                <button className="upgrade-btn" onClick={() => navigate("/pricing")}>✦ Upgrade to Pro</button>
             </div>
         );
     }

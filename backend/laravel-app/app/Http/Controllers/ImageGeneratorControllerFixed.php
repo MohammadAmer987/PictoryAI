@@ -1,12 +1,12 @@
-﻿<?php
-declare(strict_types=1);
+<?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
-class ImageGeneratorController extends Controller
+class ImageGeneratorControllerFixed extends Controller
 {
     private const IMAGE_DIMENSIONS = [
         'post'      => ['width' => 1024, 'height' => 1024, 'ratio' => '1:1'],
@@ -52,7 +52,7 @@ class ImageGeneratorController extends Controller
                 $seed,
                 $request
             );
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'error'   => 'Image request failed on the server. ' . $e->getMessage(),
@@ -129,11 +129,11 @@ class ImageGeneratorController extends Controller
         Request $request
     ) {
         $pollinationsKey = trim((string) config('services.pollinations.key'));
-        $queryParams = [
-            'width'  => $dimensions['width'],
+        $queryParams      = [
+            'width' => $dimensions['width'],
             'height' => $dimensions['height'],
             'nologo' => 'true',
-            'seed'   => $seed,
+            'seed' => $seed,
         ];
 
         if ($pollinationsKey !== '') {
@@ -151,46 +151,46 @@ class ImageGeneratorController extends Controller
 
             return response()->json([
                 'success' => false,
-                'error'   => $message,
+                'error' => $message,
             ], 429);
         }
 
         if ($probeResponse->failed()) {
             return response()->json([
                 'success' => false,
-                'error'   => $this->extractPollinationsError($probeResponse),
+                'error' => $this->extractPollinationsError($probeResponse),
             ], 500);
         }
 
         $imageRequest = \App\Models\ImageGenerationRequest::create([
-            'user_id'      => $request->user()->id,
+            'user_id' => $request->user()->id,
             'project_name' => $request->projectName,
-            'content'      => $request->content,
-            'color'        => $selectedColor,
-            'image_type'   => $imageType,
-            'prompt_used'  => $prompt,
+            'content' => $request->content,
+            'color' => $selectedColor,
+            'image_type' => $imageType,
+            'prompt_used' => $prompt,
         ]);
 
         \App\Models\ImageGenerationResponse::create([
-            'request_id'   => $imageRequest->id,
-            'image_path'   => $imageUrl,
+            'request_id' => $imageRequest->id,
+            'image_path' => $imageUrl,
             'result_order' => 1,
         ]);
 
         return response()->json([
-            'success'    => true,
-            'image'      => 'data:' . $probeResponse->header('Content-Type', 'image/jpeg') . ';base64,' . base64_encode($probeResponse->body()),
-            'image_url'  => $imageUrl,
-            'color'      => $selectedColor,
+            'success' => true,
+            'image' => 'data:' . $probeResponse->header('Content-Type', 'image/jpeg') . ';base64,' . base64_encode($probeResponse->body()),
+            'image_url' => $imageUrl,
+            'color' => $selectedColor,
             'image_type' => $imageType,
-            'size'       => [
-                'width'  => $dimensions['width'],
+            'size' => [
+                'width' => $dimensions['width'],
                 'height' => $dimensions['height'],
-                'ratio'  => $dimensions['ratio'],
+                'ratio' => $dimensions['ratio'],
             ],
-            'prompt'     => $prompt,
-            'seed'       => $seed,
-            'provider'   => 'pollinations',
+            'prompt' => $prompt,
+            'seed' => $seed,
+            'provider' => 'pollinations',
         ]);
     }
 
@@ -209,7 +209,7 @@ class ImageGeneratorController extends Controller
         $lastConnectionMessage = null;
 
         try {
-            $lockPath      = storage_path('framework/cache/pollinations-image.lock');
+            $lockPath = storage_path('framework/cache/pollinations-image.lock');
             $lockDirectory = dirname($lockPath);
 
             if (!is_dir($lockDirectory)) {
@@ -296,3 +296,4 @@ class ImageGeneratorController extends Controller
         return 'Pollinations error (' . $response->status() . '). Please try again.';
     }
 }
+

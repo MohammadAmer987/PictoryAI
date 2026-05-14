@@ -1,5 +1,7 @@
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import logo from '../../images/logo4.png';
+
 function Footer() {
     return (
         <footer className="footer-section py-5 mt-5">
@@ -33,27 +35,27 @@ function Footer() {
                     <Col xs={6} md={4} lg={2} className="text-center text-md-start">
                         <h6 className="footer-heading mb-3">Explore</h6>
                         <ul className="list-unstyled footer-list mb-0">
-                            <li><a href="#features" className="footer-link">Features</a></li>
-                            <li><a href="#pricing" className="footer-link">Pricing</a></li>
-                            <li><a href="#examples" className="footer-link">Examples</a></li>
+                            <li><Link to="/about" className="footer-link">About Us</Link></li>
+                            <li><Link to="/features" className="footer-link">Features</Link></li>
+                            <li><Link to="/pricing" className="footer-link">Pricing</Link></li>
                         </ul>
                     </Col>
 
                     <Col xs={6} md={4} lg={2} className="text-center text-md-start">
-                        <h6 className="footer-heading mb-3">Company</h6>
+                        <h6 className="footer-heading mb-3">Tools</h6>
                         <ul className="list-unstyled footer-list mb-0">
-                            <li><a href="#about" className="footer-link">About Us</a></li>
-                            <li><a href="#careers" className="footer-link">Careers</a></li>
-                            <li><a href="#blog" className="footer-link">Blog</a></li>
+                            <li><Link to="/tools" className="footer-link">All Tools</Link></li>
+                            <li><Link to="/tools/caption-generator" className="footer-link">Caption Generator</Link></li>
+                            <li><Link to="/tools/enhance-image" className="footer-link">Enhance Image</Link></li>
+                            <li><Link to="/tools/theme-image-generation" className="footer-link">Theme Images</Link></li>
                         </ul>
                     </Col>
 
                     <Col xs={12} md={4} lg={2} className="text-center text-md-start">
-                        <h6 className="footer-heading mb-3">Support</h6>
+                        <h6 className="footer-heading mb-3">Plans</h6>
                         <ul className="list-unstyled footer-list mb-0">
-                            <li><a href="#help" className="footer-link">Help Center</a></li>
-                            <li><a href="#api" className="footer-link">API Docs</a></li>
-                            <li><a href="#contact" className="footer-link">Contact Us</a></li>
+                            <li><Link to="/subscription" className="footer-link">My Plan</Link></li>
+                            <li><Link to="/history" className="footer-link">My Creations</Link></li>
                         </ul>
                     </Col>
 
@@ -71,22 +73,25 @@ function Footer() {
 
                     <Col xs={12} md={4} className="order-1 order-md-2">
                         <div className="social-icons d-flex justify-content-center gap-2 flex-wrap">
-                            {['linkedin', 'twitter-x', 'instagram', 'facebook'].map((social) => (
-                                <a
-                                    key={social}
-                                    href={`#${social}`}
-                                    className="social-link"
-                                >
-                                    <i className={`bi bi-${social}`}></i>
-                                </a>
-                            ))}
+                            <a href="https://linkedin.com" className="social-link" target="_blank" rel="noreferrer">
+                                <i className="bi bi-linkedin"></i>
+                            </a>
+                            <a href="https://twitter.com" className="social-link" target="_blank" rel="noreferrer">
+                                <i className="bi bi-twitter-x"></i>
+                            </a>
+                            <a href="https://instagram.com" className="social-link" target="_blank" rel="noreferrer">
+                                <i className="bi bi-instagram"></i>
+                            </a>
+                            <a href="https://facebook.com" className="social-link" target="_blank" rel="noreferrer">
+                                <i className="bi bi-facebook"></i>
+                            </a>
                         </div>
                     </Col>
 
                     <Col xs={12} md={4} className="order-2 order-md-3">
                         <div className="legal-links d-flex justify-content-center justify-content-md-end gap-3 gap-sm-4 flex-wrap">
-                            <a href="#privacy" className="footer-link footer-muted">Privacy Policy</a>
-                            <a href="#terms" className="footer-link footer-muted">Terms of Service</a>
+                            <Link to="/about" className="footer-link footer-muted">Contact</Link>
+                            <Link to="/subscription" className="footer-link footer-muted">Plans</Link>
                         </div>
                     </Col>
                 </Row>

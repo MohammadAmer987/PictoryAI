@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-function ProTips() {
+function ProTips({ show = true }) {
   const navigate = useNavigate();
-  return (
+  if (!show) return null;
+  else return (
     <div className="mt-5 pb-5">
       <div 
         className="rounded-4 p-4 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 shadow-sm border-0"

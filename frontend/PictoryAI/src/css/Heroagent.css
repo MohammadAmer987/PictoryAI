@@ -1,0 +1,385 @@
+/* ════════════════════════
+   HERO AGENT — HeroAgent.css
+   ملف مستقل كلياً — لا يتعارض مع أي class موجود
+════════════════════════ */
+
+/* ── Grid background decorative ── */
+.ha-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(4, 63, 52, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(4, 63, 52, 0.045) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Hero wrapper ── */
+.ha-hero {
+    background: var(--bg);
+    padding: 80px 56px 72px;
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.ha-hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Left side ── */
+.ha-left { margin: auto; }
+.ha-right { margin: auto; }
+
+/* Badge */
+.ha-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--dg);
+    color: var(--mint);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 100px;
+    margin-bottom: 22px;
+}
+
+.ha-badge-dot {
+    width: 6px;
+    height: 6px;
+    background: #1a9e75;
+    border-radius: 50%;
+    animation: ha-pulse 2s infinite;
+}
+
+@keyframes ha-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* Heading */
+.ha-h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 50px;
+    font-weight: 400;
+    color: var(--dg);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+}
+
+.ha-h1 em {
+    font-style: italic;
+    color: #1a9e75;
+}
+
+/* Subtitle */
+.ha-sub {
+    font-size: 15px;
+    color: var(--mg);
+    line-height: 1.8;
+    max-width: 360px;
+    font-weight: 300;
+    margin-bottom: 32px;
+}
+
+/* Action buttons */
+.ha-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.ha-btn-primary {
+    background: var(--dg);
+    color: var(--mint);
+    border: none;
+    border-radius: 9px;
+    padding: 13px 26px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.ha-btn-primary:hover { background: #065547; }
+
+.ha-btn-ghost {
+    background: transparent;
+    color: var(--dg);
+    border: 1.5px solid rgba(4, 63, 52, 0.22);
+    border-radius: 9px;
+    padding: 12px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.ha-btn-ghost:hover {
+    border-color: rgba(4, 63, 52, 0.45);
+    background: rgba(4, 63, 52, 0.04);
+}
+
+/* Stats row */
+.ha-stats {
+    display: flex;
+    gap: 28px;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(4, 63, 52, 0.1);
+}
+
+.ha-stat { display: flex; flex-direction: column; gap: 2px; }
+
+.ha-stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--dg);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+}
+
+.ha-stat-label {
+    font-size: 12px;
+    color: var(--mg);
+    font-weight: 300;
+}
+
+/* ════════════════════════
+   AGENT CARD (Right side)
+════════════════════════ */
+.ha-card-wrap {
+    position: relative;
+}
+
+/* Floating tags */
+.ha-floating-tag {
+    position: absolute;
+    background: var(--white);
+    border: 1px solid rgba(4, 63, 52, 0.12);
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--dg);
+    font-family: 'DM Sans', sans-serif;
+    z-index: 2;
+    box-shadow: 0 2px 12px rgba(4, 63, 52, 0.07);
+}
+
+.ha-floating-tag.top-right {
+    top: -14px;
+    right: -14px;
+}
+
+.ha-floating-tag.bottom-left {
+    bottom: -14px;
+    left: -14px;
+}
+
+.ha-ft-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ha-ft-dot.green  { background: #5dcaa5; }
+.ha-ft-dot.yellow { background: #f0c040; }
+
+/* Card */
+.ha-card {
+    background: var(--white);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 40px rgba(4, 63, 52, 0.07);
+}
+
+/* Card header */
+.ha-card-header {
+    background: var(--dg);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ha-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ha-card-avatar {
+    width: 30px;
+    height: 30px;
+    background: #1a9e75;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ha-card-name {
+    color: var(--mint);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ha-card-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: rgba(182, 229, 210, 0.7);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ha-status-dot {
+    width: 5px;
+    height: 5px;
+    background: #5dcaa5;
+    border-radius: 50%;
+    animation: ha-pulse 2s infinite;
+}
+
+/* Card body — task list */
+.ha-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ha-task {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: 10px;
+}
+
+.ha-task-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+}
+
+.ha-task-icon.done    { background: var(--mint); }
+.ha-task-icon.running { background: #fff3cd; }
+.ha-task-icon.pending { background: #ebebeb; }
+
+.ha-task-info { flex: 1; }
+
+.ha-task-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--dg);
+    margin-bottom: 3px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ha-task-meta {
+    font-size: 11px;
+    color: var(--mg);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ha-task-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 100px;
+    flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ha-task-badge.done    { background: var(--mint);  color: var(--dg); }
+.ha-task-badge.running { background: #fff3cd;       color: #6b4d00;   }
+.ha-task-badge.pending { background: #ebebeb;       color: #666;      }
+
+/* Card footer — prompt bar */
+.ha-card-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ha-prompt-bar {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 12px;
+    color: var(--mg);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ha-send-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--dg);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.ha-send-btn:hover { background: #065547; }
+
+/* ════════════════════════
+   RESPONSIVE
+════════════════════════ */
+@media (max-width: 860px) {
+    .ha-hero { padding: 48px 24px; }
+
+    .ha-hero-inner {
+        grid-template-columns: 1fr;
+        gap: 56px;
+    }
+
+    .ha-h1 { font-size: 36px; }
+
+    .ha-floating-tag.top-right  { top: -10px;    right: -6px;  }
+    .ha-floating-tag.bottom-left { bottom: -10px; left: -6px;  }
+}

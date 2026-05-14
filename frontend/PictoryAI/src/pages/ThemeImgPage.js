@@ -23,6 +23,7 @@ function ThemeImagePage() {
     const [uploadedPreview, setUploadedPreview] = useState(null);
     const [generatedImage, setGeneratedImage] = useState(null);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [error, setError] = useState(null);
 
     const themes = [
         "Eid al-Fitr",
@@ -36,6 +37,7 @@ function ThemeImagePage() {
         "Back to School",
         "Ramadan",
     ];
+
 
     const isFormValid = theme && imageSize && uploadedFile;
 
@@ -54,19 +56,53 @@ function ThemeImagePage() {
             return;
         }
 
+        setGeneratedImage(null);
+        setError(null);
         setIsGenerating(true);
 
         try {
-            setTimeout(() => {
-                if (uploadedPreview) {
-                    setGeneratedImage(uploadedPreview);
+            const formData = new FormData();
+            formData.append('image', uploadedFile);
+
+            const fieldMapping = {
+                theme: 'theme',
+                imageSize: 'image_size',
+                optionalText: 'optional_text',
+            };
+
+            formData.append("theme", theme);
+            formData.append("image_size", imageSize);
+            formData.append("optional_text", optionalText);
+
+            const token = localStorage.getItem("access_token");
+
+            const response = await fetch('http://localhost:8000/api/image-theme', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || data.message || 'Generation failed');
+            }
+
+            setGeneratedImage(data.data.edited_urls[0]);
+
+            } catch (err) {
+                console.error("Full Backend Error:", err);
+                let errorMsg = err.message;
+                if (err.response?.data) {
+                    const data = err.response.data;
+                    errorMsg = data.fal_error?.message || data.fal_error || data.error || data.message || err.message;
                 }
+                setError(errorMsg);
+            } finally {
                 setIsGenerating(false);
-            }, 1200);
-        } catch (error) {
-            console.error("Generate failed:", error);
-            setIsGenerating(false);
-        }
+            }
     };
 
     const handleDownload = () => {
@@ -202,6 +238,14 @@ function ThemeImagePage() {
                                             onChange={(e) => setOptionalText(e.target.value)}
                                         />
                                     </Form.Group>
+
+
+                                    {error && (
+                                        <p style={{ fontSize: "14px", color: "#c53030", textAlign: "center", margin: "12px 0", padding: "10px", backgroundColor: "#fff5f5", border: "1px solid #feb2b2", borderRadius: "8px", fontWeight: "500" }}>
+                                            ⚠️ {error}
+                                        </p>
+                                    )}
+
 
                                     <Button
                                         type="submit"

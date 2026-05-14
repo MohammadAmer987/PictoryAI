@@ -59,4 +59,26 @@ class User extends Authenticatable
 {
     return $this->hasMany(UsageCounter::class);
 }
+
+
+    public function captionGenerations()
+    {
+        return $this->hasMany(CaptionGeneration::class);
+    }
+
+
+    public function enhanceImageRequests()
+    {
+        return $this->hasMany(\App\Models\EnhanceImageRequest::class, 'user_id');
+    }
+
+    public function themedImageRequests()
+    {
+        return $this->hasMany(\App\Models\ThemedImageRequest::class, 'user_id');
+    }
+
+
+
 }
+
+
