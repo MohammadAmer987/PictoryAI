@@ -1,0 +1,119 @@
+.statsGrid {
+  width: min(780px, 100%);
+  min-height: calc(100vh - 96px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 22px;
+  align-content: center;
+}
+
+.card {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(244, 248, 247, 0.76)),
+    var(--bg-surface);
+  border: 1px solid rgba(136, 183, 174, 0.45);
+  border-radius: 18px;
+  padding: 24px 24px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 18px 45px rgba(24, 55, 50, 0.12);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.card .label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.card .value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+
+  margin-top: 15px;
+  display: block;
+  color: #376359;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -38px;
+  right: -34px;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(136, 183, 174, 0.34) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  left: -30px;
+  bottom: -34px;
+  width: 106px;
+  height: 106px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.86) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(101, 150, 140, 0.75);
+  box-shadow: 0 24px 55px rgba(24, 55, 50, 0.18);
+}
+
+.label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  position: relative;
+  z-index: 1;
+}
+
+.trendIcon {
+  color: var(--green);
+  background: rgba(52, 168, 83, 0.12);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+@media (max-width: 760px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}

@@ -16,8 +16,7 @@ import'./css/footer.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './css/captionGenerator.css'
 import './css/content-studio.css'
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import {getMe,logout} from "./Services/authService";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";import {getMe,logout} from "./Services/authService";
 import ContentStudioPage from "./pages/User/ContentStudioPage";
 import Text from "./components/module_3/Text";
 import InhanceImg from './pages/InhanceImgPage';
@@ -28,9 +27,12 @@ import SubscriptionPage from "./components/SubscriptionPage";
 import ChatBotWidget from "./components/ChatBotWidget";
 import { useNotifications } from './pages/useNotifications';
 import PaymentPage from "./pages/paymentPage"
+import AdminPanel from './pages/Admin/AdminPanel';
 
 function App() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith("/admin");
 
 
 async function handleLogout() {
@@ -59,10 +61,17 @@ React.useEffect(() => {
         useNotifications(user?.plan || "free");
     return (
         <>
-            <Navbar user={user} onNavigate={(route) => navigate(route)}   onLogout={handleLogout} onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}  notifications={notifications}
-                    unreadCount={unreadCount}
-                    onClearNotifications={clearNotifications}
- />
+            {!isAdminRoute && (
+  <Navbar
+    user={user}
+    onNavigate={(route) => navigate(route)}
+    onLogout={handleLogout}
+    onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}
+    notifications={notifications}
+    unreadCount={unreadCount}
+    onClearNotifications={clearNotifications}
+  />
+)}
 
             <Routes>
                 <Route path="/" element={
@@ -93,11 +102,11 @@ React.useEffect(() => {
                 <Route path="/tools/theme-image-generation" element={<ThemeImgPage addNotification={addNotification} />}/>
                 <Route path="/subscription" element={<SubscriptionPage />} />
                 <Route path="/payment" element={<PaymentPage  />} />
-
+                <Route path="/admin" element={<AdminPanel onLogout={handleLogout} />} />
             </Routes>
 
-            <ChatBotWidget />
-            <Footerpart />
+{!isAdminRoute && <ChatBotWidget />}
+{!isAdminRoute && <Footerpart />}
         </>
     );
 }
