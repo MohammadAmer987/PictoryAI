@@ -1,0 +1,226 @@
+.adminSidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: auto;
+  height: 100vh;
+  width: 300px;
+  background: #f8fbf9;
+  border-right: 1px solid #d3e2d9;
+  border-left: none;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease;
+  box-shadow: 10px 0 30px rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+}
+
+.adminSidebar--closed {
+  width: 88px;
+}
+
+.adminSidebar__toggle {
+  position: absolute;
+  top: 22px;
+  right: -11px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid #c7dcd2;
+  background: #f8fbf9;
+  color: #045f34;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.adminSidebar__logo {
+  height: 104px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid #e3eee8;
+}
+
+.adminSidebar__logoIcon {
+  min-width: 46px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #045f34;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.adminSidebar__logoName {
+  margin: 0;
+  color: #174c38;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.adminSidebar__logoSub {
+  margin: 5px 0 0;
+  color: #6b8c7b;
+  font-size: 12px;
+}
+
+.adminSidebar__nav {
+  flex: 1;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adminSidebar__navGroup {
+  margin: 0 0 10px 8px;
+  color: #376359;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.adminSidebar__navItem {
+  width: 100%;
+  height: 46px;
+  border: 0;
+  background: transparent;
+  color: #376359;
+  border-radius: 13px;
+  padding: 0 15px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  cursor: pointer;
+  position: relative;
+  font-weight: 750;
+  text-align: left;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.adminSidebar__navItem:hover {
+  background: #edf6f1;
+  color: #045f34;
+}
+
+.adminSidebar__navItem--active {
+  background: #d7e8df;
+  color: #045f34;
+}
+
+.adminSidebar__navItem span {
+  white-space: nowrap;
+}
+
+.adminSidebar--closed .adminSidebar__nav {
+  padding: 18px 14px;
+  gap: 6px;
+}
+
+.adminSidebar--closed .adminSidebar__navItem {
+  justify-content: center;
+  padding: 0;
+}
+
+.adminSidebar__activeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #045f34;
+  margin-left: auto;
+}
+
+.adminSidebar__bottom {
+  padding: 16px;
+  border-top: 1px solid #e3eee8;
+}
+
+.adminSidebar__adminCard {
+  min-height: 58px;
+  padding: 10px;
+  border-radius: 16px;
+  background: #eef6f1;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 12px;
+}
+
+.adminSidebar__avatar {
+  min-width: 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #045f34;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.adminSidebar__adminName {
+  margin: 0;
+  color: #174c38;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.adminSidebar__adminRole {
+  margin: 4px 0 0;
+  color: #6b8c7b;
+  font-size: 12px;
+}
+
+.adminSidebar__logout {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #caded4;
+  background: #f8fbf9;
+  color: #376359;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.adminSidebar__logout:hover {
+  background: #fff1f1;
+  color: #b42318;
+  border-color: #ffd0d0;
+}
+
+.adminSidebar--closed .adminSidebar__logo {
+  padding: 22px 18px;
+  justify-content: center;
+}
+
+.adminSidebar--closed .adminSidebar__bottom {
+  padding: 14px;
+}
+
+.adminSidebar--closed .adminSidebar__adminCard {
+  justify-content: center;
+  padding: 8px;
+}
+
+.adminSidebar--closed .adminSidebar__logout {
+  padding: 0;
+}

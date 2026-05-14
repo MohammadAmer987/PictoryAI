@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use OpenApi\Attributes as OA;
 
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
@@ -17,8 +18,12 @@ class ImageGeneratorControllerFixed extends Controller
         'landscape' => ['width' => 1536, 'height' => 1024, 'ratio' => '3:2'],
         'cinema'    => ['width' => 1792, 'height' => 768,  'ratio' => '21:9'],
     ];
-    #[OA\Post( 
-       path: '/api/image-generator/generate-fixed',
+
+
+ #[OA\Post(
+       path: '/api/image-generator/generate-fixed', 
+
+
         summary: 'Generate an AI image based on project details',
         description: 'Generates a professional AI image using Pollinations API based on project name, content, color, and image type. Returns base64 image data along with metadata.',
         tags: ['Tools - Image Generation'],
@@ -142,6 +147,41 @@ class ImageGeneratorControllerFixed extends Controller
     public function generate(Request $request)
     {
         try {
+            $user = $request->user();
+        $subscription = $user->activeSubscription()->with('plan')->first();
+        $plan = $subscription?->plan;
+        $planName = $plan?->name ?? 'free';
+
+        if ($planName === 'free') {
+            $maxGenerations = $plan?->max_generations ?? 3;
+            $used = \App\Models\ImageGenerationRequest::where('user_id', $user->id)->count();
+
+            if ($used >= $maxGenerations) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'free_limit_reached',
+                    'message' => 'You have used all ' . $maxGenerations . ' free generations.',
+                    'used'    => $used,
+                    'limit'   => $maxGenerations,
+                ], 403);
+            }
+        } elseif ($planName === 'pro') {
+            if (!$subscription || $subscription->status !== 'active') {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'subscription_expired',
+                    'message' => 'Your Pro subscription has expired.',
+                ], 403);
+            }
+
+            if ($subscription->end_date && now()->isAfter($subscription->end_date)) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'subscription_expired',
+                    'message' => 'Your Pro subscription has expired.',
+                ], 403);
+            }
+        }
             $request->validate([
                 'projectName' => 'required|string|max:255',
                 'content'     => 'nullable|string|max:1000',

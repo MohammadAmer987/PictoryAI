@@ -5,9 +5,155 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class ThemedImageController extends Controller
 {
+
+    #[OA\Post(
+        path: '/api/image/themed',
+        summary: 'Apply a seasonal or occasion theme to a product image',
+        description: 'Uploads a product image and replaces its background with a fully themed luxury marketing scene (e.g. Ramadan, Christmas, Valentine\'s Day). The product identity is preserved while the environment is completely transformed. Free plan users are limited to 3 generations per month.',
+        tags: ['Tools - Theme Generator'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['image', 'theme', 'image_size'],
+                    properties: [
+                        new OA\Property(
+                            property: 'image',
+                            type: 'string',
+                            format: 'binary',
+                            description: 'Product image file. Accepted formats: jpg, jpeg, png, webp. Max size: 20MB.'
+                        ),
+                        new OA\Property(
+                            property: 'theme',
+                            type: 'string',
+                            maxLength: 255,
+                            description: 'The occasion or seasonal theme to apply to the image.',
+                            enum: [
+                                'Christmas',
+                                'Ramadan',
+                                'Eid al-Fitr',
+                                'Eid al-Adha',
+                                "Valentine's Day",
+                                'Black Friday',
+                                'New Year',
+                                'Graduation',
+                                "Mother's Day",
+                                'Back to School',
+                            ],
+                            example: 'Ramadan'
+                        ),
+                        new OA\Property(
+                            property: 'image_size',
+                            type: 'string',
+                            enum: ['1:1', '16:9', '3:4', '9:16', '4:5'],
+                            description: 'Desired output image aspect ratio.',
+                            example: '1:1'
+                        ),
+                        new OA\Property(
+                            property: 'optional_text',
+                            type: 'string',
+                            maxLength: 255,
+                            nullable: true,
+                            description: 'Optional text to overlay on the generated image (e.g. a promotional message or greeting). Displayed in a large bold luxury font at the top.',
+                            example: 'Ramadan Special Offer'
+                        ),
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Image themed and saved successfully.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Image edited and saved successfully.'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'request_id', type: 'integer', example: 17),
+                                new OA\Property(property: 'original_url', type: 'string', format: 'uri', example: 'https://example.com/storage/uploads/product.jpg'),
+                                new OA\Property(
+                                    property: 'edited_urls',
+                                    type: 'array',
+                                    items: new OA\Items(type: 'string', format: 'uri'),
+                                    example: ['https://cdn.fal.ai/themed-result.jpg']
+                                ),
+                                new OA\Property(property: 'prompt_used', type: 'string', example: 'PRODUCT: The reference product may be a low-quality...'),
+                                new OA\Property(property: 'raw_result', type: 'object', description: 'Raw response payload from fal.ai'),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthenticated.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Unauthenticated.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Free plan monthly limit reached (max 3 generations).',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'You have reached the maximum limit of 3 generations for the free plan.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation failed.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Validation failed.'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['theme' => ['The theme field is required.'], 'image_size' => ['The selected image size is invalid.']]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error or FAL_KEY missing.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Image editing failed.'),
+                        new OA\Property(property: 'error', type: 'string', example: 'Connection timed out.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 502,
+                description: 'fal.ai returned an error, timed out, or returned no images.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to submit request to fal.ai'),
+                        new OA\Property(property: 'fal_error', type: 'object', description: 'Error payload from fal.ai'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function edit(Request $request)
     {
         set_time_limit(0);
@@ -36,6 +182,30 @@ class ThemedImageController extends Controller
             ], 401);
         }
 
+        $subscription = $user->subscriptions()
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+
+        $planId = $subscription?->plan_id ?? 1;
+
+        if ($planId == 1) {
+            $usageCounter = $user->usageCounters()
+                ->where('type', 'themed_image')
+                ->where('year', now()->year)
+                ->where('month', now()->month)
+                ->first();
+
+            $used = $usageCounter?->used ?? 0;
+
+            if ($used >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have reached the maximum limit of 3 generations for the free plan.',
+                ], 403);
+            }
+        }
+
         $falKey = config('services.fal.key');
 
         if (!$falKey) {
@@ -59,11 +229,11 @@ class ThemedImageController extends Controller
 
 
             $sizeMapping = [
-                '1:1'   => 'square_hd',
-                '16:9'  => 'landscape_16_9',
-                '9:16'  => 'portrait_16_9',
-                '4:5'   => 'portrait_4_5',
-                '3:4'   => 'portrait_4_5',
+                '1:1'  => 'square_hd',
+                '16:9' => 'landscape_16_9',
+                '9:16' => 'portrait_16_9',
+                '4:5'  => 'portrait_4_3',
+                '3:4'  => 'portrait_4_3',
             ];
 
             $userSize = $request->input('image_size', '1:1');
@@ -131,6 +301,17 @@ class ThemedImageController extends Controller
                 'image_size'          => $request->image_size,
                 'optional_text'       => $request->optional_text,
             ]);
+
+            if ($planId == 1) {
+                $user->usageCounters()->updateOrCreate(
+                    [
+                        'type'  => 'themed_image',
+                        'year'  => now()->year,
+                        'month' => now()->month,
+                    ],
+                    ['used' => DB::raw('used + 1')]
+                );
+            }
 
             foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([

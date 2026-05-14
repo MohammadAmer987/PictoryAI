@@ -1,0 +1,161 @@
+.usersPage {
+  width: min(1180px, 100%);
+  min-height: calc(100vh - 96px);
+  margin: 0 auto;
+  padding-right: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.usersTableWrap {
+  width: calc(100% - 72px);
+  margin-right: 100px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 248, 0.82)),
+    var(--bg-surface);
+  border: 1px solid rgba(136, 183, 174, 0.42);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 54px rgba(24, 55, 50, 0.13);
+  
+}
+.statusBadge.pending {
+  background: #cdece4;
+  color: var(--accent-light);
+}
+.usersTable {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-primary);
+ 
+  
+ 
+}
+
+.usersTable th,
+.usersTable td {
+  padding: 17px 20px;
+  border-bottom: 1px solid rgba(136, 183, 174, 0.22);
+  text-align: left;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.usersTable th {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(136, 183, 174, 0.11);
+}
+
+.usersTable tbody tr {
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.usersTable tbody tr:hover {
+  background: rgba(136, 183, 174, 0.08);
+}
+
+.usersTable tr:last-child td {
+  border-bottom: none;
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+}
+
+.userAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--accent), rgba(101, 150, 140, 0.9));
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(24, 55, 50, 0.14);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.statusBadge.active {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.statusBadge.pending {
+  background: #cdece4;
+  color: var(--accent-light);
+}
+
+.statusBadge.inactive {
+  background: var(--red-dim);
+  color: var(--red);
+}
+
+.planBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.planBadge.free {
+  background: rgba(136, 183, 174, 0.16);
+  color: var(--text-primary);
+}
+
+.planBadge.pro {
+  background: rgba(24, 55, 50, 0.12);
+  color: var(--green);
+}
+
+.imagesLeft,
+.imagesEmpty {
+  font-weight: 800;
+}
+
+.imagesEmpty {
+  color: var(--red);
+}
+
+.emptyUsers {
+  padding: 28px;
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .usersPage {
+    align-items: flex-start;
+    min-height: auto;
+  }
+
+  .usersTableWrap {
+    width: 100%;
+    margin-right: 0;
+    overflow-x: auto;
+  }
+
+  .usersTable {
+    min-width: 1040px;
+  }
+}

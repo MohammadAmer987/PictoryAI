@@ -77,11 +77,11 @@ function AboutPart() {
 
       <div className="divider" />
 
-      <div className="cards">
+      <div className="cards2">
         {features.map((f, i) => (
-          <div key={i} className="card" style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
+          <div key={i} className="card2" style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
             
-          <p className="cardTitle" style={{ fontSize: "17px" ,fontWeight:"bold" ,color:"#011005"}}>{f.title}</p>
+          <p className="cardTitle" style={{ fontSize: "17px" ,fontWeight:"bold" ,color:"#011005",paddingTop:"10px"}}>{f.title}</p>
             <div className="cardBody">
   {f.body.map((paragraph, i) => (
     <p key={i}>{paragraph}</p>

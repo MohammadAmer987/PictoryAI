@@ -30,8 +30,8 @@
 .pf-page {
     min-height: 100vh;
     padding: 2rem 1.25rem;
-    background: linear-gradient(180deg, rgba(240, 245, 242, 1), rgba(233, 244, 235, 1));
-}
+
+background-color: white;}
 
 /* ── Wrapper ── */
 .pf-wrapper {
