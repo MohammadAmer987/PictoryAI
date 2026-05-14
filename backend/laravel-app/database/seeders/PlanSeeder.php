@@ -13,16 +13,19 @@ class PlanSeeder extends Seeder
             ['name' => 'free'],
             [
                 'price' => 0,
-                'max_generations' => 5,
+                'max_generations_image' => 5,
+                'max_generations_caption' => 10,
                 'watermark' => true,
             ]
         );
 
         Plan::firstOrCreate(
-            ['name' => 'pro'],
+            ['name' => 'premium'],
             [
                 'price' => 29.99,
-                'max_generations' => null,
+                'max_generations_image' => null,
+                                'max_generations_image' => null,
+
                 'watermark' => false,
             ]
         );
