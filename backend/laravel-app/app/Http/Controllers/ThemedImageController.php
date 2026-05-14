@@ -5,20 +5,164 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use App\Services\UsageLimitService;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class ThemedImageController extends Controller
 {
+
+    #[OA\Post(
+        path: '/api/image/themed',
+        summary: 'Apply a seasonal or occasion theme to a product image',
+        description: 'Uploads a product image and replaces its background with a fully themed luxury marketing scene (e.g. Ramadan, Christmas, Valentine\'s Day). The product identity is preserved while the environment is completely transformed. Free plan users are limited to 3 generations per month.',
+        tags: ['Tools - Theme Generator'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['image', 'theme', 'image_size'],
+                    properties: [
+                        new OA\Property(
+                            property: 'image',
+                            type: 'string',
+                            format: 'binary',
+                            description: 'Product image file. Accepted formats: jpg, jpeg, png, webp. Max size: 20MB.'
+                        ),
+                        new OA\Property(
+                            property: 'theme',
+                            type: 'string',
+                            maxLength: 255,
+                            description: 'The occasion or seasonal theme to apply to the image.',
+                            enum: [
+                                'Christmas',
+                                'Ramadan',
+                                'Eid al-Fitr',
+                                'Eid al-Adha',
+                                "Valentine's Day",
+                                'Black Friday',
+                                'New Year',
+                                'Graduation',
+                                "Mother's Day",
+                                'Back to School',
+                            ],
+                            example: 'Ramadan'
+                        ),
+                        new OA\Property(
+                            property: 'image_size',
+                            type: 'string',
+                            enum: ['1:1', '16:9', '3:4', '9:16', '4:5'],
+                            description: 'Desired output image aspect ratio.',
+                            example: '1:1'
+                        ),
+                        new OA\Property(
+                            property: 'optional_text',
+                            type: 'string',
+                            maxLength: 255,
+                            nullable: true,
+                            description: 'Optional text to overlay on the generated image (e.g. a promotional message or greeting). Displayed in a large bold luxury font at the top.',
+                            example: 'Ramadan Special Offer'
+                        ),
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Image themed and saved successfully.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Image edited and saved successfully.'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'request_id', type: 'integer', example: 17),
+                                new OA\Property(property: 'original_url', type: 'string', format: 'uri', example: 'https://example.com/storage/uploads/product.jpg'),
+                                new OA\Property(
+                                    property: 'edited_urls',
+                                    type: 'array',
+                                    items: new OA\Items(type: 'string', format: 'uri'),
+                                    example: ['https://cdn.fal.ai/themed-result.jpg']
+                                ),
+                                new OA\Property(property: 'prompt_used', type: 'string', example: 'PRODUCT: The reference product may be a low-quality...'),
+                                new OA\Property(property: 'raw_result', type: 'object', description: 'Raw response payload from fal.ai'),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthenticated.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Unauthenticated.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Free plan monthly limit reached (max 3 generations).',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'You have reached the maximum limit of 3 generations for the free plan.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation failed.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Validation failed.'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['theme' => ['The theme field is required.'], 'image_size' => ['The selected image size is invalid.']]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error or FAL_KEY missing.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Image editing failed.'),
+                        new OA\Property(property: 'error', type: 'string', example: 'Connection timed out.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 502,
+                description: 'fal.ai returned an error, timed out, or returned no images.',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to submit request to fal.ai'),
+                        new OA\Property(property: 'fal_error', type: 'object', description: 'Error payload from fal.ai'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function edit(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(0);
 
         $validator = Validator::make($request->all(), [
-            'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
-            'theme'         => 'required|string|max:255',
-            'image_size'    => 'required|in:1:1,16:9,3:4,9:16,4:5',
-            'optional_text' => 'nullable|string|max:255',
+            'image'                => 'required|image|mimes:jpg,jpeg,png,webp|max:20480',
+            'theme'                => 'required|string|max:255',
+            'image_size'           =>'required|in:1:1,16:9,3:4,9:16,4:5',
+            'optional_text'        => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -83,6 +227,7 @@ class ThemedImageController extends Controller
             $mimeType     = $imageFile->getMimeType() ?? 'image/jpeg';
             $imageDataUri = "data:{$mimeType};base64,{$base64Image}";
 
+
             $sizeMapping = [
                 '1:1'  => 'square_hd',
                 '16:9' => 'landscape_16_9',
@@ -93,6 +238,7 @@ class ThemedImageController extends Controller
 
             $userSize = $request->input('image_size', '1:1');
             $falImageSize = $sizeMapping[$userSize] ?? 'square_hd';
+
 
             $prompt = $this->buildThemeImagePrompt($request);
 
@@ -149,10 +295,11 @@ class ThemedImageController extends Controller
             }
 
             $requestModel = $user->themedImageRequests()->create([
-                'source_image'  => $path,
-                'theme'         => $request->theme,
-                'image_size'    => $request->image_size,
-                'optional_text' => $request->optional_text,
+                'source_image'        => $path,
+
+                'theme'               => $request->theme,
+                'image_size'          => $request->image_size,
+                'optional_text'       => $request->optional_text,
             ]);
 
             if ($planId == 1) {
@@ -168,15 +315,13 @@ class ThemedImageController extends Controller
 
             foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([
-                    'image_path' => $url,
+                    'image_path'   => $url,
                 ]);
             }
 
-            app(UsageLimitService::class)->increment($user, 'image');
-
             return response()->json([
-                'success' => true,
-                'message' => 'Image edited and saved successfully.',
+                'success'      => true,
+                'message'      => 'Image edited and saved successfully.',
                 'data' => [
                     'request_id'   => $requestModel->id,
                     'original_url' => $uploadedImageUrl,
@@ -197,35 +342,38 @@ class ThemedImageController extends Controller
         }
     }
 
+
     private function buildThemeImagePrompt(Request $request): string
     {
-        $theme = trim((string) $request->input('theme', 'seasonal theme'));
-        $userText = trim((string) $request->input('optional_text', ''));
-        $imageSize = trim((string) $request->input('image_size', '1:1'));
+        $theme = trim((string)$request->input('theme', 'seasonal theme'));
+        $userText = trim((string)$request->input('optional_text', ''));
+        $imageSize = trim((string)$request->input('image_size', '1:1'));
 
         $secondaryText = $this->getSecondaryText($theme);
         $themeConfig = $this->getThemeConfig($theme);
 
+        // Product: preserve identity but allow quality enhancement
         $prompt = "PRODUCT: The reference product may be a low-quality or non-professional photo. ";
         $prompt .= "Re-render it with clean crisp edges, professional studio-quality finish, accurate label clarity, and natural material textures. ";
         $prompt .= "PRESERVE EXACTLY: the product shape, label design, brand colors, and overall form. Do NOT change the product identity. ";
 
+        // Replace background with themed scene
         $prompt .= "BACKGROUND: Completely replace the entire background and environment with a dramatic luxury marketing scene. ";
         $prompt .= "SCENE ELEMENTS: Naturally place these themed decorative elements around the product: {$themeConfig['elements']}. ";
         $prompt .= "SURFACE: Place the product on {$themeConfig['surface']}. Natural contact shadow underneath. No pedestal. ";
         $prompt .= "ATMOSPHERE: {$themeConfig['atmosphere']}. ";
         $prompt .= "LIGHTING: {$themeConfig['lighting']}. ";
 
+        // Optional text overlay
         if (!empty($userText)) {
             $prompt .= "TEXT: Show '{$userText}' in large bold luxury serif font at the top. ";
-
             if (!empty($secondaryText)) {
                 $prompt .= "Below it show '{$secondaryText}' in smaller elegant font. ";
             }
-
             $prompt .= "White text with subtle glow. Centered. Never touching the product. ";
         }
 
+        // Style
         $prompt .= "STYLE: Luxury high-end commercial advertisement. ";
         $prompt .= "Cinematic color grading with RICH DEEP COLORS. ";
         $prompt .= "STRONG contrast between bright highlights and deep dark shadows. ";
@@ -235,7 +383,6 @@ class ThemedImageController extends Controller
 
         return trim(preg_replace('/\s+/', ' ', $prompt));
     }
-
     private function getThemeConfig(string $theme): array
     {
         $configs = [
@@ -321,16 +468,16 @@ class ThemedImageController extends Controller
     private function getSecondaryText(string $theme): string
     {
         $texts = [
-            "Ramadan"         => "Ramadan Kareem",
-            "Eid al-Fitr"     => "Happy Eid",
-            "Eid al-Adha"     => "Happy Eid Al-Adha",
-            "Christmas"       => "Merry Christmas",
+            "Ramadan"       => "Ramadan Kareem",
+            "Eid al-Fitr"   => "Happy Eid",
+            "Eid al-Adha"   => "Happy Eid Al-Adha",
+            "Christmas"     => "Merry Christmas",
             "Valentine's Day" => "With Love",
-            "Black Friday"    => "Exclusive Offer",
-            "Graduation"      => "Class of 2026",
-            "New Year"        => "Happy New Year",
-            "Mother's Day"    => "Happy Mother's Day",
-            "Back to School"  => "Ready to Learn",
+            "Black Friday"  => "Exclusive Offer",
+            "Graduation"    => "Class of 2026",
+            "New Year"      => "Happy New Year",
+            "Mother's Day"  => "Happy Mother's Day",
+            "Back to School" => "Ready to Learn",
         ];
 
         return $texts[$theme] ?? "";
@@ -349,10 +496,6 @@ class ThemedImageController extends Controller
                 ->timeout(60)
                 ->get($statusUrl);
 
-            if (!$statusResponse->successful()) {
-                throw new \Exception('Failed to check fal status.');
-            }
-
             $statusData = $statusResponse->json();
             $status = $statusData['status'] ?? null;
 
@@ -364,14 +507,10 @@ class ThemedImageController extends Controller
                     ->timeout(180)
                     ->get($responseUrl);
 
-                if (!$resultResponse->successful()) {
-                    throw new \Exception('Failed to fetch fal result.');
-                }
-
                 return $resultResponse->json();
             }
 
-            if (in_array($status, ['FAILED', 'ERROR', 'CANCELLED'], true)) {
+            if (in_array($status, ['FAILED', 'ERROR', 'CANCELLED'])) {
                 throw new \Exception('fal failed with status ' . $status);
             }
 

@@ -56,7 +56,7 @@ React.useEffect(() => {
 
   const [user, setUser] = React.useState(null);
     const { notifications, unreadCount, addNotification, clearNotifications } =
-        useNotifications(user?.plan || "free");
+        useNotifications(user?.plan || "free", user?.id);
     return (
         <>
             <Navbar user={user} onNavigate={(route) => navigate(route)}   onLogout={handleLogout} onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}  notifications={notifications}

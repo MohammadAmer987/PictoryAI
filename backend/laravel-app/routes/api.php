@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CaptionController;
@@ -17,23 +18,14 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
+Route::middleware('auth:sanctum')->get('/notifications', [NotificationController::class, 'index']);
+
 Route::post('/image-edit', [ImageEditController::class, 'edit'])->middleware('auth:sanctum');
 
 Route::post('/image-theme', [ThemedImageController::class, 'edit'])->middleware('auth:sanctum');
 
-Route::middleware('auth:sanctum')->get('/user/subscription', function (Request $request) {
-    $user = $request->user();
-
-    $subscription = \App\Models\Subscription::where('user_id', $user->id)
-        ->latest('start_date')
-        ->first();
-
-    $isPro = $subscription && $subscription->plan_id === 2;
-
-    return response()->json([
-        'isPro' => $isPro,
-    ]);
-});
+Route::get('/user/subscription', [\App\Http\Controllers\SubscriptionNController::class, 'subscription'])->middleware('auth:sanctum');
 
 Route::post('/generate-image', [ImageGeneratorController::class, 'generate']); // ميزتك هنا
 

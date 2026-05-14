@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="MessDetector">
+    <phpmd_settings>
+      <phpmd_by_interpreter asDefaultInterpreter="true" interpreter_id="4b9b2bfa-ff47-43e4-b554-dd45e3d45c7c" timeout="30000" />
+    </phpmd_settings>
+  </component>
   <component name="MessDetectorOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
@@ -10,7 +15,12 @@
     <option name="highlightLevel" value="WARNING" />
     <option name="transferred" value="true" />
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="8.0">
+  <component name="PhpCodeSniffer">
+    <phpcs_settings>
+      <phpcs_by_interpreter asDefaultInterpreter="true" interpreter_id="4b9b2bfa-ff47-43e4-b554-dd45e3d45c7c" timeout="30000" />
+    </phpcs_settings>
+  </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.4">
     <option name="suggestChangeDefaultLanguageLevel" value="false" />
   </component>
   <component name="PhpStanOptionsConfiguration">
