@@ -4,8 +4,9 @@ import MainArea from '../components/inhance_img/MainArea';
 import { useState, useEffect } from "react";
 import Hero from "../components/ReusableHero";
 
-function App({ addNotification = () => {} }) {
+function App() {
     const [isPro, setIsPro] = useState(false);
+    const [loadingPlan, setLoadingPlan] = useState(true);
 
     useEffect(() => {
         const fetchSubscription = async () => {
@@ -20,6 +21,8 @@ function App({ addNotification = () => {} }) {
                 setIsPro(data.isPro);
             } catch (error) {
                 setIsPro(false);
+            } finally {
+                setLoadingPlan(false);
             }
         };
 
@@ -32,11 +35,13 @@ function App({ addNotification = () => {} }) {
         audience: "",
         productDescription: "",
         background: "",
+        backgroundColor: "",
         backgroundBlur: 0,
         lightType: "",
         styleType: "",
         textOnImage: "",
         textPosition: "",
+        textColor: "",
         textSize: 12,
         cameraAngle: "",
         imageRatio: "",
@@ -58,6 +63,11 @@ function App({ addNotification = () => {} }) {
         );
     }
 
+    // ── Loading state ────────────────────────────────────
+    if (loadingPlan) {
+        return <div className="text-center mt-5">Loading...</div>;
+    }
+
     return (
         <div className="enhance-page-wrapper">
             <Hero
@@ -75,6 +85,16 @@ function App({ addNotification = () => {} }) {
                 ]}
             />
 
+            {/*<div className="row">*/}
+            {/*    <div className="col-12">*/}
+            {/*        <header className="app-header">*/}
+            {/*            <span>✦ ProductShot AI</span>*/}
+            {/*            <span className={`user-type-badge ${isPro ? "pro" : "free"}`}>*/}
+            {/*                {isPro ? "⭐ PRO User" : "Free User"}*/}
+            {/*            </span>*/}
+            {/*        </header>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
 
             <div className="row g-0 main-content-wrapper">
                 <div className="col-lg-3 col-md-4">
@@ -85,7 +105,6 @@ function App({ addNotification = () => {} }) {
                         isPro={isPro}
                         isReady={isSettingsComplete()}
                         settings={settings}
-                        addNotification={addNotification}
                     />
                 </div>
             </div>

@@ -3,7 +3,7 @@ import "../../css/inhance_img/MainAreaStyle.css";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function MainArea({ isPro, isReady, settings ,  addNotification = () => {} }) {
+function MainArea({ isPro, isReady, settings }) {
     const navigate = useNavigate();
 
     const [uploadedImage, setUploadedImage] = useState(null);
@@ -105,8 +105,6 @@ function MainArea({ isPro, isReady, settings ,  addNotification = () => {} }) {
 
             setResults(data.data?.edited_urls || []);
             setSelectedResult(0);
-            addNotification({ type: "enhance" });
-
         } catch (err) {
             console.error("Full Backend Error:", err);
             let errorMsg = err.message;

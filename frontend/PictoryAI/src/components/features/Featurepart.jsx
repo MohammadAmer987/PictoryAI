@@ -1,32 +1,14 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginRequiredPopup from "../LoginRequiredPopUp";
 
 const features = [
     { id: " ", label1: "Product", label2: "Image", sub: "Enhancement", route: "/tools/enhance-image" },
     { id: " ", label1: "Theme",   label2: "Image", sub: "Generator",   route: "/tools/theme-image-generation" },
     { id: " ", label1: "Custom",  label2: "Image", sub: "Generator",   route: "/tools/generate-image" },
-    { id: " ", label1: "Custom",  label2: "Caption", sub: "Generator", route: "/tools/caption-generator" },
+    { id: " ", label1: "Custom",      label2: "Caption", sub: "Generator", route: "/tools/caption-generator" },
 ];
 
 export default function Featurepart() {
-
     const navigate = useNavigate();
-
-    const [showPopup, setShowPopup] = useState(false);
-
-    // Check login
-    const isLoggedIn = !!localStorage.getItem("access_token");
-
-    function handleProtectedNavigation(route) {
-
-        if (!isLoggedIn) {
-            setShowPopup(true);
-            return;
-        }
-
-        navigate(route);
-    }
 
     return (
         <>
@@ -38,7 +20,9 @@ export default function Featurepart() {
           flex-direction: column;
           align-items: center;
           padding: 3rem 1rem;
-          background :  #F4F8F6;
+       background :  #F4F8F6;
+
+   
         }
 
         .fs-feat {
@@ -52,6 +36,11 @@ export default function Featurepart() {
           max-width: 600px;
           border-bottom: 5px solid #71967D;
           transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+         
+        }
+
+        .fs-feat:first-child {
+          // border-top: 5px solid #71967D;
         }
 
         .fs-feat:hover {
@@ -151,35 +140,23 @@ export default function Featurepart() {
       `}</style>
 
             <div className="fs-wrap">
-
                 {features.map((f) => (
-
                     <div
                         key={f.id}
                         className="fs-feat"
-                        onClick={() => handleProtectedNavigation(f.route)}
+                        onClick={() => navigate(f.route)}
                         role="button"
                         tabIndex={0}
-                        onKeyDown={(e) =>
-                            e.key === "Enter" &&
-                            handleProtectedNavigation(f.route)
-                        }
+                        onKeyDown={(e) => e.key === "Enter" && navigate(f.route)}
                     >
                         <span className="fs-num">{f.id}</span>
 
                         <div className="fs-name-block">
-
-                            <span className="fs-main">
-                                {f.label1 && <>{f.label1} </>}
-                                <span className="fs-italic">
-                                    {f.label2}
-                                </span>
-                            </span>
-
-                            <span className="fs-sub">
-                                {f.sub}
-                            </span>
-
+              <span className="fs-main">
+                {f.label1 && <>{f.label1} </>}
+                  <span className="fs-italic">{f.label2}</span>
+              </span>
+                            <span className="fs-sub">{f.sub}</span>
                             <span className="fs-line" />
                         </div>
 
@@ -187,21 +164,13 @@ export default function Featurepart() {
                     </div>
                 ))}
 
-                <br />
-                <br />
-                <br />
-                <br />
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+
 
             </div>
-
-            <LoginRequiredPopup
-                isOpen={showPopup}
-                onClose={() => setShowPopup(false)}
-                onLogin={() => {
-                    setShowPopup(false);
-                    navigate("/login");
-                }}
-            />
         </>
     );
 }

@@ -15,7 +15,7 @@ import {
     BookOpen
 } from "lucide-react";
 
-function ThemeImagePage({ addNotification = () => {} }) {
+function ThemeImagePage() {
     const [theme, setTheme] = useState("");
     const [imageSize, setImageSize] = useState("");
     const [optionalText, setOptionalText] = useState("");
@@ -91,7 +91,6 @@ function ThemeImagePage({ addNotification = () => {} }) {
             }
 
             setGeneratedImage(data.data.edited_urls[0]);
-            addNotification({ type: "theme" });
 
             } catch (err) {
                 console.error("Full Backend Error:", err);

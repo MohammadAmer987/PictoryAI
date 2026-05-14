@@ -18,13 +18,7 @@ class UsageLimitService
             ]);
         }
 
-        $limit = match ($type) {
-    'image' => $subscription->plan->max_generations_image,
-    'caption' => $subscription->plan->max_generations_caption,
-    default => throw ValidationException::withMessages([
-        'type' => ['Unsupported generation type.'],
-    ]),
-};
+        $limit = $subscription->plan->max_generations;
 
         if ($limit === null) {
             return; // unlimited

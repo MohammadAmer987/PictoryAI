@@ -43,37 +43,44 @@ class SubscriptionController extends Controller
         ], 200);
     }
 
-    public function upgrade(Request $request)
-{
-    $user = $request->user();
+    public function upgrade(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'plan_name' => [
+                'required',
+                'string',
+                Rule::exists('plans', 'name'),
+            ],
+        ]);
 
-    $premiumPlan = Plan::where('name', 'premium')->first();
+        $newPlan = Plan::where('name', $validated['plan_name'])->first();
 
-    if (!$premiumPlan) {
+        $subscription = DB::transaction(function () use ($request, $newPlan) {
+            $user = $request->user();
+
+            $currentSubscription = $user->activeSubscription()->first();
+
+            if ($currentSubscription) {
+                $currentSubscription->update([
+                    'status' => 'expired',
+                    'end_date' => now(),
+                ]);
+            }
+
+            return Subscription::create([
+                'user_id' => $user->id,
+                'plan_id' => $newPlan->id,
+                'start_date' => now(),
+                'end_date' => null,
+                'status' => 'active',
+            ])->load('plan');
+        });
+
         return response()->json([
-            'message' => 'Premium plan not found.',
-        ], 404);
+            'message' => 'Subscription updated successfully.',
+            'data' => [
+                'subscription' => $subscription,
+            ],
+        ], 200);
     }
-
-    $subscription = Subscription::updateOrCreate(
-        [
-            'user_id' => $user->id,
-            'status' => 'active',
-        ],
-        [
-            'plan_id' => $premiumPlan->id,
-            'start_date' => now(),
-            'end_date' => null,
-            'status' => 'active',
-        ]
-    );
-
-    return response()->json([
-        'message' => 'Subscription upgraded successfully.',
-        'data' => [
-            'subscription' => $subscription->load('plan'),
-        ],
-    ]);
-}
-
 }

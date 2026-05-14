@@ -1,41 +1,46 @@
+import { Link } from "react-router-dom";
+
 function PricingCard({
-    title,
-    price,
-    features,
-    buttonText,
-    className = "",
-    image,
-    onSubscribe,
-    disabled = false,
-}) {
+                         title,
+                         price,
+                         features,
+                         buttonText,
+                         className = "",
+                         image,
+                         link
+                     }) {
     return (
-        <div className={`pricing-card ${className}`}>
-            <div className="card-body">
-                {image && <img src={image} alt="" className="card-img" />}
 
-                {title && <h2>{title}</h2>}
-                {price && <h3>{price}</h3>}
+        <Link to={link || "#"} className="card-link">
 
-                {features && features.length > 0 && (
-                    <ul>
-                        {features.map((item, index) => (
-                            <li key={index}>{item}</li>
-                        ))}
-                    </ul>
-                )}
+            <div className={`pricing-card ${className}`}>
 
-                {buttonText && (
-                    <button
-                        type="button"
-                        className="trial-btn"
-                        onClick={onSubscribe}
-                        disabled={disabled}
-                    >
-                        {buttonText}
-                    </button>
-                )}
+                <div className="card-body">
+
+                    {image && <img src={image} alt="" className="card-img" />}
+
+                    {title && <h2>{title}</h2>}
+                    {price && <h3>{price}</h3>}
+
+                    {features && features.length > 0 && (
+                        <ul>
+                            {features.map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
+                        </ul>
+                    )}
+
+                    {buttonText && (
+                        <button className="trial-btn">
+                            {buttonText}
+                        </button>
+                    )}
+
+                </div>
+
             </div>
-        </div>
+
+        </Link>
     );
 }
 
