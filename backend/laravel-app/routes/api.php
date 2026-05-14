@@ -13,6 +13,8 @@ use App\Http\Controllers\ThemedImageController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,7 +79,24 @@ Route::middleware(['auth:sanctum', 'role:1,2'])->group(function () {
 */
 
 Route::middleware(['auth:sanctum', 'role:1'])->prefix('admin')->group(function () {
- Route::get('/test', function () {
+    Route::get('/test', function () {
         return response()->json(['message' => 'admin only']);
     });
+
+    // Users management
+    Route::get('/users', [AdminController::class, 'getAllUsers']);
+    
+    // Dashboard statistics
+    Route::get('/dashboard/stats', [AdminController::class, 'getDashboardStats']);
+    
+    // Analytics
+    Route::get('/analytics', [AdminController::class, 'getAnalytics']);
+    
+    // Revenue analytics
+    Route::get('/revenue', [AdminController::class, 'getRevenueAnalytics']);
+
+    // Notifications
+    Route::post('/notifications/send', [AdminNotificationController::class, 'send']);
+    Route::get('/notifications/history', [AdminNotificationController::class, 'getHistory']);
+    Route::get('/notifications/stats', [AdminNotificationController::class, 'getStats']);
 });

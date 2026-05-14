@@ -4,7 +4,7 @@ import {
   Bell,
   Check,
   Home,
- 
+  DollarSign,
   LogOut,
   Search,
   Settings,
@@ -21,6 +21,7 @@ const icons = {
   settings: Settings,
   trendUp: ArrowUpRight,
   users: Users,
+  revenue: DollarSign,
 };
 
 export default function Icon({ name, size = 16, className }) {
