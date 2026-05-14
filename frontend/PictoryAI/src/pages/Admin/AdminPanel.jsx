@@ -6,6 +6,7 @@ import Dashboard from './Dashboard';
 import Users from './Users';
 import Analytics from './Analytics';
 import Revenue from './Revenue';
+import Notifications from './Notifications';
 
 import '../../css/AdminPanel.css';
 
@@ -47,6 +48,10 @@ export default function AdminPanel({ onLogout }) {
 
           {activePage === 'revenue' && (
             <Revenue />
+          )}
+
+          {activePage === 'notifications' && (
+            <Notifications />
           )}
         </main>
       </div>
