@@ -9,7 +9,7 @@ export default function UsersTable({ users, searchQuery = '' }) {
       user.storeName,
       user.businessType,
       user.plan,
-    
+
     ]
       .join(' ')
       .toLowerCase()
@@ -26,7 +26,7 @@ export default function UsersTable({ users, searchQuery = '' }) {
             <th>Store</th>
             <th>Business Type</th>
             <th>Plan</th>
-           
+
             <th>Joined</th>
           </tr>
         </thead>
@@ -47,7 +47,7 @@ export default function UsersTable({ users, searchQuery = '' }) {
                   {user.plan}
                 </span>
               </td>
-             
+
               <td>{user.joinedAt}</td>
             </tr>
           ))}

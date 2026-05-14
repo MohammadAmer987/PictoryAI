@@ -45,7 +45,7 @@ export default function Topbar({ activePage, onSearch }) {
           />
         </div>
 
-        
+
       </div>
     </header>
   );
