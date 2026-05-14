@@ -201,22 +201,35 @@ class AdminController extends Controller
 
     /**
      * Helper: Get monthly growth data
+     * Works with both MySQL and SQLite
      */
     private function getMonthlyGrowthData()
     {
-        $monthlyUsers = User::where('role_id', 2)
-            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->limit(12)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'month' => $item->month,
-                    'users' => $item->count,
-                ];
-            });
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'sqlite') {
+            // SQLite uses strftime
+            $monthlyUsers = User::where('role_id', 2)
+                ->selectRaw("strftime('%Y-%m', created_at) as month, COUNT(*) as count")
+                ->groupBy('month')
+                ->orderBy('month', 'asc')
+                ->limit(12)
+                ->get();
+        } else {
+            // MySQL uses DATE_FORMAT
+            $monthlyUsers = User::where('role_id', 2)
+                ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+                ->groupBy('month')
+                ->orderBy('month', 'asc')
+                ->limit(12)
+                ->get();
+        }
 
-        return $monthlyUsers;
+        return $monthlyUsers->map(function ($item) {
+            return [
+                'month' => $item->month,
+                'users' => $item->count,
+            ];
+        });
     }
 }
