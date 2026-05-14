@@ -13,6 +13,9 @@ import { useNavigate } from "react-router-dom";
 const angles = [
     { name: 'Front',      image: Front },
     { name: '45° Angle',  image: Angle45 },
+    { name: 'Flat Lay',   image: FlatLay },
+    { name: 'Side',       image: Side },
+    { name: 'Top',        image: Top },
 ];
 
 function ExtraPlane({ isPro, settings, updateSetting }) {

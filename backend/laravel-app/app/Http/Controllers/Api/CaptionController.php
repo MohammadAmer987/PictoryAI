@@ -266,7 +266,7 @@ class CaptionController extends Controller
             'success' => true,
             'data' => [
                 'plan' => isset($subscription->plan->name) ? $subscription->plan->name : 'free',
-                'is_premium' => strtolower(isset($subscription->plan->name) ? $subscription->plan->name : 'free') === 'premium',
+                'is_premium' => strtolower(isset($subscription->plan->name) ? $subscription->plan->name : 'free') === 'pro',
             ],
         ]);
     }

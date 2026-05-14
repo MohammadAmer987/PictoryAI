@@ -5,9 +5,6 @@ use OpenApi\Attributes as OA;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
-use App\Services\UsageLimitService;
-use Illuminate\Validation\ValidationException;
-
 class ImageGeneratorController extends Controller
 {
     private const IMAGE_DIMENSIONS = [
@@ -151,26 +148,6 @@ class ImageGeneratorController extends Controller
                 'imageType'   => 'nullable|string|in:post,story,banner,portrait,landscape,cinema',
             ]);
 
-            $user = $request->user();
-
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthenticated.',
-                ], 401);
-            }
-
-            try {
-                app(UsageLimitService::class)->assertCanGenerate($user, 'image');
-            } catch (ValidationException $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You have reached your image generation limit. Please subscribe to continue.',
-                    'upgrade_required' => true,
-                    'errors' => $e->errors(),
-                ], 403);
-            }
-
             $selectedColor   = $request->color ? trim($request->color) : null;
             $colorDescriptor = $selectedColor ?: 'the selected color';
 
@@ -195,7 +172,7 @@ class ImageGeneratorController extends Controller
                 $seed,
                 $request
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
                 'error'   => 'Image request failed on the server. ' . $e->getMessage(),
@@ -272,7 +249,6 @@ class ImageGeneratorController extends Controller
         Request $request
     ) {
         $pollinationsKey = trim((string) config('services.pollinations.key'));
-
         $queryParams = [
             'width'  => $dimensions['width'],
             'height' => $dimensions['height'],
@@ -284,7 +260,7 @@ class ImageGeneratorController extends Controller
             $queryParams['key'] = $pollinationsKey;
         }
 
-        $query = http_build_query($queryParams);
+        $query     = http_build_query($queryParams);
         $imageUrls = $this->buildPollinationsUrls($prompt, $query);
 
         [$probeResponse, $imageUrl] = $this->executePollinationsRequest($imageUrls);
@@ -306,10 +282,8 @@ class ImageGeneratorController extends Controller
             ], 500);
         }
 
-        $user = $request->user();
-
         $imageRequest = \App\Models\ImageGenerationRequest::create([
-            'user_id'      => $user->id,
+            'user_id'      => $request->user()->id,
             'project_name' => $request->projectName,
             'content'      => $request->content,
             'color'        => $selectedColor,
@@ -322,8 +296,6 @@ class ImageGeneratorController extends Controller
             'image_path'   => $imageUrl,
             'result_order' => 1,
         ]);
-
-        app(UsageLimitService::class)->increment($user, 'image');
 
         return response()->json([
             'success'    => true,
@@ -380,9 +352,7 @@ class ImageGeneratorController extends Controller
                     }
 
                     try {
-                        $lastResponse = Http::timeout(120)
-                            ->connectTimeout(15)
-                            ->get($imageUrl);
+                        $lastResponse = Http::timeout(20)->get($imageUrl);
                     } catch (ConnectionException $e) {
                         $lastConnectionMessage = $e->getMessage();
                         continue;
@@ -429,7 +399,6 @@ class ImageGeneratorController extends Controller
         $json = $response->json();
 
         $jsonMessage = null;
-
         if (is_array($json)) {
             $jsonMessage = data_get($json, 'message') ?: data_get($json, 'error');
         }
