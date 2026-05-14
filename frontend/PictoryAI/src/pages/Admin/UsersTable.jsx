@@ -26,7 +26,6 @@ export default function UsersTable({ users, searchQuery = '' }) {
             <th>Store</th>
             <th>Business Type</th>
             <th>Plan</th>
-            <th>Images Left</th>
             <th>Status</th>
             <th>Joined</th>
           </tr>
@@ -46,11 +45,6 @@ export default function UsersTable({ users, searchQuery = '' }) {
               <td>
                 <span className={`planBadge ${user.plan.toLowerCase()}`}>
                   {user.plan}
-                </span>
-              </td>
-              <td>
-                <span className={user.imagesRemaining === 0 ? 'imagesEmpty' : 'imagesLeft'}>
-                  {user.imagesRemaining}
                 </span>
               </td>
               <td>

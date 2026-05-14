@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   BarChart3,
   Image,
@@ -8,56 +9,65 @@ import {
   Users,
 } from 'lucide-react';
 import '../../css/admincss/Analytics.css';
+import { getAnalytics } from '../../Services/adminService';
 
-const overviewStats = [
-  {
-    label: 'Registered Users',
-    value: '1,248',
-    detail: '+86 new accounts this month',
-    icon: Users,
-  },
-  {
-    label: 'Feature Usage',
-    value: '10,890',
-    detail: 'Total usage across all tools',
-    icon: BarChart3,
-  },
-];
-
-const featureStats = [
-  {
-    name: 'Image Generation',
-    users: 426,
-    total: 1390,
-    icon: Image,
-    color: '#376359',
-  },
-  {
-    name: 'Image Enhancement',
-    users: 318,
-    total: 940,
-    icon: Sparkles,
-    color: '#5f8f83',
-  },
-  {
-    name: 'Theme Image',
-    users: 274,
-    total: 760,
-    icon: Layers,
-    color: '#7f6f52',
-  },
-  {
-    name: 'Caption Generation',
-    users: 512,
-    total: 1800,
-    icon: MessageSquareText,
-    color: '#4f6f87',
-  },
-];
-
-const maxUsers = Math.max(...featureStats.map((feature) => feature.users));
+const iconMap = {
+  Image: Image,
+  Sparkles: Sparkles,
+  Layers: Layers,
+  MessageSquareText: MessageSquareText,
+  Users: Users,
+  BarChart3: BarChart3,
+};
 
 export default function Analytics() {
+  const [analyticsData, setAnalyticsData] = useState({
+    overview: [],
+    featureStats: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getAnalytics();
+      setAnalyticsData(data);
+    } catch (err) {
+      console.error('Failed to fetch analytics:', err);
+      setError(err.message || 'Failed to load analytics');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="analyticsPage">
+        <div style={{ textAlign: 'center', padding: '40px' }}>Loading analytics...</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="analyticsPage">
+        <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>
+          Error: {error}
+        </div>
+      </section>
+    );
+  }
+
+  const maxUsers = analyticsData.featureStats.length > 0
+    ? Math.max(...analyticsData.featureStats.map((feature) => feature.users))
+    : 1;
+
   return (
     <section className="analyticsPage">
       <div className="analyticsHeader">
@@ -72,8 +82,8 @@ export default function Analytics() {
       </div>
 
       <div className="analyticsOverview">
-        {overviewStats.map((stat) => {
-          const Icon = stat.icon;
+        {analyticsData.overview.map((stat) => {
+          const Icon = iconMap[stat.icon] || Users;
 
           return (
             <article className="analyticsCard" key={stat.label}>
@@ -81,7 +91,7 @@ export default function Analytics() {
                 <Icon size={22} />
               </div>
               <p>{stat.label}</p>
-              <strong>{stat.value}</strong>
+              <strong>{stat.value.toLocaleString()}</strong>
               <span>{stat.detail}</span>
             </article>
           );
@@ -98,8 +108,8 @@ export default function Analytics() {
         </div>
 
         <div className="featureStatsGrid">
-          {featureStats.map((feature) => {
-            const Icon = feature.icon;
+          {analyticsData.featureStats.map((feature) => {
+            const Icon = iconMap[feature.icon] || Image;
             const percentage = Math.round((feature.users / maxUsers) * 100);
 
             return (

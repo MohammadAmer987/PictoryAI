@@ -14,6 +14,11 @@ export const navItems = [
     label: 'Analytics',
     icon: 'analytics',
   },
+  {
+    id: 'revenue',
+    label: 'Revenue',
+    icon: 'revenue',
+  },
 ];
 
 export const users = [

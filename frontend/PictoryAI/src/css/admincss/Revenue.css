@@ -1,0 +1,190 @@
+.revenuePage {
+  padding: 2rem;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+}
+
+.revenueHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.revenueHeader h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0 0;
+}
+
+.revenueEyebrow {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+.revenuePulse {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #e0f2fe;
+  border-radius: 0.375rem;
+  color: #0284c7;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Revenue Overview Cards */
+.revenueOverview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.revenueCard {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.revenueCardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0.375rem;
+  flex-shrink: 0;
+}
+
+.revenueCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.revenueCardLabel {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.revenueCardValue {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.revenueCardDetail {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Plans Panel */
+.plansPanel {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.panelHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.panelHeader h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0 0;
+}
+
+.panelEyebrow {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Plans Table */
+.plansTable {
+  overflow-x: auto;
+}
+
+.plansTableHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1.5fr 1.5fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.plansTableRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1.5fr 1.5fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+}
+
+.plansTableRow:hover {
+  background-color: #f8fafc;
+}
+
+.planCol {
+  display: flex;
+  align-items: center;
+}
+
+.planCol--name {
+  font-weight: 600;
+}
+
+.planCol--price {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.planCol--revenue {
+  font-weight: 600;
+}
+
+.subscriptionBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #dbeafe;
+  color: #0284c7;
+  border-radius: 0.25rem;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .revenueOverview {
+    grid-template-columns: 1fr;
+  }
+
+  .plansTableHeader,
+  .plansTableRow {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .revenueHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

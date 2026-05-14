@@ -5,6 +5,7 @@ import Topbar from './Topbar';
 import Dashboard from './Dashboard';
 import Users from './Users';
 import Analytics from './Analytics';
+import Revenue from './Revenue';
 
 import '../../css/AdminPanel.css';
 
@@ -40,6 +41,10 @@ export default function AdminPanel({ onLogout }) {
 
           {activePage === 'analytics' && (
             <Analytics />
+          )}
+
+          {activePage === 'revenue' && (
+            <Revenue />
           )}
         </main>
       </div>

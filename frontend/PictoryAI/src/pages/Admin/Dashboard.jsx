@@ -1,58 +1,90 @@
+import { useState, useEffect } from 'react';
 import '../../css/Dashboard.css';
 
 import StatCard from './StatCard';
 import UsersTable from './UsersTable';
 import Analytics from './Analytics';
 
-import { users } from './mockData';
+import { getDashboardStats, getAllUsers } from '../../Services/adminService';
 
 export default function Dashboard({ searchQuery = '' }) {
-  const totalUsers = users.length;
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    premiumUsers: 0,
+  });
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const activeUsers = users.filter(
-    (user) => user.status?.toLowerCase() === 'active'
-  ).length;
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  const premiumUsers = users.filter(
-    (user) => user.plan?.toLowerCase() !== 'free'
-  ).length;
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const [statsData, usersData] = await Promise.all([
+        getDashboardStats(),
+        getAllUsers(),
+      ]);
 
-  const totalImagesLeft = users.reduce((total, user) => {
-    return total + Number(user.imagesRemaining || 0);
-  }, 0);
+      setStats(statsData);
+      setUsers(usersData);
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err);
+      setError(err.message || 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const latestUsers = users.slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="dashboardPage">
+        <div style={{ textAlign: 'center', padding: '40px' }}>Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboardPage">
+        <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>
+          Error: {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboardPage">
       <section className="dashboardStats">
         <StatCard
           label="Total Users"
-          value={totalUsers}
+          value={stats.totalUsers}
           sub="Registered platform users"
           trend="up"
         />
 
         <StatCard
           label="Active Users"
-          value={activeUsers}
+          value={stats.activeUsers}
           sub="Currently active accounts"
           trend="up"
         />
 
         <StatCard
           label="Premium Users"
-          value={premiumUsers}
+          value={stats.premiumUsers}
           sub="Users with paid plans"
           trend="up"
         />
 
-        <StatCard
-          label="Images Left"
-          value={totalImagesLeft}
-          sub="Remaining user image credits"
-          trend="up"
-        />
       </section>
 
       <section className="dashboardSection">
