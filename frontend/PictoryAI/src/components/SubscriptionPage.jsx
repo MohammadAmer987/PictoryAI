@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSubscription } from "./useSubscription";
 
 const COLORS = {
@@ -36,9 +37,8 @@ function StatusBadge({ status }) {
   );
 }
 
-function PlanCard({ plan, currentPlanName, onSelect, upgrading }) {
-  const isCurrent = plan.name === currentPlanName;
-  const isPro = plan.name === "pro";
+function PlanCard({ plan, currentPlanName, onSelect }) {
+  const isCurrent = plan.name?.toLowerCase() === currentPlanName?.toLowerCase();
 
   return (
     <div
@@ -49,20 +49,29 @@ function PlanCard({ plan, currentPlanName, onSelect, upgrading }) {
       }}
     >
       <div className="d-flex justify-content-between align-items-center mb-2">
-        <span className="fw-bold" style={{ color: COLORS.darkGreen, fontSize: 16 }}>
+        <span
+          className="fw-bold"
+          style={{ color: COLORS.darkGreen, fontSize: 16 }}
+        >
           {plan.name.toUpperCase()}
         </span>
 
-        <span className="fw-bold" style={{ color: COLORS.accent, fontSize: 18 }}>
+        <span
+          className="fw-bold"
+          style={{ color: COLORS.accent, fontSize: 18 }}
+        >
           ${plan.price}
           <span style={{ fontSize: 12, color: COLORS.muted }}>/mo</span>
         </span>
       </div>
 
-      <ul className="list-unstyled mb-3" style={{ fontSize: 13, color: "#4a7c68" }}>
+      <ul
+        className="list-unstyled mb-3"
+        style={{ fontSize: 13, color: "#4a7c68" }}
+      >
         <li>✓ Max generations: {plan.max_generations ?? "Unlimited"}</li>
         <li>✓ Watermark: {plan.watermark ? "Enabled" : "Removed"}</li>
-        <li>✓ {isPro ? "Premium access" : "Basic access"}</li>
+        <li>✓ Premium access</li>
       </ul>
 
       <button
@@ -72,45 +81,115 @@ function PlanCard({ plan, currentPlanName, onSelect, upgrading }) {
           borderRadius: 30,
           border: "none",
         }}
-        disabled={isCurrent || upgrading}
+        disabled={isCurrent}
         onClick={() => onSelect(plan)}
       >
-        {isCurrent ? "Current Plan" : upgrading ? "Updating..." : `Switch to ${plan.name}`}
+        {isCurrent ? "Current Plan" : "Switch to Premium"}
       </button>
     </div>
   );
 }
 
+function addOneMonth(dateValue) {
+  if (!dateValue) return null;
+
+  const startDate = new Date(dateValue);
+
+  if (Number.isNaN(startDate.getTime())) {
+    return null;
+  }
+
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + 1);
+
+  return endDate;
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) return "-";
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return date.toLocaleDateString();
+}
+
+function calculateDaysLeft(endDate) {
+  if (!endDate) return null;
+
+  const today = new Date();
+  const difference = endDate.getTime() - today.getTime();
+
+  return Math.max(0, Math.ceil(difference / (1000 * 60 * 60 * 24)));
+}
+
 export default function SubscriptionPage() {
+  const navigate = useNavigate();
+
   const {
     subscription,
     history,
     plan,
     plans,
     loading,
-    upgrading,
     error,
     daysRemaining,
     renewalDate,
-    upgradeToPlan,
   } = useSubscription();
 
   const [actionError, setActionError] = useState("");
 
-  async function handleChangePlan(selectedPlan) {
+  function handleChangePlan(selectedPlan) {
     setActionError("");
 
-    try {
-      await upgradeToPlan(selectedPlan.name);
-    } catch (err) {
-      setActionError(err.message || "Failed to change plan.");
+    navigate("/payment", {
+      state: {
+        plan: selectedPlan,
+      },
+    });
+  }
+
+  function getCalculatedPremiumEndDate() {
+    const isPremium = plan?.name?.toLowerCase() === "premium";
+
+    if (!isPremium) {
+      return null;
     }
+
+    if (subscription?.end_date) {
+      return new Date(subscription.end_date);
+    }
+
+    return addOneMonth(subscription?.start_date);
+  }
+
+  function getDisplayEndDate(item) {
+    if (item.end_date) {
+      return formatDate(item.end_date);
+    }
+
+    if (item.plan?.name?.toLowerCase() === "premium" && item.start_date) {
+      const endDate = addOneMonth(item.start_date);
+      return endDate ? endDate.toLocaleDateString() : "-";
+    }
+
+    return "-";
   }
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 300 }}>
-        <div className="spinner-border" style={{ color: COLORS.accent }} role="status" />
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: 300 }}
+      >
+        <div
+          className="spinner-border"
+          style={{ color: COLORS.accent }}
+          role="status"
+        />
       </div>
     );
   }
@@ -131,11 +210,30 @@ export default function SubscriptionPage() {
     );
   }
 
-  const days = daysRemaining();
-  const renewal = renewalDate();
+  const calculatedPremiumEndDate = getCalculatedPremiumEndDate();
+
+  const renewal =
+    renewalDate() ||
+    (calculatedPremiumEndDate
+      ? calculatedPremiumEndDate.toLocaleDateString()
+      : null);
+
+  const days =
+    daysRemaining() ??
+    calculateDaysLeft(calculatedPremiumEndDate);
+
+  const premiumPlans = plans.filter(
+    (p) => p.name?.toLowerCase() === "premium"
+  );
 
   return (
-    <div style={{ backgroundColor: COLORS.lightBg, minHeight: "100vh", padding: "40px 16px" }}>
+    <div
+      style={{
+        backgroundColor: COLORS.lightBg,
+        minHeight: "100vh",
+        padding: "40px 16px",
+      }}
+    >
       <div className="container" style={{ maxWidth: 720 }}>
         <div className="mb-4">
           <h4 className="fw-bold mb-1" style={{ color: COLORS.darkGreen }}>
@@ -161,7 +259,9 @@ export default function SubscriptionPage() {
                   <span style={{ fontSize: 22 }}>🌿</span>
 
                   <h5 className="m-0 text-white fw-bold" style={{ fontSize: 20 }}>
-                    {plan?.name ? `${plan.name.toUpperCase()} Plan` : "No Active Plan"}
+                    {plan?.name
+                      ? `${plan.name.toUpperCase()} Plan`
+                      : "No Active Plan"}
                   </h5>
                 </div>
 
@@ -189,26 +289,37 @@ export default function SubscriptionPage() {
                 }}
               >
                 <div className="text-center">
-                  <div className="fw-bold text-white" style={{ fontSize: 24, lineHeight: 1 }}>
+                  <div
+                    className="fw-bold text-white"
+                    style={{ fontSize: 24, lineHeight: 1 }}
+                  >
                     {days ?? "--"}
                   </div>
+
                   <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>
                     days left
                   </div>
                 </div>
 
-                <div style={{ width: 1, height: 36, backgroundColor: "rgba(255,255,255,0.2)" }} />
+                <div
+                  style={{
+                    width: 1,
+                    height: 36,
+                    backgroundColor: "rgba(255,255,255,0.2)",
+                  }}
+                />
 
                 <div>
                   <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>
                     Ends on
                   </div>
+
                   <div className="text-white fw-semibold" style={{ fontSize: 13 }}>
                     {renewal}
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : plan?.name?.toLowerCase() === "free" ? (
               <div
                 className="mt-3"
                 style={{
@@ -221,18 +332,24 @@ export default function SubscriptionPage() {
               >
                 No expiry date. Active until changed.
               </div>
-            )}
+            ) : null}
           </div>
 
           <div className="card-body" style={{ padding: "24px 28px" }}>
-            <h6 className="fw-bold mb-3" style={{ color: COLORS.darkGreen, fontSize: 14 }}>
+            <h6
+              className="fw-bold mb-3"
+              style={{ color: COLORS.darkGreen, fontSize: 14 }}
+            >
               Plan Limits
             </h6>
 
             <div style={{ color: "#3d6b5a", fontSize: 14 }}>
               <p className="mb-2">
-                <strong>Max generations:</strong>{" "}
-                {plan?.max_generations ?? "Unlimited"}
+                <strong>Max generations (Captions):</strong>{" "}
+                {plan?.max_generations_caption ?? "Unlimited"}
+                <br />
+                <strong>Max generations (Images):</strong>{" "}
+                {plan?.max_generations_image ?? "Unlimited"}
               </p>
 
               <p className="mb-2">
@@ -266,19 +383,25 @@ export default function SubscriptionPage() {
           }}
         >
           <div className="card-body" style={{ padding: "20px 28px" }}>
-            <h6 className="fw-bold mb-3" style={{ color: COLORS.darkGreen, fontSize: 14 }}>
+            <h6
+              className="fw-bold mb-3"
+              style={{ color: COLORS.darkGreen, fontSize: 14 }}
+            >
               Available Plans
             </h6>
 
-            {plans.map((p) => (
-              <PlanCard
-                key={p.id}
-                plan={p}
-                currentPlanName={plan?.name}
-                onSelect={handleChangePlan}
-                upgrading={upgrading}
-              />
-            ))}
+            {premiumPlans.length === 0 ? (
+              <p className="text-muted mb-0">Premium plan is not available.</p>
+            ) : (
+              premiumPlans.map((p) => (
+                <PlanCard
+                  key={p.id}
+                  plan={p}
+                  currentPlanName={plan?.name}
+                  onSelect={handleChangePlan}
+                />
+              ))
+            )}
           </div>
         </div>
 
@@ -290,7 +413,10 @@ export default function SubscriptionPage() {
           }}
         >
           <div className="card-body" style={{ padding: "20px 28px" }}>
-            <h6 className="fw-bold mb-3" style={{ color: COLORS.darkGreen, fontSize: 14 }}>
+            <h6
+              className="fw-bold mb-3"
+              style={{ color: COLORS.darkGreen, fontSize: 14 }}
+            >
               Subscription History
             </h6>
 
@@ -312,11 +438,18 @@ export default function SubscriptionPage() {
                     {history.map((item) => (
                       <tr key={item.id}>
                         <td>{item.plan?.name || "-"}</td>
+
                         <td>
                           <StatusBadge status={item.status} />
                         </td>
-                        <td>{item.start_date ? new Date(item.start_date).toLocaleDateString() : "-"}</td>
-                        <td>{item.end_date ? new Date(item.end_date).toLocaleDateString() : "-"}</td>
+
+                        <td>
+                          {item.start_date
+                            ? new Date(item.start_date).toLocaleDateString()
+                            : "-"}
+                        </td>
+
+                        <td>{getDisplayEndDate(item)}</td>
                       </tr>
                     ))}
                   </tbody>

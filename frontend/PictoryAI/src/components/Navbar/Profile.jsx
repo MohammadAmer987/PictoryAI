@@ -6,7 +6,7 @@ import EditName from "./EditName";
 import {
   updateProfileName,
   updateStoreName,
- 
+  updateProfileLogo,
 } from "../../Services/profileService";
 
 export default function Profile({
@@ -25,7 +25,8 @@ export default function Profile({
   const [editStoreName, setEditStoreName] = useState(storeName);
   const [storeError, setStoreError] = useState("");
   const [savingStore, setSavingStore] = useState(false);
-
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState("");
   useEffect(() => {
     setEditStoreName(storeName || "");
   }, [storeName]);
@@ -43,6 +44,40 @@ export default function Profile({
       onUserUpdated(response.data.user);
     }
   }
+  async function handlePhotoUpload(e) {
+  const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  setPhotoError("");
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(file.type)) {
+    setPhotoError("Only JPG, PNG, or WEBP images are allowed.");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    setPhotoError("Image size must be less than 2MB.");
+    return;
+  }
+
+  try {
+    setUploadingPhoto(true);
+
+    const response = await updateProfileLogo(file);
+
+    if (response?.data?.user && onUserUpdated) {
+      onUserUpdated(response.data.user);
+    }
+  } catch (err) {
+    setPhotoError(err.message || "Failed to upload photo.");
+  } finally {
+    setUploadingPhoto(false);
+    e.target.value = "";
+  }
+}
 
   const handleSaveStoreName = async () => {
     setStoreError("");
@@ -102,8 +137,26 @@ export default function Profile({
 
         <div className="profile-content">
           <div className="profile-banner">
-            <button className="btn-upload">Upload Photo</button>
-          </div>
+            <label
+              className="btn-upload"
+              style={{ cursor: uploadingPhoto ? "not-allowed" : "pointer" }}
+            >
+              {uploadingPhoto ? "Uploading..." : "Upload Photo"}
+
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handlePhotoUpload}
+                  disabled={uploadingPhoto}
+                  style={{ display: "none" }}
+                />
+              </label>    
+                    {photoError && (
+        <p style={{ color: "red", fontSize: "13px", marginTop: "8px" }}>
+          {photoError}
+        </p>
+      )}
+        </div>
 
           <div className="profile-avatar-wrapper">
             <div className="profile-avatar">

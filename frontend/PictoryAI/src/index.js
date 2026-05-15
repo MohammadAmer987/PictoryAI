@@ -148,6 +148,9 @@ function normalizeUser(apiUser) {
     role_id: Number(apiUser.role_id),
     role: apiUser.role?.name || "user",
     raw: apiUser,
+    avatarUrl: apiUser.profile?.logo_url
+  ? `http://127.0.0.1:8000${apiUser.profile.logo_url}`
+  : null,
   };
 }
 root.render(

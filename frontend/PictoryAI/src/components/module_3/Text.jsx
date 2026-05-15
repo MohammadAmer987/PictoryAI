@@ -144,7 +144,7 @@ export default function Text({ onSubmit , addNotification = () => {} }) {
                 size: data.size || null,
                 image: imageUrl,
             });
-            addNotification({ type: "genarate" });
+            await addNotification({ type: "genarate" });
 
         } catch (err) {
             let message = err?.message;

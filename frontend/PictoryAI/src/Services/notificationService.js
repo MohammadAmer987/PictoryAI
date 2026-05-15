@@ -27,14 +27,14 @@ export const getNotificationHistory = async (page = 1) => {
 };
 
 /**
- * Get notification statistics (admin)
+ * Get list of users for notification selection (admin)
  */
-export const getNotificationStats = async () => {
+export const getNotificationUsers = async (search = '') => {
   try {
-    const data = await get('/admin/notifications/stats');
+    const data = await get(`/admin/notifications/users${search ? `?search=${search}` : ''}`);
     return data;
   } catch (error) {
-    console.error('Error fetching notification stats:', error);
+    console.error('Error fetching notification users:', error);
     throw error;
   }
 };

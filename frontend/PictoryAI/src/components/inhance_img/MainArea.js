@@ -105,7 +105,7 @@ function MainArea({ isPro, isReady, settings ,  addNotification = () => {} }) {
 
             setResults(data.data?.edited_urls || []);
             setSelectedResult(0);
-            addNotification({ type: "enhance" });
+            await addNotification({ type: "enhance" });
 
         } catch (err) {
             console.error("Full Backend Error:", err);
