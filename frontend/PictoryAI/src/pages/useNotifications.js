@@ -1,78 +1,63 @@
 import { useState, useCallback, useEffect } from "react";
 
 const FREE_LIMITS = {
-    theme:   3,
-    enhance: 3,
-    caption: 3,
-    generate: 3,
+    theme: 3, enhance: 3, caption: 3, generate: 3,
 };
 
 const TYPE_MAP = {
-    theme:   "themed_image",
+    theme: "themed_image",
     enhance: "enhance_image",
     caption: "caption",
     generate: "generate_image",
-
 };
+
+const LABELS = {
+    theme: "Theme Image", enhance: "Enhanced Image",
+    caption: "Caption", generate: "Generated Image",
+};
+
+async function fetchUsageFromAPI() {
+    const res = await fetch("http://127.0.0.1:8000/api/notifications", {
+        headers: {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+        },
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error("Failed");
+    return data.notifications; // [{type, used, limit, remaining, label}]
+}
 
 export function useNotifications(userPlan = "free", userId = null) {
     const [notifications, setNotifications] = useState([]);
-    const [usageCount, setUsageCount] = useState({
-        theme:   0,
-        enhance: 0,
-        caption: 0,
-        generate: 0,
-    });
 
-    // جيب الأرقام الحقيقية من الداتابيس عند التحميل
     useEffect(() => {
         if (!userId) return;
+        fetchUsageFromAPI().catch(console.error);
+    }, [userId]);
 
-        async function fetchUsage() {
+    const addNotification = useCallback(async ({ type }) => {
+        const isPro = userPlan === "pro";
+
+        let remaining = null;
+
+        if (!isPro) {
             try {
-                const res = await fetch("http://127.0.0.1:8000/api/notifications", {
-                    headers: {
-                        "Accept": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
-                const data = await res.json();
+                const freshData = await fetchUsageFromAPI();
+                const apiType = TYPE_MAP[type];
+                const entry = freshData.find((n) => n.type === apiType);
 
-                if (data.success) {
-                    const map = {};
-                    data.notifications.forEach((n) => {
-                        const localType = Object.keys(TYPE_MAP).find(
-                            (k) => TYPE_MAP[k] === n.type
-                        );
-                        if (localType) map[localType] = n.used;
-                    });
-                    setUsageCount((prev) => ({ ...prev, ...map }));
+                if (entry) {
+                    remaining = entry.remaining;
                 }
             } catch (e) {
                 console.error("Failed to fetch usage", e);
             }
         }
 
-        fetchUsage();
-    }, [userId]);
-
-    const addNotification = useCallback(({ type }) => {
-        const labels = {
-            theme:   "Theme Image",
-            enhance: "Enhanced Image",
-            caption: "Caption",
-            generate: "Generated Image",
-        };
-
-        const newCount = (usageCount[type] || 0) + 1;
-        setUsageCount((prev) => ({ ...prev, [type]: newCount }));
-
-        const isPro = userPlan === "pro";
-        const remaining = isPro ? null : FREE_LIMITS[type] - newCount;
-
         const notification = {
             id: Date.now(),
-            message: `${labels[type]} generated successfully`,
+            message: `${LABELS[type]} generated successfully`,
             sub: !isPro
                 ? remaining > 0
                     ? `You have ${remaining} attempt${remaining === 1 ? "" : "s"} left`
@@ -81,7 +66,7 @@ export function useNotifications(userPlan = "free", userId = null) {
         };
 
         setNotifications((prev) => [notification, ...prev]);
-    }, [usageCount, userPlan]);
+    }, [userPlan]);
 
     const clearNotifications = useCallback(() => {
         setNotifications([]);
