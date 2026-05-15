@@ -5,13 +5,640 @@
         "description": "API documentation for the Pictory AI backend.",
         "version": "1.0.0"
     },
-    "servers": [
-        {
-            "url": "http://127.0.0.1:8000",
-            "description": "Local development server"
-        }
-    ],
     "paths": {
+        "/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get current authenticated user",
+                "description": "Returns the current authenticated user information",
+                "operationId": "5c085271722d202b909db88f6f6c4d64",
+                "responses": {
+                    "200": {
+                        "description": "Current user retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local development server"
+                    }
+                ]
+            }
+        },
+        "/admin/test": {
+            "get": {
+                "tags": [
+                    "Admin - Users"
+                ],
+                "summary": "Admin test endpoint",
+                "description": "Simple endpoint to test admin access. Admin only.",
+                "operationId": "03f143c66cedd9a4c42cebacec59138c",
+                "responses": {
+                    "200": {
+                        "description": "Admin access confirmed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "admin only"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local development server"
+                    }
+                ]
+            }
+        },
+        "/admin/users": {
+            "get": {
+                "tags": [
+                    "Admin - Users"
+                ],
+                "summary": "Get all users",
+                "description": "Retrieves a list of all regular users with their profiles, subscriptions, and usage data. Admin only.",
+                "operationId": "06d892de062bd84601131f920878264e",
+                "responses": {
+                    "200": {
+                        "description": "Users retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "storeName": {
+                                                "type": "string"
+                                            },
+                                            "businessType": {
+                                                "type": "string"
+                                            },
+                                            "plan": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "joinedAt": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "isVerified": {
+                                                "type": "boolean"
+                                            },
+                                            "lastLoginAt": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/dashboard/stats": {
+            "get": {
+                "tags": [
+                    "Admin - Dashboard"
+                ],
+                "summary": "Get dashboard statistics",
+                "description": "Retrieves dashboard statistics including total users, active users, and premium users. Admin only.",
+                "operationId": "081c007a98947435407fe644e31503e3",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard statistics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "totalUsers": {
+                                            "type": "integer",
+                                            "example": 100
+                                        },
+                                        "activeUsers": {
+                                            "type": "integer",
+                                            "example": 85
+                                        },
+                                        "premiumUsers": {
+                                            "type": "integer",
+                                            "example": 35
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/analytics": {
+            "get": {
+                "tags": [
+                    "Admin - Analytics"
+                ],
+                "summary": "Get feature analytics",
+                "description": "Retrieves feature usage analytics including statistics for image generation, caption generation, and other tools. Admin only.",
+                "operationId": "9e0bd3e4e746385aeb6361fee7689ed4",
+                "responses": {
+                    "200": {
+                        "description": "Analytics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "overview": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "label": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "integer"
+                                                    },
+                                                    "detail": {
+                                                        "type": "string"
+                                                    },
+                                                    "icon": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "featureStats": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "users": {
+                                                        "type": "integer"
+                                                    },
+                                                    "total": {
+                                                        "type": "integer"
+                                                    },
+                                                    "icon": {
+                                                        "type": "string"
+                                                    },
+                                                    "color": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "monthlyData": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "month": {
+                                                        "type": "string"
+                                                    },
+                                                    "users": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/revenue": {
+            "get": {
+                "tags": [
+                    "Admin - Analytics"
+                ],
+                "summary": "Get revenue analytics",
+                "description": "Retrieves revenue analytics including total revenue, active subscriptions per plan, and revenue by plan. Admin only.",
+                "operationId": "3917be64cdd81c2c8591e4313d1b010f",
+                "responses": {
+                    "200": {
+                        "description": "Revenue analytics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "totalRevenue": {
+                                            "type": "number",
+                                            "example": 1500
+                                        },
+                                        "totalActiveSubscriptions": {
+                                            "type": "integer",
+                                            "example": 45
+                                        },
+                                        "plans": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "type": "number"
+                                                    },
+                                                    "activeSubscriptions": {
+                                                        "type": "integer"
+                                                    },
+                                                    "monthlyRevenue": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/notifications/send": {
+            "post": {
+                "tags": [
+                    "Admin - Notifications"
+                ],
+                "summary": "Send notification to users",
+                "description": "Sends an email notification to all users or to specific selected users. Admin only.",
+                "operationId": "b65cc94177d068a6ca0d465e45bdc3c1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "type": {
+                                        "description": "Notification type",
+                                        "type": "string",
+                                        "enum": [
+                                            "all",
+                                            "specific"
+                                        ]
+                                    },
+                                    "user_ids": {
+                                        "description": "Required when type is specific",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Important Update",
+                                        "maxLength": 255
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "We have an important update for you"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notification sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email notification sent to 10 user(s)"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 10
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No users found for this notification"
+                    },
+                    "500": {
+                        "description": "Error sending notification"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/notifications/history": {
+            "get": {
+                "tags": [
+                    "Admin - Notifications"
+                ],
+                "summary": "Get notification history",
+                "description": "Retrieves paginated list of all sent notifications with recipient details. Admin only.",
+                "operationId": "86125efffafe549cb5bb678f670687b7",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification history retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "message": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/notifications/users": {
+            "get": {
+                "tags": [
+                    "Admin - Notifications"
+                ],
+                "summary": "Get users for notification targeting",
+                "description": "Retrieves a list of users that can be targeted for notifications with optional search. Admin only.",
+                "operationId": "c9ca4edab327e86d5e200980640aabe4",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search by email or owner name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Users retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "format": "email"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get current authenticated user information",
+                "description": "Returns the current authenticated user's information",
+                "operationId": "bc2032a379aa97707ccc61511897c120",
+                "responses": {
+                    "200": {
+                        "description": "Current user retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout the current user",
+                "description": "Revokes the current authentication token and logs out the user",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "200": {
+                        "description": "Logged out successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/captions/generate": {
             "post": {
                 "tags": [
@@ -109,8 +736,6 @@
                 ]
             }
         },
-
-
         "/api/history/captions": {
             "get": {
                 "tags": [
@@ -246,7 +871,6 @@
                 ]
             }
         },
-
         "/api/image/edit": {
             "post": {
                 "tags": [
@@ -560,7 +1184,6 @@
                 ]
             }
         },
-
         "/api/image-generator/generate": {
             "post": {
                 "tags": [
@@ -1043,115 +1666,23 @@
                 ]
             }
         },
-        "/api/subscription": {
-            "get": {
+        "/profile/name": {
+            "patch": {
                 "tags": [
-                    "Subscription"
+                    "Profile"
                 ],
-                "summary": "Get current user subscription status",
-                "operationId": "6c176ef3c94a1d730735ee055eca7381",
-                "responses": {
-                    "200": {
-                        "description": "Subscription status retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "isPro": {
-                                            "description": "Whether the user has a Pro subscription",
-                                            "type": "boolean",
-                                            "example": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/image/themed": {
-            "post": {
-                "tags": [
-                    "Tools - Theme Generator"
-                ],
-                "summary": "Apply a seasonal or occasion theme to a product image",
-                "description": "Uploads a product image and replaces its background with a fully themed luxury marketing scene (e.g. Ramadan, Christmas, Valentine's Day). The product identity is preserved while the environment is completely transformed. Free plan users are limited to 3 generations per month.",
-                "operationId": "1f158df8e5d416e6fb0e9c9a41862a68",
+                "summary": "Update owner name",
+                "description": "Updates the owner name of the user's profile",
+                "operationId": "67570cbcf1627284f67ca933f28c0b84",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
-                                "required": [
-                                    "image",
-                                    "theme",
-                                    "image_size"
-                                ],
                                 "properties": {
-                                    "image": {
-                                        "description": "Product image file. Accepted formats: jpg, jpeg, png, webp. Max size: 20MB.",
+                                    "owner_name": {
                                         "type": "string",
-                                        "format": "binary"
-                                    },
-                                    "theme": {
-                                        "description": "The occasion or seasonal theme to apply to the image.",
-                                        "type": "string",
-                                        "example": "Ramadan",
-                                        "maxLength": 255,
-                                        "enum": [
-                                            "Christmas",
-                                            "Ramadan",
-                                            "Eid al-Fitr",
-                                            "Eid al-Adha",
-                                            "Valentine's Day",
-                                            "Black Friday",
-                                            "New Year",
-                                            "Graduation",
-                                            "Mother's Day",
-                                            "Back to School"
-                                        ]
-                                    },
-                                    "image_size": {
-                                        "description": "Desired output image aspect ratio.",
-                                        "type": "string",
-                                        "example": "1:1",
-                                        "enum": [
-                                            "1:1",
-                                            "16:9",
-                                            "3:4",
-                                            "9:16",
-                                            "4:5"
-                                        ]
-                                    },
-                                    "optional_text": {
-                                        "description": "Optional text to overlay on the generated image (e.g. a promotional message or greeting). Displayed in a large bold luxury font at the top.",
-                                        "type": "string",
-                                        "example": "Ramadan Special Offer",
-                                        "nullable": true,
-                                        "maxLength": 255
+                                        "example": "John Doe"
                                     }
                                 },
                                 "type": "object"
@@ -1161,47 +1692,19 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Image themed and saved successfully.",
+                        "description": "Name updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Image edited and saved successfully."
+                                            "example": "Name updated successfully."
                                         },
                                         "data": {
                                             "properties": {
-                                                "request_id": {
-                                                    "type": "integer",
-                                                    "example": 17
-                                                },
-                                                "original_url": {
-                                                    "type": "string",
-                                                    "format": "uri",
-                                                    "example": "https://example.com/storage/uploads/product.jpg"
-                                                },
-                                                "edited_urls": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "format": "uri"
-                                                    },
-                                                    "example": [
-                                                        "https://cdn.fal.ai/themed-result.jpg"
-                                                    ]
-                                                },
-                                                "prompt_used": {
-                                                    "type": "string",
-                                                    "example": "PRODUCT: The reference product may be a low-quality..."
-                                                },
-                                                "raw_result": {
-                                                    "description": "Raw response payload from fal.ai",
-                                                    "type": "object"
+                                                "user": {
+                                                    "$ref": "#/components/schemas/User"
                                                 }
                                             },
                                             "type": "object"
@@ -1212,19 +1715,59 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthenticated.",
+                    "404": {
+                        "description": "Profile not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/store-name": {
+            "patch": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update store name",
+                "description": "Updates the store name of the user's profile",
+                "operationId": "6d2a3cb7f85fe573656b123d6f30ba8f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "store_name": {
+                                        "type": "string",
+                                        "example": "My Store"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Store name updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthenticated."
+                                            "example": "Store name updated successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/User"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -1232,97 +1775,59 @@
                             }
                         }
                     },
-                    "403": {
-                        "description": "Free plan monthly limit reached (max 3 generations).",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "You have reached the maximum limit of 3 generations for the free plan."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
+                    "404": {
+                        "description": "Profile not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/email": {
+            "patch": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update user email",
+                "description": "Updates the email address of the authenticated user",
+                "operationId": "a738aa1bc2de0df234c6f1045b503c7f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "newemail@example.com"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
-                    },
-                    "422": {
-                        "description": "Validation failed.",
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation failed."
+                                            "example": "Email updated successfully."
                                         },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "theme": [
-                                                    "The theme field is required."
-                                                ],
-                                                "image_size": [
-                                                    "The selected image size is invalid."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Server error or FAL_KEY missing.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Image editing failed."
-                                        },
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Connection timed out."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "502": {
-                        "description": "fal.ai returned an error, timed out, or returned no images.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Failed to submit request to fal.ai"
-                                        },
-                                        "fal_error": {
-                                            "description": "Error payload from fal.ai",
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/User"
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },
@@ -1334,56 +1839,53 @@
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctumBearerAuth": []
                     }
                 ]
             }
         },
-        "/api/notifications": {
-            "get": {
+        "/profile/password": {
+            "patch": {
                 "tags": [
-                    "Notifications"
+                    "Profile"
                 ],
-                "summary": "Get usage notifications and limits for the authenticated user",
-                "operationId": "911565ad9aff9ba7eded3f189509e578",
+                "summary": "Update user password",
+                "description": "Updates the password of the authenticated user",
+                "operationId": "04d602da08e355749d68c257c1e30009",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "example": "current_password"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "new_password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "new_password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Usage counters and limits returned successfully",
+                        "description": "Password updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "notifications": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string",
-                                                        "example": "caption"
-                                                    },
-                                                    "used": {
-                                                        "type": "integer",
-                                                        "example": 2
-                                                    },
-                                                    "limit": {
-                                                        "type": "integer",
-                                                        "example": 3
-                                                    },
-                                                    "remaining": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "label": {
-                                                        "type": "string",
-                                                        "example": "Caption Generator"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully."
                                         }
                                     },
                                     "type": "object"
@@ -1391,19 +1893,104 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthenticated",
+                    "422": {
+                        "description": "Current password is incorrect"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/logo": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update profile logo",
+                "description": "Uploads and updates the profile logo image",
+                "operationId": "3c2389bc3d573d2b6c1212ac408c20cb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "logo": {
+                                        "description": "Logo image file",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Logo updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthenticated."
+                                            "example": "Logo updated successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/User"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profile not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/subscriptions/current": {
+            "get": {
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Get current user subscription",
+                "description": "Retrieves the currently active subscription for the authenticated user",
+                "operationId": "a546d31e84b50e9af9ae265d83dda6be",
+                "responses": {
+                    "200": {
+                        "description": "Current subscription retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Current subscription retrieved successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "subscription": {
+                                                    "$ref": "#/components/schemas/Subscription"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -1414,7 +2001,108 @@
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/subscriptions/history": {
+            "get": {
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Get subscription history",
+                "description": "Retrieves all past and current subscriptions for the authenticated user",
+                "operationId": "11a72831fbe2834577fe31095bfc62ac",
+                "responses": {
+                    "200": {
+                        "description": "Subscription history retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Subscription history retrieved successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "subscriptions": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Subscription"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/subscriptions/upgrade": {
+            "post": {
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Upgrade user subscription to premium",
+                "description": "Upgrades the user's subscription to the premium plan",
+                "operationId": "86b5f9381ec7bd01d2ffa5576db0002d",
+                "responses": {
+                    "200": {
+                        "description": "Subscription upgraded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Subscription upgraded successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "subscription": {
+                                                    "$ref": "#/components/schemas/Subscription"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Premium plan not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Premium plan not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctumBearerAuth": []
                     }
                 ]
             }
@@ -1717,6 +2405,143 @@
         }
     },
     "components": {
+        "schemas": {
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    "role_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "is_verified": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "last_login_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Profile": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "owner_name": {
+                        "type": "string"
+                    },
+                    "store_name": {
+                        "type": "string"
+                    },
+                    "business_type": {
+                        "type": "string"
+                    },
+                    "business_description": {
+                        "type": "string"
+                    },
+                    "logo": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Plan": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "free"
+                    },
+                    "price": {
+                        "type": "number",
+                        "example": 0
+                    },
+                    "max_generations": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "watermark": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "Subscription": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "plan_id": {
+                        "type": "integer"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "cancelled",
+                            "expired"
+                        ]
+                    },
+                    "plan": {
+                        "$ref": "#/components/schemas/Plan"
+                    }
+                },
+                "type": "object"
+            },
+            "DashboardStats": {
+                "properties": {
+                    "totalUsers": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "activeUsers": {
+                        "type": "integer",
+                        "example": 85
+                    },
+                    "premiumUsers": {
+                        "type": "integer",
+                        "example": 35
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "sanctumBearerAuth": {
                 "type": "http",
@@ -1728,19 +2553,44 @@
     },
     "tags": [
         {
+            "name": "Authentication",
+            "description": "Authentication and account access operations."
+        },
+        {
             "name": "Tools - Captions",
             "description": "Operations related to AI caption generation."
         },
         {
             "name": "Tools - Image Generation",
             "description": "Operations related to AI image generation."
-
-
         },
         {
             "name": "History",
             "description": "Operations related to user generation history."
-
+        },
+        {
+            "name": "Subscriptions",
+            "description": "Operations related to user subscription management."
+        },
+        {
+            "name": "Profile",
+            "description": "Operations related to user profile management."
+        },
+        {
+            "name": "Admin - Users",
+            "description": "Admin operations for user management."
+        },
+        {
+            "name": "Admin - Dashboard",
+            "description": "Admin operations for dashboard statistics."
+        },
+        {
+            "name": "Admin - Analytics",
+            "description": "Admin operations for analytics and revenue tracking."
+        },
+        {
+            "name": "Admin - Notifications",
+            "description": "Admin operations for user notifications."
         },
         {
             "name": "Tools - Image Enhancement",
@@ -1757,7 +2607,6 @@
         {
             "name": "Tools - Theme Generator",
             "description": "Tools - Theme Generator"
-
         }
     ]
 }

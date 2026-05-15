@@ -10,12 +10,40 @@ use App\Models\ImageGenerationRequest;
 use App\Models\ThemedImageRequest;
 use App\Models\UsageCounter;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class AdminController extends Controller
 {
-    /**
-     * Get all users with their profile, subscription, and usage data
-     */
+    #[OA\Get(
+        path: '/admin/users',
+        summary: 'Get all users',
+        description: 'Retrieves a list of all regular users with their profiles, subscriptions, and usage data. Admin only.',
+        tags: ['Admin - Users'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Users retrieved successfully',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer'),
+                            new OA\Property(property: 'name', type: 'string'),
+                            new OA\Property(property: 'email', type: 'string', format: 'email'),
+                            new OA\Property(property: 'storeName', type: 'string'),
+                            new OA\Property(property: 'businessType', type: 'string'),
+                            new OA\Property(property: 'plan', type: 'string'),
+                            new OA\Property(property: 'status', type: 'string'),
+                            new OA\Property(property: 'joinedAt', type: 'string', format: 'date'),
+                            new OA\Property(property: 'isVerified', type: 'boolean'),
+                            new OA\Property(property: 'lastLoginAt', type: 'string'),
+                        ]
+                    )
+                )
+            ),
+        ]
+    )]
     public function getAllUsers()
     {
         $users = User::with(['profile', 'activeSubscription.plan', 'usageCounters'])
@@ -28,9 +56,26 @@ class AdminController extends Controller
         return response()->json($users);
     }
 
-    /**
-     * Get dashboard statistics
-     */
+    #[OA\Get(
+        path: '/admin/dashboard/stats',
+        summary: 'Get dashboard statistics',
+        description: 'Retrieves dashboard statistics including total users, active users, and premium users. Admin only.',
+        tags: ['Admin - Dashboard'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Dashboard statistics retrieved successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'totalUsers', type: 'integer', example: 100),
+                        new OA\Property(property: 'activeUsers', type: 'integer', example: 85),
+                        new OA\Property(property: 'premiumUsers', type: 'integer', example: 35),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function getDashboardStats()
     {
         $totalUsers = User::where('role_id', 2)->count();
@@ -56,9 +101,58 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Get analytics - feature usage statistics
-     */
+    #[OA\Get(
+        path: '/admin/analytics',
+        summary: 'Get feature analytics',
+        description: 'Retrieves feature usage analytics including statistics for image generation, caption generation, and other tools. Admin only.',
+        tags: ['Admin - Analytics'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Analytics retrieved successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'overview',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'label', type: 'string'),
+                                    new OA\Property(property: 'value', type: 'integer'),
+                                    new OA\Property(property: 'detail', type: 'string'),
+                                    new OA\Property(property: 'icon', type: 'string'),
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'featureStats',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'name', type: 'string'),
+                                    new OA\Property(property: 'users', type: 'integer'),
+                                    new OA\Property(property: 'total', type: 'integer'),
+                                    new OA\Property(property: 'icon', type: 'string'),
+                                    new OA\Property(property: 'color', type: 'string'),
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'monthlyData',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'month', type: 'string'),
+                                    new OA\Property(property: 'users', type: 'integer'),
+                                ]
+                            )
+                        ),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function getAnalytics()
     {
         // Total usage stats
@@ -132,9 +226,37 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Get subscription revenue and profit analytics
-     */
+    #[OA\Get(
+        path: '/admin/revenue',
+        summary: 'Get revenue analytics',
+        description: 'Retrieves revenue analytics including total revenue, active subscriptions per plan, and revenue by plan. Admin only.',
+        tags: ['Admin - Analytics'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Revenue analytics retrieved successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'totalRevenue', type: 'number', example: 1500),
+                        new OA\Property(property: 'totalActiveSubscriptions', type: 'integer', example: 45),
+                        new OA\Property(
+                            property: 'plans',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'name', type: 'string'),
+                                    new OA\Property(property: 'price', type: 'number'),
+                                    new OA\Property(property: 'activeSubscriptions', type: 'integer'),
+                                    new OA\Property(property: 'monthlyRevenue', type: 'number'),
+                                ]
+                            )
+                        ),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function getRevenueAnalytics()
     {
         $plans = Plan::get()->map(function ($plan) {
