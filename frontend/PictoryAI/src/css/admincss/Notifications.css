@@ -268,6 +268,120 @@
   color: #1e293b;
 }
 
+/* History Container */
+.historyContainer {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.historyTable {
+  overflow-x: auto;
+}
+
+.historyTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.historyTable thead {
+  background-color: #f1f5f9;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.historyTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.historyTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.historyTable tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.historyTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* User Search and Selection */
+.userSearchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.75rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.userSearchInput {
+  padding-left: 2.5rem;
+}
+
+.usersList {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+.userItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.userItem:last-child {
+  border-bottom: none;
+}
+
+.userItem:hover {
+  background-color: #f8fafc;
+}
+
+.userItem input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: #1e40af;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.userName {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.userEmail {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .notificationsPage {
@@ -276,6 +390,19 @@
 
   .composeForm {
     padding: 1rem;
+  }
+
+  .historyContainer {
+    padding: 1rem;
+  }
+
+  .historyTable {
+    font-size: 0.85rem;
+  }
+
+  .historyTable th,
+  .historyTable td {
+    padding: 0.75rem 0.5rem;
   }
 
   .statsGrid {
