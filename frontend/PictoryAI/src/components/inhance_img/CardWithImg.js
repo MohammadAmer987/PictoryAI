@@ -3,7 +3,7 @@ function CardWithImg({img, label, selected, onClick, imgWidth})
 {
     return(
         <div
-            className={`card ${selected ? "active" : ""}`}
+            className={`card_inh ${selected ? "active" : ""}`}
             onClick={onClick}
         >
             <div className='img'>
