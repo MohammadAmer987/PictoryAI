@@ -1,4 +1,4 @@
-.card {
+.card_inh {
     padding: 8px;
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -10,7 +10,7 @@
     overflow: hidden;
 }
 
-.card::before {
+.card_inh::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -19,20 +19,20 @@
     transition: var(--transition);
 }
 
-.card:hover {
+.card_inh:hover {
     border-color: var(--green-light);
     box-shadow: var(--shadow-sm);
     transform: translateY(-2px);
 }
 
-.card:hover::before { opacity: 1; }
+.card_inh:hover::before { opacity: 1; }
 
-.card .img {
+.card_inh .img {
     overflow: hidden;
     border-radius: 6px;
 }
 
-.card img {
+.card_inh img {
     border-radius: 6px;
     display: block;
     margin: 0 auto;
@@ -40,9 +40,9 @@
     object-fit: cover;
 }
 
-.card:hover img { transform: scale(1.05); }
+.card_inh:hover img { transform: scale(1.05); }
 
-.card p {
+.card_inh p {
     margin: 5px 0 0;
     font-size: 11px;
     font-weight: 500;
@@ -50,7 +50,7 @@
     letter-spacing: 0.02em;
 }
 
-.card.active {
+.card_inh.active {
     background: var(--white);
     transform: translateY(-2px);
     border-color: var(--green-mid);
@@ -58,7 +58,7 @@
     box-shadow: 0 0 0 3px rgba(113,150,125,0.15);
 }
 
-.card.active::after {
+.card_inh.active::after {
     content: '✓';
     position: absolute;
     top: 5px;
@@ -74,7 +74,7 @@
     justify-content: center;
 }
 
-.card.active p {
+.card_inh.active p {
     color: var(--green-mid);
     font-weight: 600;
 }
