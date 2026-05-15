@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Api\CaptionController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\ImageGeneratorControllerFixed;
+
+use App\Http\Controllers\ImageGeneratorController;
+
 use App\Http\Controllers\ImageEditController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ThemedImageController;
@@ -49,7 +51,9 @@ Route::middleware(['auth:sanctum', 'role:1,2'])->group(function () {
     Route::post('/image-edit', [ImageEditController::class, 'edit']);
     Route::post('/image-theme', [ThemedImageController::class, 'edit']);
 
-    Route::post('/generate-image', [ImageGeneratorControllerFixed::class, 'generate']);
+
+Route::post('/generate-image', [ImageGeneratorController::class, 'generate']);
+
 
     Route::post('/captions/generate', [CaptionController::class, 'generate']);
     Route::get('/captions/my-plan', [CaptionController::class, 'myPlan']);

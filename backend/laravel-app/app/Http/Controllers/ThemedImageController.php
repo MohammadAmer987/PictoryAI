@@ -302,16 +302,19 @@ class ThemedImageController extends Controller
                 'optional_text'       => $request->optional_text,
             ]);
 
-            if ($planId == 1) {
-                $user->usageCounters()->updateOrCreate(
-                    [
-                        'type'  => 'themed_image',
-                        'year'  => now()->year,
-                        'month' => now()->month,
-                    ],
-                    ['used' => DB::raw('used + 1')]
-                );
-            }
+
+            
+if ($planId == 1) {
+    $counter = $user->usageCounters()->firstOrCreate(
+        [
+            'type'  => 'themed_image',
+            'year'  => now()->year,
+            'month' => now()->month,
+        ],
+        ['used' => 0]
+    );
+    $counter->increment('used');
+}
 
             foreach ($editedUrls as $index => $url) {
                 $requestModel->responses()->create([
