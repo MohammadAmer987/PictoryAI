@@ -279,7 +279,7 @@ class ImageEditController extends Controller
 
         $planId = $subscription?->plan_id ?? 1;
 
-        if ($planId == 1) { // free plan
+        if ($planId == 1) {
             $usageCounter = $user->usageCounters()
                 ->where('type', 'enhance_image')
                 ->where('year', now()->year)

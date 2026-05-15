@@ -12,7 +12,7 @@ use App\Mail\NotificationEmail;
 class AdminNotificationController extends Controller
 {
     /**
-     * Send notification to all users or specific users
+     * Send email notification to all users or specific users
      */
     public function send(Request $request)
     {
@@ -21,9 +21,6 @@ class AdminNotificationController extends Controller
             'user_ids' => 'nullable|array', // For specific users
             'title' => 'required|string|max:255',
             'message' => 'required|string',
-            'link' => 'nullable|string|url',
-            'send_email' => 'boolean|default:true',
-            'send_in_app' => 'boolean|default:true',
         ]);
 
         try {
@@ -43,25 +40,18 @@ class AdminNotificationController extends Controller
                     'user_id' => $user->id,
                     'title' => $validated['title'],
                     'message' => $validated['message'],
-                    'type' => $this->getNotificationType($validated),
+                    'type' => 'email',
                     'status' => 'pending',
-                    'meta' => [
-                        'link' => $validated['link'] ?? null,
-                    ],
+                    'meta' => [],
                 ]);
 
-                if ($validated['send_email']) {
-                    $this->sendEmailNotification($user, $notification, $validated);
-                } else {
-                    $notification->update(['status' => 'sent', 'sent_at' => now()]);
-                }
-
+                $this->sendEmailNotification($user, $notification, $validated);
                 $notificationCount++;
             }
 
             return response()->json([
                 'success' => true,
-                'message' => "Notification sent to {$notificationCount} user(s)",
+                'message' => "Email notification sent to {$notificationCount} user(s)",
                 'count' => $notificationCount,
             ]);
         } catch (\Exception $e) {
@@ -73,30 +63,27 @@ class AdminNotificationController extends Controller
     }
 
     /**
-     * Get all sent notifications (admin view)
+     * Get notification history (admin view)
+     * Shows all sent notifications with recipient details
      */
-    public function getHistory()
+    public function getHistory(Request $request)
     {
+        $page = $request->query('page', 1);
+        
         $notifications = Notification::with('user:id,email')
             ->orderBy('created_at', 'desc')
-            ->paginate(50);
+            ->paginate(20, ['*'], 'page', $page);
 
-        return response()->json($notifications);
-    }
-
-    /**
-     * Get notification stats
-     */
-    public function getStats()
-    {
-        $stats = [
-            'total_sent' => Notification::where('status', 'sent')->count(),
-            'total_pending' => Notification::where('status', 'pending')->count(),
-            'total_failed' => Notification::where('status', 'failed')->count(),
-            'total_read' => Notification::whereNotNull('read_at')->count(),
-        ];
-
-        return response()->json($stats);
+        return response()->json([
+            'success' => true,
+            'data' => $notifications->items(),
+            'pagination' => [
+                'total' => $notifications->total(),
+                'per_page' => $notifications->perPage(),
+                'current_page' => $notifications->currentPage(),
+                'last_page' => $notifications->lastPage(),
+            ],
+        ]);
     }
 
     /**
@@ -114,23 +101,6 @@ class AdminNotificationController extends Controller
     }
 
     /**
-     * Helper: Get notification type string
-     */
-    private function getNotificationType($validated)
-    {
-        $sendEmail = $validated['send_email'] ?? false;
-        $sendInApp = $validated['send_in_app'] ?? false;
-
-        if ($sendEmail && $sendInApp) {
-            return 'both';
-        } elseif ($sendEmail) {
-            return 'email';
-        }
-
-        return 'in_app';
-    }
-
-    /**
      * Helper: Send email notification
      */
     private function sendEmailNotification($user, $notification, $validated)
@@ -138,8 +108,8 @@ class AdminNotificationController extends Controller
         try {
             Mail::to($user->email)->send(new NotificationEmail(
                 title: $validated['title'],
-                message: $validated['message'],
-                link: $validated['link'] ?? null,
+                body: $validated['message'],
+                link: null,
                 userName: $user->profile?->owner_name ?? $user->email,
             ));
 

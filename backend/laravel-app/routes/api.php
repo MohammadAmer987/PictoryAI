@@ -73,13 +73,14 @@ Route::post('/generate-image', [ImageGeneratorController::class, 'generate']);
     Route::patch('/profile/store-name', [ProfileController::class, 'updateStoreName']);
     Route::patch('/profile/email', [ProfileController::class, 'updateEmail']);
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword']);
+    Route::post('/profile/logo', [ProfileController::class, 'updateLogo']);
 });
 
 /*
-|--------------------------------------------------------------------------
-| Admin-only routes
-| role_id: 1 = admin only
-|--------------------------------------------------------------------------
+
+    Admin-only routes
+    role_id: 1 = admin only
+
 */
 
 Route::middleware(['auth:sanctum', 'role:1'])->prefix('admin')->group(function () {
@@ -102,5 +103,4 @@ Route::middleware(['auth:sanctum', 'role:1'])->prefix('admin')->group(function (
     // Notifications
     Route::post('/notifications/send', [AdminNotificationController::class, 'send']);
     Route::get('/notifications/history', [AdminNotificationController::class, 'getHistory']);
-    Route::get('/notifications/stats', [AdminNotificationController::class, 'getStats']);
 });
