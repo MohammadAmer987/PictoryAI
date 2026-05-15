@@ -99,4 +99,5 @@ Route::middleware(['auth:sanctum', 'role:1'])->prefix('admin')->group(function (
     // Notifications
     Route::post('/notifications/send', [AdminNotificationController::class, 'send']);
     Route::get('/notifications/history', [AdminNotificationController::class, 'getHistory']);
+    Route::get('/notifications/users', [AdminNotificationController::class, 'getUsers']);
 });
