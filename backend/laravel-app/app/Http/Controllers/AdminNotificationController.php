@@ -87,6 +87,42 @@ class AdminNotificationController extends Controller
     }
 
     /**
+     * Get users for notification recipient selection (admin)
+     */
+    public function getUsers(Request $request)
+    {
+        $search = $request->query('search', '');
+        
+        $query = User::where('role_id', 2); // Only regular users, not admins
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('email', 'like', "%{$search}%")
+                  ->orWhereHas('profile', function($q) use ($search) {
+                      $q->where('owner_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $users = $query->select('id', 'email')
+            ->with('profile:user_id,owner_name')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($user) {
+                return [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->profile?->owner_name ?? $user->email,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $users,
+        ]);
+    }
+
+    /**
      * Helper: Get target users based on type
      */
     private function getTargetUsers($validated)
