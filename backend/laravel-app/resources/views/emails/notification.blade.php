@@ -170,7 +170,7 @@
                 </div>
 
                 <div class="message">
-{{ $message }}
+{{ $body }}
                 </div>
 
                 @if ($link)
