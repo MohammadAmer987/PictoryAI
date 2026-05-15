@@ -2,10 +2,17 @@ import { Container, Row, Col, Badge, Breadcrumb, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 function ContentStudioHeader({
+                               activeTab = 'images',
                                searchTerm = '',
                                onSearchChange,
                                sortValue = 'newest',
                                onSortChange,
+                               imageFilter = 'all',
+                               onImageFilterChange,
+                               captionToneFilter = 'all',
+                               onCaptionToneFilterChange,
+                               captionLanguageFilter = 'all',
+                               onCaptionLanguageFilterChange,
                                totalImages = 0,
                                totalCaptions = 0,
                              }) {
@@ -128,8 +135,8 @@ function ContentStudioHeader({
             </Col>
           </Row>
 
-          <Row className="g-3 mt-4">
-            <Col lg={8} md={12}>
+          <Row className="g-3 mt-4 align-items-stretch">
+            <Col lg={activeTab === 'images' ? 5 : 4} md={12}>
               <div className="studio-search-wrap">
                 <i className="bi bi-search studio-search-icon"></i>
                 <Form.Control
@@ -142,7 +149,7 @@ function ContentStudioHeader({
               </div>
             </Col>
 
-            <Col lg={4} md={12}>
+            <Col lg={2} md={6}>
               <div className="studio-select-wrap">
                 <i className="bi bi-funnel studio-select-icon"></i>
 
@@ -158,6 +165,57 @@ function ContentStudioHeader({
                 </Form.Select>
               </div>
             </Col>
+            {activeTab === 'images' ? (
+                <Col lg={3} md={6}>
+                  <div className="studio-select-wrap">
+                    <i className="bi bi-grid studio-select-icon"></i>
+                    <Form.Select
+                        value={imageFilter}
+                        onChange={(e) => onImageFilterChange(e.target.value)}
+                        className="studio-select studio-select-compact"
+                    >
+                      <option value="all">All Image Types</option>
+                      <option value="generate">Generated</option>
+                      <option value="enhance">Enhanced</option>
+                      <option value="theme">Themed</option>
+                    </Form.Select>
+                  </div>
+                </Col>
+            ) : (
+                <>
+                  <Col lg={3} md={6}>
+                    <div className="studio-select-wrap">
+                      <i className="bi bi-emoji-smile studio-select-icon"></i>
+                      <Form.Select
+                          value={captionToneFilter}
+                          onChange={(e) => onCaptionToneFilterChange(e.target.value)}
+                          className="studio-select studio-select-compact"
+                      >
+                        <option value="all">All Tones</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="friendly">Friendly</option>
+                        <option value="funny">Funny</option>
+                        <option value="professional">Professional</option>
+                      </Form.Select>
+                    </div>
+                  </Col>
+
+                  <Col lg={3} md={6}>
+                    <div className="studio-select-wrap">
+                      <i className="bi bi-translate studio-select-icon"></i>
+                      <Form.Select
+                          value={captionLanguageFilter}
+                          onChange={(e) => onCaptionLanguageFilterChange(e.target.value)}
+                          className="studio-select studio-select-compact"
+                      >
+                        <option value="all">All Languages</option>
+                        <option value="english">English</option>
+                        <option value="arabic">Arabic</option>
+                      </Form.Select>
+                    </div>
+                  </Col>
+                </>
+            )}
           </Row>
 
           <Row className="g-3 mt-2 pb-2">

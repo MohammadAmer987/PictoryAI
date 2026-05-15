@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Row, Col, Card } from "react-bootstrap";
 
-function ImagesGrid({ images = [] }) {
+function ImagesGrid({ images = [], onDeleteGroup }) {
+    const [expandedItems, setExpandedItems] = useState({});
+
     const formatDate = (date) => {
         if (!date) return "";
         return new Date(date).toLocaleDateString("en-GB");
@@ -11,6 +14,13 @@ function ImagesGrid({ images = [] }) {
         if (type === "enhance") return "Enhanced";
         if (type === "theme") return "Themed";
         return "Image";
+    };
+
+    const getTypeIcon = (type) => {
+        if (type === "generate") return "bi-magic";
+        if (type === "enhance") return "bi-stars";
+        if (type === "theme") return "bi-palette";
+        return "bi-image";
     };
 
     const getTitle = (item) => {
@@ -51,6 +61,9 @@ function ImagesGrid({ images = [] }) {
         if (item.details?.product_name) rows.push(["Product", item.details.product_name]);
         if (item.details?.theme) rows.push(["Theme", item.details.theme]);
         if (item.details?.style_type) rows.push(["Style", item.details.style_type]);
+        if (item.details?.image_type) rows.push(["Format", item.details.image_type]);
+        if (item.details?.light_type) rows.push(["Light", item.details.light_type]);
+        if (item.details?.image_size) rows.push(["Ratio", item.details.image_size]);
 
         if (item.type === "generate") {
             const prompt = item.details?.content || item.details?.prompt_used;
@@ -106,6 +119,13 @@ function ImagesGrid({ images = [] }) {
         </div>
     );
 
+    const toggleExpanded = (itemId) => {
+        setExpandedItems((current) => ({
+            ...current,
+            [itemId]: !current[itemId],
+        }));
+    };
+
     if (!images.length) {
         return (
             <div className="studio-empty-state text-center py-5">
@@ -124,17 +144,29 @@ function ImagesGrid({ images = [] }) {
                 const extraImages = getExtraImages(item);
                 const details = getDetails(item);
                 const title = getTitle(item);
+                const badgeLabel = getBadgeLabel(item.type);
+                const typeIcon = getTypeIcon(item.type);
+                const totalResults = Array.isArray(item.images) ? item.images.length : 0;
+                const itemKey = item.id || index;
+                const isExpanded = Boolean(expandedItems[itemKey]);
 
                 return (
-                    <Col key={item.id || index} xl={4} lg={6} md={6}>
-                        <Card className="studio-image-card border-0 shadow-sm h-100">
+                    <Col key={itemKey} xl={4} lg={6} md={6} className="align-self-start">
+                        <Card className="studio-image-card border-0 shadow-sm">
                             <div className="studio-image-wrap">
                                 <img src={mainImage} alt={title} className="studio-image-preview" />
 
                                 <div className="studio-image-topbar">
-                  <span className="studio-image-badge">
-                    {getBadgeLabel(item.type)}
-                  </span>
+                                    <div className="studio-image-meta-stack">
+                                        <span className="studio-image-badge">
+                                            <i className={`bi ${typeIcon}`}></i>
+                                            {badgeLabel}
+                                        </span>
+
+                                        <span className="studio-image-count-badge">
+                                            {totalResults} result{totalResults === 1 ? "" : "s"}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="studio-image-overlay">
@@ -155,67 +187,98 @@ function ImagesGrid({ images = [] }) {
                                     >
                                         <i className="bi bi-download"></i>
                                     </button>
+
+                                    <button
+                                        type="button"
+                                        className="studio-icon-btn"
+                                        title="Delete image group"
+                                        onClick={() => onDeleteGroup?.(item)}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
 
                             <Card.Body className="studio-image-body">
-                                <div className="mb-3 text-center">
-                                    <span className="studio-image-date">
-                    {formatDate(item.created_at || item.date)}
-                  </span>
+                                <div className="studio-image-bottom-row">
+                                    <div className="studio-image-title-wrap">
+                                        <h5 className="studio-image-title mb-0">{title}</h5>
+                                        <p className="studio-image-subtitle mb-0">
+                                            {formatDate(item.created_at || item.date)}
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className={`studio-image-expand-btn ${isExpanded ? "open" : ""}`}
+                                        onClick={() => toggleExpanded(itemKey)}
+                                        aria-expanded={isExpanded}
+                                        aria-label={isExpanded ? "Hide details" : "Show details"}
+                                    >
+                                        <i className="bi bi-chevron-down"></i>
+                                    </button>
                                 </div>
 
-                                {details.length > 0 && (
-                                    <div className="studio-mini-details mb-3">
-                                        {details.map(([label, value]) => (
-                                            <div
-                                                className={`studio-mini-detail ${
-                                                    label === "Prompt" ? "studio-mini-detail-full" : ""
-                                                }`}
-                                                key={label}
-                                            >
-                                                <span>{label}</span>
-                                                <strong>{value}</strong>
+                                {isExpanded && (
+                                    <div className="studio-image-expanded">
+                                        {details.length > 0 && (
+                                            <div className="studio-mini-details mb-3">
+                                                {details.map(([label, value]) => (
+                                                    <div
+                                                        className={`studio-mini-detail ${
+                                                            label === "Prompt" ? "studio-mini-detail-full" : ""
+                                                        }`}
+                                                        key={label}
+                                                    >
+                                                        <span>{label}</span>
+                                                        <strong>{value}</strong>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
+                                        )}
 
-                                {beforeImage && (
-                                    <div className="studio-before-after mb-3">
-                                        <div>
-                                            <span className="studio-section-label">Before</span>
-                                            <ImageBox
-                                                imageUrl={beforeImage}
-                                                alt="Before"
-                                                fileName={`${title}-before`}
-                                            />
-                                        </div>
+                                        {beforeImage && (
+                                            <div className="studio-before-after mb-3">
+                                                <div className="studio-compare-card">
+                                                    <span className="studio-section-label">Before</span>
+                                                    <ImageBox
+                                                        imageUrl={beforeImage}
+                                                        alt="Before"
+                                                        fileName={`${title}-before`}
+                                                    />
+                                                </div>
 
-                                        <div>
-                                            <span className="studio-section-label">After</span>
-                                            <ImageBox
-                                                imageUrl={mainImage}
-                                                alt="After"
-                                                fileName={`${title}-after`}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
+                                                <div className="studio-compare-card">
+                                                    <span className="studio-section-label">After</span>
+                                                    <ImageBox
+                                                        imageUrl={mainImage}
+                                                        alt="After"
+                                                        fileName={`${title}-after`}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
 
-                                {extraImages.length > 0 && (
-                                    <div>
-                                        <span className="studio-section-label">More results</span>
-                                        <div className="studio-small-results">
-                                            {extraImages.slice(0, 3).map((image, imgIndex) => (
-                                                <ImageBox
-                                                    key={`${image}-${imgIndex}`}
-                                                    imageUrl={image}
-                                                    alt={`Result ${imgIndex + 1}`}
-                                                    fileName={`${title}-result-${imgIndex + 1}`}
-                                                />
-                                            ))}
-                                        </div>
+                                        {extraImages.length > 0 && (
+                                            <div className="studio-results-panel">
+                                                <div className="studio-results-panel-head">
+                                                    <span className="studio-section-label">More results</span>
+                                                    <span className="studio-results-note">
+                                                        Alternate variations
+                                                    </span>
+                                                </div>
+                                                <div className="studio-small-results">
+                                                    {extraImages.slice(0, 3).map((image, imgIndex) => (
+                                                        <ImageBox
+                                                            key={`${image}-${imgIndex}`}
+                                                            imageUrl={image}
+                                                            alt={`Result ${imgIndex + 1}`}
+                                                            fileName={`${title}-result-${imgIndex + 1}`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </Card.Body>

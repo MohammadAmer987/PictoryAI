@@ -8,10 +8,42 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Services\UsageLimitService;
 use Illuminate\Validation\ValidationException;
-//
-//////
+use OpenApi\Attributes as OA;
+
 class CaptionController extends Controller
 {
+    #[OA\Post(
+        path: '/api/captions/generate',
+        operationId: 'generateCaptions',
+        summary: 'Generate AI captions from a product image',
+        description: 'Generates four marketing captions for a product image using the caption generation tool.',
+        tags: ['Tools - Captions'],
+        security: [['sanctumBearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['product_name', 'image'],
+                    properties: [
+                        new OA\Property(property: 'product_name', type: 'string', maxLength: 255, example: 'Luxury Perfume'),
+                        new OA\Property(property: 'target_audience', type: 'string', maxLength: 255, example: 'Women aged 20-35'),
+                        new OA\Property(property: 'tone', type: 'string', maxLength: 255, example: 'Elegant'),
+                        new OA\Property(property: 'language', type: 'string', maxLength: 50, example: 'English'),
+                        new OA\Property(property: 'description', type: 'string', maxLength: 200, example: 'A premium floral fragrance for daily wear'),
+                        new OA\Property(property: 'image', type: 'string', format: 'binary'),
+                    ],
+                    type: 'object'
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Captions generated successfully.'),
+            new OA\Response(response: 401, description: 'Unauthenticated.'),
+            new OA\Response(response: 403, description: 'Caption generation limit reached.'),
+            new OA\Response(response: 422, description: 'Validation failed.')
+        ]
+    )]
     public function generate(Request $request)
     {
 
@@ -210,6 +242,19 @@ class CaptionController extends Controller
         ]);
 
     }
+
+    #[OA\Get(
+        path: '/api/captions/my-plan',
+        operationId: 'getCaptionGeneratingPlan',
+        summary: 'Get current user caption plan',
+        description: 'Returns the current subscription plan details relevant to the caption generation tool.',
+        tags: ['Tools - Captions'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Current plan retrieved successfully.'),
+            new OA\Response(response: 401, description: 'Unauthenticated.')
+        ]
+    )]
     public function myPlan(Request $request)
     {
         $subscription = $request->user()
@@ -221,7 +266,7 @@ class CaptionController extends Controller
             'success' => true,
             'data' => [
                 'plan' => isset($subscription->plan->name) ? $subscription->plan->name : 'free',
-                'is_premium' => strtolower(isset($subscription->plan->name) ? $subscription->plan->name : 'free') === 'pro',
+                'is_premium' => strtolower(isset($subscription->plan->name) ? $subscription->plan->name : 'free') === 'premium',
             ],
         ]);
     }

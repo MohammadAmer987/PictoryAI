@@ -16,8 +16,7 @@ import'./css/footer.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './css/captionGenerator.css'
 import './css/content-studio.css'
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import {getMe,logout} from "./Services/authService";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";import {getMe,logout} from "./Services/authService";
 import ContentStudioPage from "./pages/User/ContentStudioPage";
 import Text from "./components/module_3/Text";
 import InhanceImg from './pages/InhanceImgPage';
@@ -25,9 +24,18 @@ import './css/inhance_img/InhanceImgPage.css'
 import ThemeImgPage from "./pages/ThemeImgPage";
 import './css/theme_img/ThemeImgPage.css'
 import SubscriptionPage from "./components/SubscriptionPage";
+import ChatBotWidget from "./components/ChatBotWidget";
+import { useNotifications } from './pages/useNotifications';
+import PaymentPage from "./pages/paymentPage"
+import AdminPanel from './pages/Admin/AdminPanel';
+import ProtectedRoute from './Services/ProtectedRoute';
 
 function App() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith("/admin");
+
+
 async function handleLogout() {
   await logout();
   setUser(null);
@@ -40,9 +48,13 @@ React.useEffect(() => {
 
       if (data?.data?.user) {
         setUser(normalizeUser(data.data.user));
+      } else {
+        setUser(null);
       }
     } catch {
       setUser(null);
+    } finally {
+      setAuthLoading(false);
     }
   }
 
@@ -50,10 +62,22 @@ React.useEffect(() => {
 }, []);
 
   const [user, setUser] = React.useState(null);
+  const [authLoading, setAuthLoading] = React.useState(true);
+    const { notifications, unreadCount, addNotification, clearNotifications } =
+        useNotifications(user?.plan || "free", user?.id);
     return (
         <>
-            <Navbar user={user} onNavigate={(route) => navigate(route)}   onLogout={handleLogout} onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}
- />
+            {!isAdminRoute && (
+  <Navbar
+    user={user}
+    onNavigate={(route) => navigate(route)}
+    onLogout={handleLogout}
+    onUserUpdated={(apiUser) => setUser(normalizeUser(apiUser))}
+    notifications={notifications}
+    unreadCount={unreadCount}
+    onClearNotifications={clearNotifications}
+  />
+)}
 
             <Routes>
                 <Route path="/" element={
@@ -65,7 +89,7 @@ React.useEffect(() => {
 
                     </>
                 } />
-                <Route path="/tools/image-generator" element={<Text onSubmit={(data) => console.log(data)} />} />
+                <Route path="/tools/image-generator" element={<Text onSubmit={(data) => console.log(data)} />}  addNotification={addNotification}/>
 
                 <Route path="/about" element={<Aboutpart />} />
                 <Route path="/pricing" element={<Pricingpart />} />
@@ -74,20 +98,39 @@ React.useEffect(() => {
         setUser(normalizeUser(apiUser));
       }}/>} />
                 <Route path="/signup" element={<SignupPage/>} />
-                <Route path="/tools" element={<AiToolsPage />} />  
-                <Route path="/history" element={<ContentStudioPage />} />
-                <Route path="/tools" element={<AiToolsPage />} />
-                <Route path="/tools/caption-generator" element={<CaptionGenerating />} />
-                <Route path="/tools/enhance-image" element={<InhanceImg />}/>
+                <Route
+                  path="/tools"
+                  element={
+                    <ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} >
+                      <AiToolsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/history" element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} ><ContentStudioPage /></ProtectedRoute>} />
+                <Route path="/tools/caption-generator" element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} ><CaptionGenerating addNotification={addNotification}/></ProtectedRoute>} />
+                <Route path="/tools/enhance-image" element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} ><InhanceImg addNotification={addNotification}/></ProtectedRoute>}/>
 
-                <Route path ="/tools/generate-image" element={<Text onSubmit={(data) => console.log(data)} />}></Route>
+                <Route path ="/tools/generate-image" element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} ><Text onSubmit={(data) => console.log(data)} /></ProtectedRoute>}></Route>
 
-                <Route path="/tools/theme-image-generation" element={<ThemeImgPage />}/>
-                <Route path="/subscription" element={<SubscriptionPage />} />
-
+                <Route path="/tools/theme-image-generation" element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} ><ThemeImgPage addNotification={addNotification} /></ProtectedRoute>}/>
+                <Route path="/subscription" element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} ><SubscriptionPage /></ProtectedRoute>} />
+                <Route path="/payment" element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={[1, 2]} ><PaymentPage  /></ProtectedRoute>} />
+                <Route
+                        path="/admin"
+                        element={
+                          <ProtectedRoute
+                            user={user}
+                            authLoading={authLoading}
+                            allowedRoles={[1]}
+                          >
+                            <AdminPanel onLogout={handleLogout} />
+                          </ProtectedRoute>
+                        }
+                      />
             </Routes>
 
-            <Footerpart />
+{!isAdminRoute && <ChatBotWidget />}
+{!isAdminRoute && <Footerpart />}
         </>
     );
 }
@@ -98,11 +141,11 @@ function normalizeUser(apiUser) {
 
   return {
     id: apiUser.id,
-    name:
-      apiUser.profile?.owner_name ||"User",    
-    store_name: apiUser.profile?.store_name || null,  
+    name: apiUser.profile?.owner_name || "User",
+    store_name: apiUser.profile?.store_name || null,
     email: apiUser.email,
     plan: apiUser.active_subscription?.plan?.name || "free",
+    role_id: Number(apiUser.role_id),
     role: apiUser.role?.name || "user",
     raw: apiUser,
   };
