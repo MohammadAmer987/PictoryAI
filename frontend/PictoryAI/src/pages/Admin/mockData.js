@@ -19,11 +19,13 @@ export const navItems = [
     label: 'Revenue',
     icon: 'revenue',
   },
+
   {
     id: 'notifications',
     label: 'Notifications',
     icon: 'notifications',
   },
+
 ];
 
 export const users = [

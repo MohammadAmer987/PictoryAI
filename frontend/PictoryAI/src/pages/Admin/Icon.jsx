@@ -5,7 +5,9 @@ import {
   Check,
   Home,
   DollarSign,
+
   Mail,
+
   LogOut,
   Search,
   Settings,
@@ -24,6 +26,7 @@ const icons = {
   users: Users,
   revenue: DollarSign,
   notifications: Mail,
+
 };
 
 export default function Icon({ name, size = 16, className }) {
