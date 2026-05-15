@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
@@ -108,6 +109,29 @@ class AuthController extends Controller
     }
 
 
+    #[OA\Get(
+        path: '/me',
+        summary: 'Get current authenticated user information',
+        description: 'Returns the current authenticated user\'s information',
+        tags: ['Authentication'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Current user retrieved successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'data', ref: '#/components/schemas/User'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthenticated'
+            ),
+        ]
+    )]
     public function me(Request $request)
     {
         $user = $request->user();
@@ -127,6 +151,25 @@ class AuthController extends Controller
 
 
 
+    #[OA\Post(
+        path: '/logout',
+        summary: 'Logout the current user',
+        description: 'Revokes the current authentication token and logs out the user',
+        tags: ['Authentication'],
+        security: [['sanctumBearerAuth' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Logged out successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Logged out successfully'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
