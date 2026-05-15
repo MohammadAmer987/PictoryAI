@@ -91,7 +91,7 @@ function ThemeImagePage({ addNotification = () => {} }) {
             }
 
             setGeneratedImage(data.data.edited_urls[0]);
-            addNotification({ type: "theme" });
+            await addNotification({ type: "theme" });
 
             } catch (err) {
                 console.error("Full Backend Error:", err);

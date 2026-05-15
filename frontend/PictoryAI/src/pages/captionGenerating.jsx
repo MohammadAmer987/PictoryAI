@@ -121,7 +121,7 @@ function CaptionGenerating({ addNotification = () => {} }) {
 
       setIsLimitReached(false);
       setResults(data?.data?.captions || []);
-      addNotification({ type: "caption" });
+      await addNotification({ type: "caption" });
     } catch (error) {
       console.error('Caption generation error:', error);
 
