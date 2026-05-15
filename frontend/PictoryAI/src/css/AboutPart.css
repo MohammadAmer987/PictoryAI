@@ -178,23 +178,29 @@
 }
 
 /* ── Cards ─────────────────────────────────────────── */
-.cards {
+.cards2 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 25px;
   margin-bottom: 1.4rem;
+  
 
 }
 
-.aw .card {
+
+
+.aw .card2 {
+  padding: 0%  1.5rem;
   background: #aed0ba;
+
+
   border: 0.5px solid var(--green-accent);
   border-radius: 12px;
  animation: rise 0.45s ease forwards;
   opacity: 1; 
   animation-fill-mode: both;
       width: 245px;
-      height: 170px;
+      height: 190px;
     
 
 }
@@ -261,6 +267,6 @@
 @media (max-width: 520px) {
   .hero   { flex-direction: column; }
   .orbitWrap { display: none; }
-  .cards  { grid-template-columns: 1fr; }
+  /* .cards  { grid-template-columns: 1fr; } */
   .bottom { flex-direction: column; align-items: flex-start; }
 }

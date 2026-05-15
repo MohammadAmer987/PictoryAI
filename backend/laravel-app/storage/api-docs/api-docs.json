@@ -244,13 +244,326 @@
                 ]
             }
         },
+        "/api/image/edit": {
+            "post": {
+                "tags": [
+                    "Tools - Image Enhancement"
+                ],
+                "summary": "Edit a product image using AI",
+                "description": "Uploads a product image and applies AI-powered editing including background replacement, lighting, style, text overlay, and camera angle adjustments. Free plan users are limited to 3 generations per month.",
+                "operationId": "32a2aa97a259ae9e3823737261a23f6b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image",
+                                    "product_name",
+                                    "target_audience",
+                                    "background_type",
+                                    "background_blur",
+                                    "light_type",
+                                    "style_type",
+                                    "extra_prompt"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "description": "Product image file. Accepted formats: jpg, jpeg, png, webp. Max size: 20MB.",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "product_name": {
+                                        "description": "Name of the product.",
+                                        "type": "string",
+                                        "example": "Luxury Perfume Bottle",
+                                        "maxLength": 255
+                                    },
+                                    "target_audience": {
+                                        "description": "The intended audience for the product.",
+                                        "type": "string",
+                                        "example": "Young women aged 18-35",
+                                        "maxLength": 255
+                                    },
+                                    "product_description": {
+                                        "description": "Optional short description of the product.",
+                                        "type": "string",
+                                        "example": "A premium oud-based perfume with a gold cap.",
+                                        "nullable": true,
+                                        "maxLength": 1000
+                                    },
+                                    "background_type": {
+                                        "description": "Description of the desired background.",
+                                        "type": "string",
+                                        "example": "Soft white marble surface with rose petals",
+                                        "maxLength": 500
+                                    },
+                                    "background_blur": {
+                                        "description": "Background blur intensity from 0 (no blur) to 10 (maximum blur).",
+                                        "type": "integer",
+                                        "example": 5,
+                                        "maximum": 10,
+                                        "minimum": 0
+                                    },
+                                    "light_type": {
+                                        "description": "Lighting style to apply.",
+                                        "type": "string",
+                                        "example": "Soft studio lighting",
+                                        "maxLength": 255
+                                    },
+                                    "style_type": {
+                                        "description": "Photography or visual style.",
+                                        "type": "string",
+                                        "example": "Luxury commercial photography",
+                                        "maxLength": 255
+                                    },
+                                    "text_on_image": {
+                                        "description": "Optional text to overlay on the image.",
+                                        "type": "string",
+                                        "example": "Limited Edition",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "text_position": {
+                                        "description": "Position of the text overlay on the image.",
+                                        "type": "string",
+                                        "example": "bottom-left",
+                                        "nullable": true,
+                                        "maxLength": 50
+                                    },
+                                    "text_size": {
+                                        "description": "Font size of the overlay text in pixels.",
+                                        "type": "integer",
+                                        "example": 48,
+                                        "nullable": true,
+                                        "maximum": 100,
+                                        "minimum": 12
+                                    },
+                                    "camera_angle": {
+                                        "description": "Camera angle for the shot.",
+                                        "type": "string",
+                                        "example": "eye level",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "image_ratio": {
+                                        "description": "Desired output image aspect ratio.",
+                                        "type": "string",
+                                        "example": "1:1",
+                                        "nullable": true,
+                                        "enum": [
+                                            "1:1",
+                                            "16:9",
+                                            "3:4",
+                                            "9:16",
+                                            "4:5"
+                                        ]
+                                    },
+                                    "extra_prompt": {
+                                        "description": "Additional instructions or creative directions for the AI.",
+                                        "type": "string",
+                                        "example": "Add a subtle golden shimmer to the background.",
+                                        "maxLength": 1500
+                                    },
+                                    "num_images": {
+                                        "description": "Number of image variations to generate (1–3). Defaults to 1.",
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true,
+                                        "maximum": 3,
+                                        "minimum": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image edited successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image edited and saved successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "request_id": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "original_url": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "example": "https://example.com/storage/uploads/image.jpg"
+                                                },
+                                                "edited_urls": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "format": "uri"
+                                                    },
+                                                    "example": [
+                                                        "https://cdn.fal.ai/result1.jpg",
+                                                        "https://cdn.fal.ai/result2.jpg"
+                                                    ]
+                                                },
+                                                "prompt_used": {
+                                                    "type": "string",
+                                                    "example": "Professional luxury e-commerce product photography of Luxury Perfume Bottle..."
+                                                },
+                                                "raw_result": {
+                                                    "description": "Raw response from fal.ai",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Free plan monthly limit reached (max 3 generations).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have reached the maximum limit of 3 generations for the free plan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "image": [
+                                                    "The image field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error or FAL_KEY missing.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image editing failed."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Connection timed out."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "fal.ai returned an error or timed out.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to submit request to fal.ai"
+                                        },
+                                        "fal_error": {
+                                            "description": "Error payload from fal.ai",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/image-generator/generate": {
             "post": {
                 "tags": [
                     "Tools - Image Generation"
                 ],
                 "summary": "Generate an AI image based on project details",
-                "description": "Generates a professional AI image using Pollinations API based on project name, content, color, and image type. Returns base64 image data along with metadata.",
+                "description": "Generates a professional AI image using **fal.ai** (Flux model) based on project name, content, color, and image type.\n\n### Plan Limits\n- **Free plan**: maximum **3 generations** total.\n- **Pro plan**: **unlimited** generations (active subscription required).\n\nReturns base64 image data along with metadata.",
                 "operationId": "d042d78611f21d2433653c97d3f79737",
                 "requestBody": {
                     "required": true,
@@ -325,9 +638,9 @@
                                             "example": "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
                                         },
                                         "image_url": {
-                                            "description": "Original Pollinations image URL",
+                                            "description": "Original fal.ai image URL",
                                             "type": "string",
-                                            "example": "https://image.pollinations.ai/prompt/..."
+                                            "example": "https://fal.media/files/..."
                                         },
                                         "color": {
                                             "type": "string",
@@ -357,8 +670,7 @@
                                         },
                                         "prompt": {
                                             "description": "The full prompt sent to the AI",
-                                            "type": "string",
-                                            "example": "STRICT IMAGE GENERATION INSTRUCTIONS..."
+                                            "type": "string"
                                         },
                                         "seed": {
                                             "description": "Random seed used for generation",
@@ -367,7 +679,84 @@
                                         },
                                         "provider": {
                                             "type": "string",
-                                            "example": "pollinations"
+                                            "example": "fal.ai"
+                                        },
+                                        "usage": {
+                                            "description": "Usage info (only returned for free plan)",
+                                            "properties": {
+                                                "used": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "limit": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "remaining": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Free limit reached or subscription expired",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "free_limit_reached",
+                                            "enum": [
+                                                "free_limit_reached",
+                                                "subscription_expired"
+                                            ]
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have used all 3 free generations."
+                                        },
+                                        "used": {
+                                            "type": "integer",
+                                            "example": 3,
+                                            "nullable": true
+                                        },
+                                        "limit": {
+                                            "type": "integer",
+                                            "example": 3,
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
@@ -394,26 +783,6 @@
                             }
                         }
                     },
-                    "429": {
-                        "description": "Image service is busy (queue full)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "error": {
-                                            "type": "string",
-                                            "example": "The free image service is busy right now. Please wait a moment and try again."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
                     "500": {
                         "description": "Server or generation error",
                         "content": {
@@ -426,16 +795,13 @@
                                         },
                                         "error": {
                                             "type": "string",
-                                            "example": "Image request failed on the server."
+                                            "example": "Image generation failed."
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
                     }
                 },
                 "security": [
@@ -445,63 +811,195 @@
                 ]
             }
         },
-        "/api/image-generator/generate-fixed": {
+        "/api/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Get usage notifications and limits for the authenticated user",
+                "operationId": "911565ad9aff9ba7eded3f189509e578",
+                "responses": {
+                    "200": {
+                        "description": "Usage counters and limits returned successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "notifications": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "example": "caption"
+                                                    },
+                                                    "used": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "limit": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "remaining": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "label": {
+                                                        "type": "string",
+                                                        "example": "Caption Generator"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/subscription": {
+            "get": {
+                "tags": [
+                    "Subscription"
+                ],
+                "summary": "Get current user subscription status",
+                "operationId": "6c176ef3c94a1d730735ee055eca7381",
+                "responses": {
+                    "200": {
+                        "description": "Subscription status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "isPro": {
+                                            "description": "Whether the user has a Pro subscription",
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/image/themed": {
             "post": {
                 "tags": [
-                    "Tools - Image Generation"
+                    "Tools - Theme Generator"
                 ],
-                "summary": "Generate an AI image based on project details",
-                "description": "Generates a professional AI image using Pollinations API based on project name, content, color, and image type. Returns base64 image data along with metadata.",
-                "operationId": "08b46b34ccf9340a46d2a743328acbc0",
+                "summary": "Apply a seasonal or occasion theme to a product image",
+                "description": "Uploads a product image and replaces its background with a fully themed luxury marketing scene (e.g. Ramadan, Christmas, Valentine's Day). The product identity is preserved while the environment is completely transformed. Free plan users are limited to 3 generations per month.",
+                "operationId": "1f158df8e5d416e6fb0e9c9a41862a68",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "projectName"
+                                    "image",
+                                    "theme",
+                                    "image_size"
                                 ],
                                 "properties": {
-                                    "projectName": {
-                                        "description": "The name of the project to display in the image",
+                                    "image": {
+                                        "description": "Product image file. Accepted formats: jpg, jpeg, png, webp. Max size: 20MB.",
                                         "type": "string",
-                                        "example": "My Brand",
-                                        "maxLength": 255
+                                        "format": "binary"
                                     },
-                                    "content": {
-                                        "description": "Additional content description for image generation",
+                                    "theme": {
+                                        "description": "The occasion or seasonal theme to apply to the image.",
                                         "type": "string",
-                                        "example": "A modern coffee shop with warm lighting",
-                                        "nullable": true,
-                                        "maxLength": 1000
-                                    },
-                                    "color": {
-                                        "description": "Brand color to dominate the image palette (hex or color name)",
-                                        "type": "string",
-                                        "example": "#3B82F6",
-                                        "nullable": true,
-                                        "maxLength": 100
-                                    },
-                                    "colorText": {
-                                        "description": "Additional color instructions in natural language",
-                                        "type": "string",
-                                        "example": "Use deep navy blue tones",
-                                        "nullable": true,
-                                        "maxLength": 255
-                                    },
-                                    "imageType": {
-                                        "description": "Image format/layout type:\n- `post` → 1024×1024 (1:1)\n- `story` → 1024×1792 (9:16)\n- `banner` → 1792×1024 (16:9)\n- `portrait` → 1024×1280 (4:5)\n- `landscape` → 1536×1024 (3:2)\n- `cinema` → 1792×768 (21:9)",
-                                        "type": "string",
-                                        "example": "post",
-                                        "nullable": true,
+                                        "example": "Ramadan",
+                                        "maxLength": 255,
                                         "enum": [
-                                            "post",
-                                            "story",
-                                            "banner",
-                                            "portrait",
-                                            "landscape",
-                                            "cinema"
+                                            "Christmas",
+                                            "Ramadan",
+                                            "Eid al-Fitr",
+                                            "Eid al-Adha",
+                                            "Valentine's Day",
+                                            "Black Friday",
+                                            "New Year",
+                                            "Graduation",
+                                            "Mother's Day",
+                                            "Back to School"
                                         ]
+                                    },
+                                    "image_size": {
+                                        "description": "Desired output image aspect ratio.",
+                                        "type": "string",
+                                        "example": "1:1",
+                                        "enum": [
+                                            "1:1",
+                                            "16:9",
+                                            "3:4",
+                                            "9:16",
+                                            "4:5"
+                                        ]
+                                    },
+                                    "optional_text": {
+                                        "description": "Optional text to overlay on the generated image (e.g. a promotional message or greeting). Displayed in a large bold luxury font at the top.",
+                                        "type": "string",
+                                        "example": "Ramadan Special Offer",
+                                        "nullable": true,
+                                        "maxLength": 255
                                     }
                                 },
                                 "type": "object"
@@ -511,7 +1009,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Image generated successfully",
+                        "description": "Image themed and saved successfully.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -520,114 +1018,41 @@
                                             "type": "boolean",
                                             "example": true
                                         },
-                                        "image": {
-                                            "description": "Base64 encoded image with data URI prefix",
+                                        "message": {
                                             "type": "string",
-                                            "example": "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+                                            "example": "Image edited and saved successfully."
                                         },
-                                        "image_url": {
-                                            "description": "Original Pollinations image URL",
-                                            "type": "string",
-                                            "example": "https://image.pollinations.ai/prompt/..."
-                                        },
-                                        "color": {
-                                            "type": "string",
-                                            "example": "#3B82F6",
-                                            "nullable": true
-                                        },
-                                        "image_type": {
-                                            "type": "string",
-                                            "example": "post"
-                                        },
-                                        "size": {
+                                        "data": {
                                             "properties": {
-                                                "width": {
+                                                "request_id": {
                                                     "type": "integer",
-                                                    "example": 1024
+                                                    "example": 17
                                                 },
-                                                "height": {
-                                                    "type": "integer",
-                                                    "example": 1024
-                                                },
-                                                "ratio": {
+                                                "original_url": {
                                                     "type": "string",
-                                                    "example": "1:1"
+                                                    "format": "uri",
+                                                    "example": "https://example.com/storage/uploads/product.jpg"
+                                                },
+                                                "edited_urls": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "format": "uri"
+                                                    },
+                                                    "example": [
+                                                        "https://cdn.fal.ai/themed-result.jpg"
+                                                    ]
+                                                },
+                                                "prompt_used": {
+                                                    "type": "string",
+                                                    "example": "PRODUCT: The reference product may be a low-quality..."
+                                                },
+                                                "raw_result": {
+                                                    "description": "Raw response payload from fal.ai",
+                                                    "type": "object"
                                                 }
                                             },
                                             "type": "object"
-                                        },
-                                        "prompt": {
-                                            "description": "The full prompt sent to the AI",
-                                            "type": "string",
-                                            "example": "STRICT IMAGE GENERATION INSTRUCTIONS..."
-                                        },
-                                        "seed": {
-                                            "description": "Random seed used for generation",
-                                            "type": "integer",
-                                            "example": 482910573
-                                        },
-                                        "provider": {
-                                            "type": "string",
-                                            "example": "pollinations"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The project name field is required."
-                                        },
-                                        "errors": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "Image service is busy (queue full)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "error": {
-                                            "type": "string",
-                                            "example": "The free image service is busy right now. Please wait a moment and try again."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Server or generation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Image request failed on the server."
                                         }
                                     },
                                     "type": "object"
@@ -636,12 +1061,128 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthenticated"
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Free plan monthly limit reached (max 3 generations).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have reached the maximum limit of 3 generations for the free plan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "theme": [
+                                                    "The theme field is required."
+                                                ],
+                                                "image_size": [
+                                                    "The selected image size is invalid."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error or FAL_KEY missing.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image editing failed."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Connection timed out."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "fal.ai returned an error, timed out, or returned no images.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to submit request to fal.ai"
+                                        },
+                                        "fal_error": {
+                                            "description": "Error payload from fal.ai",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
                     {
-                        "bearerAuth": []
+                        "sanctum": []
                     }
                 ]
             }
@@ -669,6 +1210,22 @@
         {
             "name": "History",
             "description": "Operations related to user generation history."
+        },
+        {
+            "name": "Tools - Image Enhancement",
+            "description": "Tools - Image Enhancement"
+        },
+        {
+            "name": "Notifications",
+            "description": "Notifications"
+        },
+        {
+            "name": "Subscription",
+            "description": "Subscription"
+        },
+        {
+            "name": "Tools - Theme Generator",
+            "description": "Tools - Theme Generator"
         }
     ]
 }

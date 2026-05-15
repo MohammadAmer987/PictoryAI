@@ -35,11 +35,30 @@ function LoginPage({ onLoginSuccess }) {
 
       const data = await login(formData);
 
-if (onLoginSuccess && data?.data?.user) {
-  onLoginSuccess(data.data.user);
-}
+      const user = data?.data?.user;
 
-      navigate("/tools");
+      if (!user) {
+        setError("Login succeeded, but user data was not returned.");
+        return;
+      }
+
+      if (onLoginSuccess) {
+        onLoginSuccess(user);
+      }
+
+      const roleId = Number(user.role_id);
+
+      if (roleId === 1) {
+        navigate("/admin");
+        return;
+      }
+
+      if (roleId === 2) {
+        navigate("/tools");
+        return;
+      }
+
+      setError("Your account role is not allowed to access this system.");
     } catch (err) {
       setError(err.message || "Login failed.");
     } finally {
@@ -51,7 +70,7 @@ if (onLoginSuccess && data?.data?.user) {
     <>
       <div
         style={{
-          zindex: "1",
+          zIndex: "1",
           minHeight: "100vh",
           background: "#f7fbf8",
           display: "flex",
@@ -124,7 +143,7 @@ if (onLoginSuccess && data?.data?.user) {
               border: "none",
               padding: "14px",
               borderRadius: "12px",
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               marginBottom: "18px",
               opacity: loading ? 0.7 : 1,
             }}
@@ -136,7 +155,11 @@ if (onLoginSuccess && data?.data?.user) {
             Don’t have an account?{" "}
             <span
               onClick={() => navigate("/signup")}
-              style={{ color: "#045f34", fontWeight: "bold", cursor: "pointer" }}
+              style={{
+                color: "#045f34",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
             >
               Sign Up
             </span>

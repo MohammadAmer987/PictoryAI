@@ -1,5 +1,5 @@
 import Group from "./Group";
-import ColorPickerAndRange from "./ColorPickerAndRange";
+import Range from "./Range";
 import sea from "../../assets/inhance_img/backgrounds/Sea.jpg";
 import mountains from "../../assets/inhance_img/backgrounds/Mountains.jpg";
 import forest from "../../assets/inhance_img/backgrounds/Forest.jpg";
@@ -41,14 +41,11 @@ function BackgroundPlane({ settings, updateSetting }) {
                 onClick={(v) => updateSetting("background", v)}
                 selected={settings.background}
             />
-            <ColorPickerAndRange
-                title1='Background Color (Optional)'
+            <Range
                 title2='Background Blur (Optional)'
                 text=''
                 maxValue={10}
                 minValue={0}
-                color={settings.backgroundColor}
-                setColor={(v) => updateSetting("backgroundColor", v)}
                 range={settings.backgroundBlur}
                 setRange={(v) => updateSetting("backgroundBlur", v)}
             />

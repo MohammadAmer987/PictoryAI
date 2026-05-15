@@ -1,0 +1,37 @@
+.adminPanel {
+  min-height: 100vh;
+  background: #eef3f0;
+}
+
+.adminContent {
+  min-height: 100vh;
+  transition: margin-left 0.25s ease, width 0.25s ease;
+}
+
+.adminPanel.sidebarOpened .adminContent {
+  margin-left: 300px;
+  width: calc(100% - 300px);
+
+  margin-top: -5%;
+
+}
+
+.adminPanel.sidebarClosed .adminContent {
+  margin-left: 88px;
+  width: calc(100% - 88px);
+}
+
+.adminMain {
+  min-height: calc(100vh - 96px);
+  padding: 28px;
+  overflow-x: hidden;
+  background: #eef3f0;
+}
+
+@media (max-width: 768px) {
+  .adminPanel.sidebarOpened .adminContent,
+  .adminPanel.sidebarClosed .adminContent {
+    margin-left: 88px;
+    width: calc(100% - 88px);
+  }
+}
