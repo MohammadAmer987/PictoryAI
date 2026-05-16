@@ -34,7 +34,8 @@ const EditName = ({ show, onHide, currentName, onSaveName }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+    const fullName = `${firstName} ${lastName}`.trim();
+
     if (!fullName) {
       setMessage({ type: "danger", text: "Please enter a name." });
       return;
