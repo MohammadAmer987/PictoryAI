@@ -203,8 +203,8 @@ function PaymentPage() {
                         onClick={handleConfirmPayment}
                         disabled={loading}
                     >
-                        {loading ? "Processing..." : "Confirm Subscription"}
-                    </button>
+                        {loading ? "Processing..." : "Confirm Premium Subscription"}               
+     </button>
 
                     
                 </div>
