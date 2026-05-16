@@ -84,7 +84,7 @@ function PlanCard({ plan, currentPlanName, onSelect }) {
         disabled={isCurrent}
         onClick={() => onSelect(plan)}
       >
-        {isCurrent ? "Current Plan" : "Switch to Premium"}
+                          {isCurrent ? "Current Plan" : "Upgrade to Premium"}
       </button>
     </div>
   );
