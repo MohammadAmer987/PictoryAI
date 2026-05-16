@@ -8,11 +8,10 @@ import {
   updateStoreName,
   updateProfileLogo,
 } from "../../Services/profileService";
-
 export default function Profile({
   isOpen,
   onClose,
-  userName = "Mohammad Nooh",
+  userName = "ahmad jarrar",
   userEmail = "n321632408@stu.edu",
   storeName = "My Store",
   onUserUpdated,
@@ -35,9 +34,14 @@ export default function Profile({
     const trimmedName = fullName.trim();
 
     if (!trimmedName) {
-      throw new Error("Name is required.");
-    }
 
+      throw new Error("Name is required."); //JDJVDSVNVJNFDSVBFSBVIBFIVBIFDHB
+    }
+     const response2 = await updateProfileName(trimmedName);
+
+     if (response2?.data?.user && onUserUpdated) {
+       onUserUpdated(response2.data.user);
+     }
     const response = await updateProfileName(trimmedName);
 
     if (response?.data?.user && onUserUpdated) {
