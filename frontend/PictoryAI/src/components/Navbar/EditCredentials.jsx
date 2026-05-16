@@ -282,7 +282,7 @@ const EditCredentials = ({ show, onHide, currentEmail, onUserUpdated }) => {
                   e.target.style.borderColor = colors.darkGreen;
                 }}
               >
-                {loading ? "Updating..." : "Update Email"}
+                     {loading ? "Updating..." : "Update Email Address"}
               </Button>
             </div>
           </Form>
