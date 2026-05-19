@@ -8,7 +8,7 @@
   align-content: center;
 }
 
-.card {
+.statsGrid .card {
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(244, 248, 247, 0.76)),
     var(--bg-surface);
@@ -20,7 +20,7 @@
   box-shadow: 0 18px 45px rgba(24, 55, 50, 0.12);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.card .label {
+.statsGrid .card .label {
   font-size: 16px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -28,7 +28,7 @@
   display: block;
 }
 
-.card .value {
+.statsGrid .card .value {
   font-size: 28px;
   font-weight: 600;
   color: var(--text-primary);
@@ -38,7 +38,7 @@
   color: #376359;
 }
 
-.card::before {
+.statsGrid .card::before {
   content: '';
   position: absolute;
   top: -38px;
@@ -50,7 +50,7 @@
   pointer-events: none;
 }
 
-.card::after {
+.statsGrid .card::after {
   content: '';
   position: absolute;
   left: -30px;
@@ -62,7 +62,7 @@
   pointer-events: none;
 }
 
-.card:hover {
+.statsGrid .card:hover {
   transform: translateY(-4px);
   border-color: rgba(101, 150, 140, 0.75);
   box-shadow: 0 24px 55px rgba(24, 55, 50, 0.18);

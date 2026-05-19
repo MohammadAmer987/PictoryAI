@@ -140,7 +140,7 @@ function CaptionGenerating({ addNotification = () => {} }) {
 
   return (
       <div
-          className="main-page-wrapper"
+          className="main-page-wrapper caption-generator-page"
           style={{ backgroundColor: 'var(--light-bg-green)', minHeight: '100vh' }}
       >
         <Hero />

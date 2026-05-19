@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 
 const FREE_LIMITS = {
-    theme: 3, enhance: 3, caption: 3, generate: 3,
+    theme: 3, enhance: 3, caption: 10, generate: 3,
 };
 
 const TYPE_MAP = {

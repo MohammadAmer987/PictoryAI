@@ -5,6 +5,8 @@ function CaptionsList({ captions = [], onDeleteGroup }) {
     const [openId, setOpenId] = useState(null);
     const [copiedKey, setCopiedKey] = useState('');
 
+    const isRtlText = (text = '') => /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
+
     const toggleOpen = (id) => {
         setOpenId((prev) => (prev === id ? null : id));
     };
@@ -145,6 +147,7 @@ function CaptionsList({ captions = [], onDeleteGroup }) {
                                 <div className="studio-caption-grid">
                                     {group.items.map((item, index) => {
                                         const key = `${group.id}-${index}`;
+                                        const isRtl = isRtlText(item.text);
 
                                         return (
                                             <div
@@ -167,7 +170,11 @@ function CaptionsList({ captions = [], onDeleteGroup }) {
                                                     </Button>
                                                 </div>
 
-                                                <p className="studio-caption-variant-text mb-0">
+                                                <p
+                                                    className="studio-caption-variant-text mb-0"
+                                                    dir={isRtl ? 'rtl' : 'ltr'}
+                                                    style={{ textAlign: isRtl ? 'right' : 'left' }}
+                                                >
                                                     {item.text}
                                                 </p>
                                             </div>

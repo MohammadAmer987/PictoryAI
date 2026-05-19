@@ -5,6 +5,8 @@ function PreviewSection({ results, loading, onRegenerate }) {
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [copiedAll, setCopiedAll] = useState(false);
 
+  const isRtlText = (text) => /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
+
   const handleCopy = (text, index) => {
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
@@ -112,7 +114,10 @@ function PreviewSection({ results, loading, onRegenerate }) {
 
         <Stack gap={3}>
           {results.map((item, index) => (
-            <Card key={index} className="border-light rounded-4 p-3 shadow-none transition-all hover-shadow">
+            <Card
+              key={index}
+              className="border-light rounded-4 p-3 shadow-none transition-all hover-shadow"
+            >
               <div className="d-flex justify-content-between align-items-start mb-2">
                 <div className="d-flex align-items-center">
                   <div className="bg-light p-2 rounded-3 me-2 text-secondary" style={{ width: '35px', height: '35px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -129,18 +134,26 @@ function PreviewSection({ results, loading, onRegenerate }) {
                   {copiedIndex === index ? 'Copied!' : 'Copy'}
                 </Button>
               </div>
+                {(() => {
+                  const isRtl = isRtlText(item.content);
+
+                  return (
                 <p
                     className="align-content-lg-start text-secondary mb-3 fw-medium"
+                    dir={isRtl ? 'rtl' : 'ltr'}
                     style={{
                         fontSize: '1rem',
                         lineHeight: '1.9',
                         whiteSpace: 'normal',
                         wordBreak: 'break-word',
                         overflow: 'visible',
+                        textAlign: isRtl ? 'right' : 'left',
                     }}
                 >
                     {item.content}
                 </p>
+                  );
+                })()}
               <div className="d-flex flex-wrap gap-2">
                 {item.tags.map(tag => (
                   <Badge key={tag} bg="light" text="success" className="fw-normal border border-success-subtle extra-small py-1 px-3 rounded-pill">#{tag}</Badge>
