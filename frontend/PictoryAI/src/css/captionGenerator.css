@@ -102,6 +102,10 @@ body {
   min-height: 100vh;
 }
 
+.caption-generator-page .shadow-sm {
+  box-shadow: none !important;
+}
+
 body::-webkit-scrollbar {
   width: 8px;
 }
@@ -139,11 +143,7 @@ html, body {
 
 
 .card-header-custom {
-  background: linear-gradient(
-          135deg,
-          white,
-          var(--light-bg-green)
-  );
+  background: white;
   border-bottom: 1px solid #edf2f7;
   padding: 1rem !important;
 }

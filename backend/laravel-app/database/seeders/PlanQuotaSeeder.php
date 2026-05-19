@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Plan;
+use Illuminate\Database\Seeder;
 
-class PlanSeeder extends Seeder
+class PlanQuotaSeeder extends Seeder
 {
     public function run(): void
     {

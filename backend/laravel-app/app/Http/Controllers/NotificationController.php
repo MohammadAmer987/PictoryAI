@@ -60,6 +60,10 @@ class NotificationController extends Controller
             ], 401);
         }
 
+        $subscription = $user->activeSubscription()
+            ->with('plan')
+            ->first();
+
         $counters = $user->usageCounters()
             ->where('year', now()->year)
             ->where('month', now()->month)
@@ -67,7 +71,7 @@ class NotificationController extends Controller
             ->keyBy('type');
 
         $limits = [
-            'caption'       => 3,
+            'caption'       => $subscription?->plan?->max_generations_caption ?? 10,
             'enhance_image' => 3,
             'themed_image'  => 3,
             'generate_image'  => 3,
